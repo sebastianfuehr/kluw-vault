@@ -1,6 +1,10 @@
 # Contributing
 
 ```bash
+pamac install tk
+```
+
+```bash
 # Install the Python package virtualenv
 pip install virtualenv
 # Create a new virtual environment
