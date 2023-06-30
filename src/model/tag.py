@@ -3,13 +3,13 @@ from sqlalchemy.orm import relationship
 from .orm_base import Base
 
 
-class Project(Base):
-    __tablename__ = 'projects'
+class Tag(Base):
+    __tablename__ = 'tags'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    tags = relationship('Tag',
-                        secondary='project_tags',
-                        back_populates='projects')
+    projects = relationship('Project',
+                            secondary='project_tags',
+                            back_populates='tags')
 
     def __init__(self, name):
         self.name = name
