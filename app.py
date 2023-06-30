@@ -1,19 +1,19 @@
 #!/usr/bin/python
 
 # Python libraries
-from tkinter import Tk, ttk
+import ttkbootstrap as tb
+from tkinter.font import nametofont
 import configparser
 from datetime import datetime
 # Custom libraries
 from src.model.orm_base import Session, db_engine, Base
-from src.controller.db_controller import DBController
 from src.model.tracking_session import TrackingSession
 from src.components.MainFrame import MainFrame
 
 
-class App(Tk):
+class App(tb.Window):
     def __init__(self):
-        super().__init__()
+        super().__init__(themename='darkly')
 
         # Load and update configuration data
         self.config = configparser.ConfigParser()
@@ -21,15 +21,18 @@ class App(Tk):
         self.config['User']['last_login_datetime'] = str(datetime.now())
         with open('config.ini', 'w') as configfile:
             self.config.write(configfile)
-        
+
+        # Options
+        default_font = nametofont('TkDefaultFont')
+        default_font.configure(size=16)
+
         # Open a new database connection
         Base.metadata.create_all(db_engine)
         self.session = Session()
-        self.db_controller = DBController(self.session)
 
         # GUI structure
         self.title('Time Journal')
-        container = MainFrame(self)
+        MainFrame(self)
 
 
 if __name__ == '__main__':
