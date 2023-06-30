@@ -12,29 +12,39 @@ class TimeEntriesList(tb.Frame):
         self.parent = parent
         self.app = app
 
-        # Headers
-        self.headers = [
+        self.build_components()
+
+    def build_components(self):
+        # Columns
+        self.columns = [
             'db_id',
             'Date',
             'Day',
             'Start',
             'Stop',
             'Pause',
-            'Duration'
+            'Duration',
+            'Project ID',
+            'Project Name',
+            'Activity ID',
+            'Activity Name'
         ]
+        hidden_columns_idx = [0, 7, 9]
 
         entries = TimeEntryService.get_all(self.app.session).all()
         row_data = [entry.to_list() for entry in entries]
 
         self.table = Tableview(self,
-                               coldata=self.headers,
+                               coldata=self.columns,
                                rowdata=row_data,
                                paginated=True,
                                autofit=True,
                                autoalign=True,
                                pagesize=50)
+        for col_idx in hidden_columns_idx:
+            self.table.hide_selected_column(cid=col_idx)
         self.table.view.bind('<<TreeviewSelect>>', self.on_tb_tableview_select)
-        self.table.pack(side='left', fill='both')
+        self.table.pack(side='left', expand=True, fill='both')
 
         # Right sidebar form
         self.te_form = TimeEntryForm(self, self.app)
@@ -69,16 +79,20 @@ class TimeEntriesList(tb.Frame):
         except IndexError:
             print('Index not found.')
 
-    def add_entry(self, new_entry: TimeEntry):
+    def add_entry(self, te: TimeEntry):
         print('add_entry')
-        self.table.insert_row(tb.END, new_entry.to_list())
+        self.table.insert_row(tb.END, te.to_list())
         self.table.load_table_data()
 
     def update_entry(self, te: TimeEntry):
         print('update_entry')
         # Temporary database reload. TODO: Update tableview row.
         # self.table.view.item(self.selected_iid, values=te.to_list)
+        self.rebuild_table()
+
+    def rebuild_table(self):
         entries = TimeEntryService.get_all(self.app.session).all()
         row_data = [entry.to_list() for entry in entries]
-        self.table.build_table_data(coldata=self.headers,
-                                    rowdata=row_data)
+        self.table.delete_rows()
+        self.table.insert_rows(tb.END, row_data)
+        self.table.load_table_data()

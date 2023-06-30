@@ -20,7 +20,7 @@ class MainFrame(tb.Frame):
         sb_left.pack(side="left", fill="y")
 
         tel = TimeEntriesList(self, app=self.parent)
-        tel.pack(side='right', fill='both')
+        tel.pack(side='right', expand=True, fill='both')
 
         #proj_l = ProjectsList(self, self.parent)
         #proj_l.pack(side="top", fill="x")

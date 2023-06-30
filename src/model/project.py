@@ -11,5 +11,11 @@ class Project(Base):
                         secondary='project_tags',
                         back_populates='projects')
 
-    def __init__(self, name):
+    def __init__(self,
+                 id=None,
+                 name=None):
+        self.id = id
         self.name = name
+
+    def to_string(self):
+        return f'id: {self.id}, name: {self.name}'

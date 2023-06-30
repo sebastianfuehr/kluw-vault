@@ -3,6 +3,8 @@ from datetime import datetime
 # Custom modules
 from ..model.time_entry import TimeEntry
 from ..controller.time_entry_service import TimeEntryService
+from ..controller.project_service import ProjectService
+from ..controller.activity_service import ActivityService
 
 
 class TimeEntryForm(tb.Frame):
@@ -17,7 +19,7 @@ class TimeEntryForm(tb.Frame):
     def build_form_components(self):
         lbl_te_date = tb.Label(self, text='Date:')
         lbl_te_date.grid(column=0, row=0)
-        self.te_date = tb.DateEntry(self, dateformat='%Y-%m-%d')
+        self.te_date = tb.Entry(self)
         self.te_date.grid(column=1, row=0)
 
         lbl_te_weekday = tb.Label(self, text='Day:')
@@ -47,11 +49,45 @@ class TimeEntryForm(tb.Frame):
         self.te_duration.grid(column=1, row=5)
         self.te_duration['text'] = '00:00:00'
 
+        # Project combobox
+        projects = ProjectService.get_all(self.app.session).all()
+        project_names = [project.name for project in projects]
+        if len(project_names) == 0:
+            init_proj_name = None
+        else:
+            init_proj_name = project_names[0]
+        self.selected_project = tb.StringVar(value=init_proj_name)
+
+        lbl_te_project = tb.Label(self, text='Project:')
+        lbl_te_project.grid(column=0, row=6)
+        self.te_project = tb.Combobox(self, textvariable=self.selected_project)
+        self.te_project.grid(column=1, row=6)
+        self.te_project['values'] = project_names
+
+        # Activity combobox
+        activities = ActivityService.get_all(self.app.session).all()
+        activity_names = [activity.name for activity in activities]
+        if len(activity_names) == 0:
+            init_act_name = None
+        else:
+            init_act_name = activity_names[0]
+        self.selected_activity = tb.StringVar(value=init_act_name)
+
+        lbl_te_activity = tb.Label(self, text='Activity:')
+        lbl_te_activity.grid(column=0, row=7)
+        self.te_activity = tb.Combobox(self,
+                                       textvariable=self.selected_activity)
+        self.te_activity.grid(column=1, row=7)
+        self.te_activity['values'] = activity_names
+
+        # lbl_te_tags = 
+
+        # Buttons
         self.btn_save_entry = tb.Button(self,
                                         text='Save',
                                         command=self.save_entry)
         self.btn_save_entry.grid(column=0,
-                                 row=6,
+                                 row=9,
                                  columnspan=2)
 
         self.btn_new_entry = tb.Button(self,
@@ -59,7 +95,7 @@ class TimeEntryForm(tb.Frame):
                                        bootstyle='success',
                                        command=self.empty_form)
         self.btn_new_entry.grid(column=0,
-                                row=7,
+                                row=10,
                                 columnspan=2)
 
     def empty_form(self):
@@ -74,7 +110,7 @@ class TimeEntryForm(tb.Frame):
         if self.time_entry is None:
             # Rest all fields
             print('Reset form fields.')
-            self.te_date.entry.delete(0, tb.END)
+            self.te_date.delete(0, tb.END)
             self.te_weekday['text'] = ''
             self.te_start.delete(0, tb.END)
             self.te_end.delete(0, tb.END)
@@ -83,8 +119,8 @@ class TimeEntryForm(tb.Frame):
         else:
             print(f'Populate fields with {self.time_entry.to_list()}')
             # Fill form fields with time entry values
-            self.te_date.entry.delete(0, tb.END)
-            self.te_date.entry.insert(0, self.time_entry.get_date())
+            self.te_date.delete(0, tb.END)
+            self.te_date.insert(0, self.time_entry.get_date())
 
             self.te_weekday['text'] = self.time_entry.get_weekday()
 
@@ -107,15 +143,26 @@ class TimeEntryForm(tb.Frame):
         else:
             new_entry = self.time_entry
 
-        date = self.te_date.entry.get()
+        date = self.te_date.get()
         new_entry.start = datetime.strptime(f'{date} {self.te_start.get()}',
                                             '%Y-%m-%d %H:%M:%S')
         new_entry.stop = datetime.strptime(f'{date} {self.te_end.get()}',
-                                           '%Y-%m-%d %H:%M:%S')
+                                        '%Y-%m-%d %H:%M:%S')
         new_entry.pause = int(self.te_pause.get())
+        proj_name = self.selected_project.get()
+        new_entry.project_id = ProjectService.get_project_by_name(
+            self.app.session,
+            proj_name
+        ).id
+        activity_name = self.selected_activity.get()
+        new_entry.activity_id = ActivityService.get_activity_id(
+            self.app.session,
+            activity_name,
+            new_entry.project_id
+        ).id
         TimeEntryService.merge(self.app.session, new_entry)
 
         if self.time_entry is None:
-            self.parent.add_entry(new_entry=new_entry)
+            self.parent.add_entry(te=new_entry)
         else:
             self.parent.update_entry(te=new_entry)
