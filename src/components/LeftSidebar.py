@@ -9,3 +9,6 @@ class LeftSidebar(tb.Frame):
 
         lbl_username = tb.Label(self, text=f"Currently logged in as {self.config['User']['last_login_username']}")
         lbl_username.pack(side="bottom")
+
+        lbl_progress = tb.Label(self, text='')
+        lbl_progress.pack(side='top')

@@ -11,5 +11,6 @@ class Activity(Base):
     project_id = Column(Integer, ForeignKey('projects.id'))
     project = relationship('Project')
 
-    def __init__(self, name):
+    def __init__(self, id=None, name=None):
+        self.id = id
         self.name = name

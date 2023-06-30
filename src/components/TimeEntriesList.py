@@ -71,21 +71,18 @@ class TimeEntriesList(tb.Frame):
     def on_tb_tableview_select(self, _):
         try:
             self.selected_iid = self.table.view.selection()[0]
-            print(f'Selected row: {self.selected_iid}')
             values = self.table.view.item(self.selected_iid, 'values')
-            print(f'Values: {values}')
+            print(f'Selected {self.selected_iid}: {values}')
             selected_te = TimeEntry.from_list(values)
             self.te_form.set_time_entry(selected_te)
         except IndexError:
             print('Index not found.')
 
     def add_entry(self, te: TimeEntry):
-        print('add_entry')
         self.table.insert_row(tb.END, te.to_list())
         self.table.load_table_data()
 
     def update_entry(self, te: TimeEntry):
-        print('update_entry')
         # Temporary database reload. TODO: Update tableview row.
         # self.table.view.item(self.selected_iid, values=te.to_list)
         self.rebuild_table()

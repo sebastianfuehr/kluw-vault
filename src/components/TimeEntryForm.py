@@ -2,6 +2,8 @@ import ttkbootstrap as tb
 from datetime import datetime
 # Custom modules
 from ..model.time_entry import TimeEntry
+from ..model.project import Project
+from ..model.activity import Activity
 from ..controller.time_entry_service import TimeEntryService
 from ..controller.project_service import ProjectService
 from ..controller.activity_service import ActivityService
@@ -93,31 +95,38 @@ class TimeEntryForm(tb.Frame):
         self.btn_new_entry = tb.Button(self,
                                        text='New',
                                        bootstyle='success',
-                                       command=self.empty_form)
+                                       command=self.form_for_new_entry)
         self.btn_new_entry.grid(column=0,
                                 row=10,
                                 columnspan=2)
 
-    def empty_form(self):
+    def form_for_new_entry(self):
         self.set_time_entry(None)
 
     def set_time_entry(self, time_entry: TimeEntry):
-        print('set_time_entry')
         self.time_entry = time_entry
         self.__populate_fields()
 
     def __populate_fields(self):
         if self.time_entry is None:
             # Rest all fields
-            print('Reset form fields.')
             self.te_date.delete(0, tb.END)
-            self.te_weekday['text'] = ''
+            self.te_date.insert(0, datetime.now().date())
+
+            self.te_weekday['text'] = datetime.now().strftime('%a')
+
             self.te_start.delete(0, tb.END)
+            self.te_start.insert(0, datetime.now().strftime('%H:%M:%S'))
+
             self.te_end.delete(0, tb.END)
+            self.te_end.insert(0, datetime.now().strftime('%H:%M:%S'))
+
             self.te_pause.delete(0, tb.END)
-            self.te_duration['text'] = '0:00:00'
+            self.te_pause.insert(0, 0)
+
+            # TODO: Extra method for calculating the duration outside of the
+            # time entry instance
         else:
-            print(f'Populate fields with {self.time_entry.to_list()}')
             # Fill form fields with time entry values
             self.te_date.delete(0, tb.END)
             self.te_date.insert(0, self.time_entry.get_date())
@@ -154,12 +163,20 @@ class TimeEntryForm(tb.Frame):
             self.app.session,
             proj_name
         ).id
+        new_entry.project = Project(
+            id=new_entry.project_id,
+            name=proj_name
+        )
         activity_name = self.selected_activity.get()
         new_entry.activity_id = ActivityService.get_activity_id(
             self.app.session,
             activity_name,
             new_entry.project_id
         ).id
+        new_entry.activity = Activity(
+            id=new_entry.activity_id,
+            name=activity_name
+        )
         TimeEntryService.merge(self.app.session, new_entry)
 
         if self.time_entry is None:

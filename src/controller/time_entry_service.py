@@ -12,6 +12,6 @@ class TimeEntryService():
     def merge(db_session, te: TimeEntry):
         """Inserts or updates a record.
         """
-        output = db_session.merge(te)
+        print(f'merge with {te.to_list()}')
+        db_session.merge(te)
         db_session.commit()
-        print(f'merge outpu: {output.to_list()}')
