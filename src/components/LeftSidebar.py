@@ -1,4 +1,5 @@
 import ttkbootstrap as tb
+from datetime import timedelta
 
 
 class LeftSidebar(tb.Frame):
@@ -7,8 +8,10 @@ class LeftSidebar(tb.Frame):
         self.parent = parent
         self.config = parent.config
 
-        lbl_username = tb.Label(self, text=f"Currently logged in as {self.config['User']['last_login_username']}")
+        msg_user = f"Currently logged in as {self.config['User']['last_login_username']}"
+        lbl_username = tb.Label(self, text=msg_user)
         lbl_username.pack(side="bottom")
 
-        lbl_progress = tb.Label(self, text='')
+        seconds_today = self.parent.parent.sc.total_time_today()
+        lbl_progress = tb.Label(self, text=str(timedelta(seconds=seconds_today)))
         lbl_progress.pack(side='top')

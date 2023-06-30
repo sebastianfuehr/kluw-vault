@@ -13,6 +13,8 @@ from src.components.MainFrame import MainFrame
 from src.model.activity import Activity
 from src.model.tag import Tag
 from src.model.project_tag import ProjectTag
+# Controller
+from src.controller.statistics_controller import StatisticsController
 
 
 class App(tb.Window):
@@ -33,6 +35,7 @@ class App(tb.Window):
         # Open a new database connection
         Base.metadata.create_all(db_engine)
         self.session = Session()
+        self.sc = StatisticsController(self.session)
 
         # GUI structure
         self.title('Time Journal')
