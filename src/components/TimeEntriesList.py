@@ -1,16 +1,20 @@
-from tkinter import ttk
-import tksheet
+import ttkbootstrap as tb
+from ttkbootstrap.tableview import Tableview
 # Custom libraries
+from src.components.TimeEntryForm import TimeEntryForm
 from ..controller.time_entry_service import TimeEntryService
+from ..model.time_entry import TimeEntry
 
-class TimeEntriesList(ttk.Frame):
+
+class TimeEntriesList(tb.Frame):
     def __init__(self, parent, app):
         super().__init__(parent)
         self.parent = parent
         self.app = app
 
-        # Table headers
-        headers = [
+        # Headers
+        self.headers = [
+            'db_id',
             'Date',
             'Day',
             'Start',
@@ -20,11 +24,29 @@ class TimeEntriesList(ttk.Frame):
         ]
 
         entries = TimeEntryService.get_all(self.app.session).all()
-        entries_lists = [entry.get_list() for entry in entries]
+        row_data = [entry.to_list() for entry in entries]
 
-        sheet = tksheet.Sheet(self, header=headers)
+        self.table = Tableview(self,
+                               coldata=self.headers,
+                               rowdata=row_data,
+                               paginated=True,
+                               autofit=True,
+                               autoalign=True,
+                               pagesize=50)
+        self.table.view.bind('<<TreeviewSelect>>', self.on_tb_tableview_select)
+        self.table.pack(side='left', fill='both')
+
+        # Right sidebar form
+        self.te_form = TimeEntryForm(self, self.app)
+        self.te_form.pack(side='right', fill='y', padx=10, pady=10)
+
+        """
+        # Tksheets
+        sheet = tksheet.Sheet(self,
+                              theme='dark green',
+                              header=headers)
         sheet.pack(fill="both")
-        sheet.set_sheet_data(entries_lists)
+        sheet.set_sheet_data(row_data)
         sheet.enable_bindings(("single_select",
                                "row_select",
                                "arrowkeys",
@@ -34,48 +56,29 @@ class TimeEntriesList(ttk.Frame):
                                "edit_cell"))
         sheet.readonly_columns(columns=[1,5], readonly=True)
         sheet.align_columns(columns=[3,4,5,], align="e", align_header=False)
-        #sheet.format_column(3, formatter_options=)
-
         """
-        # Create table skeleton
-        entry_columns = [
-            'Date',
-            'Day',
-            'Start',
-            'Stop',
-            'Pause',
-            'Duration'
-        ]
-        col_nbr = 0
-        for column in entry_columns:
-            lbl_header = ttk.Label(self, text=f'{column}')
-            lbl_header.grid(row=0, column=col_nbr)
-            col_nbr += 1
 
-        # Add entries
-        entries = TimeEntryService.get_all(self.app.session)
-        row_nbr = 1
-        for entry in entries:
-            lbl_date = ttk.Label(self, text=f'{entry.start.date()}')
-            lbl_date.grid(row=row_nbr, column=0)
+    def on_tb_tableview_select(self, _):
+        try:
+            self.selected_iid = self.table.view.selection()[0]
+            print(f'Selected row: {self.selected_iid}')
+            values = self.table.view.item(self.selected_iid, 'values')
+            print(f'Values: {values}')
+            selected_te = TimeEntry.from_list(values)
+            self.te_form.set_time_entry(selected_te)
+        except IndexError:
+            print('Index not found.')
 
-            lbl_day = ttk.Label(self, text=f"{entry.start.strftime('%a')}")
-            lbl_day.grid(row=row_nbr, column=1)
+    def add_entry(self, new_entry: TimeEntry):
+        print('add_entry')
+        self.table.insert_row(tb.END, new_entry.to_list())
+        self.table.load_table_data()
 
-            lbl_start = ttk.Label(self, text=f'{entry.start}')
-            lbl_start.grid(row=row_nbr, column=2)
-
-            lbl_stop = ttk.Label(self, text=f'{entry.stop}')
-            lbl_stop.grid(row=row_nbr, column=3)
-
-            lbl_pause = ttk.Label(self, text=f'{entry.pause}')
-            lbl_pause.grid(row=row_nbr, column=4)
-
-            duration = 0
-            if entry.start != None and entry.stop != None:
-                duration = entry.start - entry.stop
-            lbl_duration = ttk.Label(self, text=f'{duration}')
-            lbl_duration.grid(row=row_nbr, column=5)
-
-            row_nbr += 1
-        """
+    def update_entry(self, te: TimeEntry):
+        print('update_entry')
+        # Temporary database reload. TODO: Update tableview row.
+        # self.table.view.item(self.selected_iid, values=te.to_list)
+        entries = TimeEntryService.get_all(self.app.session).all()
+        row_data = [entry.to_list() for entry in entries]
+        self.table.build_table_data(coldata=self.headers,
+                                    rowdata=row_data)
