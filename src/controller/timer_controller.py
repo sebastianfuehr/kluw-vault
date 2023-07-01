@@ -40,3 +40,6 @@ class TimerController():
         else:
             curr_duration = datetime.now() - self.start_time - timedelta(seconds=self.paused_seconds)
         return curr_duration
+
+    def get_current_pause_duration(self):
+        return datetime.now() - self.pause_time + timedelta(seconds=self.paused_seconds)

@@ -16,14 +16,30 @@ class Timer(tb.Frame):
         self.framerate = int(1000/fps)
         self.state = 'off'
 
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
         self.init_gui_components()
 
     def init_gui_components(self):
         self.lbl_time_display = tb.Label(
             master=self,
-            text='00:00'
+            text='0:00:00',
+            anchor='center',
+            font=('Helvetica', 22, 'bold')
         )
-        self.lbl_time_display.pack()
+        self.lbl_time_display.grid(
+            row=0, column=0, columnspan=2, sticky='ew', padx=10, pady=10
+        )
+
+        self.lbl_paused_time_display = tb.Label(
+            master=self,
+            text='0:00:00',
+            anchor='center',
+            font=('Helvetica', 12)
+        )
+        self.lbl_paused_time_display.grid(
+            row=1, column=0, columnspan=2, sticky='ew', padx=10
+        )
 
         self.btn_start_pause_resume = tb.Button(
             master=self,
@@ -31,7 +47,9 @@ class Timer(tb.Frame):
             command=self.start_handler,
             bootstyle='success'
         )
-        self.btn_start_pause_resume.pack()
+        self.btn_start_pause_resume.grid(
+            row=2, column=0, sticky='ew', padx=10, pady=10
+        )
 
         self.btn_stop = tb.Button(
             master=self,
@@ -40,7 +58,7 @@ class Timer(tb.Frame):
             bootstyle='danger',
             state='disabled'
         )
-        self.btn_stop.pack()
+        self.btn_stop.grid(row=2, column=1, sticky='ew', padx=10, pady=10)
 
         self.btn_reset = tb.Button(
             master=self,
@@ -49,7 +67,7 @@ class Timer(tb.Frame):
             bootstyle='secondary-link',
             state='disabled'
         )
-        self.btn_reset.pack()
+        self.btn_reset.grid(row=3, column=0, columnspan=2)
 
     def start_handler(self):
         if self.state == 'off':
@@ -59,6 +77,7 @@ class Timer(tb.Frame):
         elif self.state == 'on':
             self.timer_controller.pause()
             self.state = 'pause'
+            self.update_display()
         elif self.state == 'pause':
             self.timer_controller.resume()
             self.state = 'on'
@@ -70,6 +89,7 @@ class Timer(tb.Frame):
         self.state = 'off'
         self.update_buttons()
         self.lbl_time_display['text'] = '0:00:00'
+        self.lbl_paused_time_display['text'] = '0:00:00'
 
     def update_buttons(self):
         if self.state == 'off':
@@ -90,7 +110,11 @@ class Timer(tb.Frame):
         if self.state == 'on':
             elapsed = self.timer_controller.get_current_duration()
             self.lbl_time_display['text'] = str(elapsed).split('.', 2)[0]
-            self.after(self.framerate, self.update_display)
+            self.after(100, self.update_display)
+        elif self.state == 'pause':
+            elapsed = self.timer_controller.get_current_pause_duration()
+            self.lbl_paused_time_display['text'] = str(elapsed).split('.', 2)[0]
+            self.after(100, self.update_display)
 
     """
     def __init__(self, container):
