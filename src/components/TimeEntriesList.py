@@ -1,5 +1,6 @@
 import ttkbootstrap as tb
 from ttkbootstrap.tableview import Tableview
+from datetime import datetime
 # Custom libraries
 from src.components.TimeEntryForm import TimeEntryForm
 from src.components.Timer import Timer
@@ -13,6 +14,8 @@ class TimeEntriesList(tb.Frame):
         self.parent = parent
         self.app = app
 
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
         self.build_components()
 
     def build_components(self):
@@ -44,36 +47,16 @@ class TimeEntriesList(tb.Frame):
                                pagesize=50)
         for col_idx in hidden_columns_idx:
             self.table.hide_selected_column(cid=col_idx)
+        self.table.sort_column_data(cid=1, sort=1)
         self.table.view.bind('<<TreeviewSelect>>', self.on_tb_tableview_select)
-        self.table.pack(side='left', expand=True, fill='both')
+        self.table.grid(row=0, column=0, sticky='nsew', rowspan=2)
 
         # Right sidebar form
-        sidebar = tb.Frame(self)
-        sidebar.pack(side='right', fill='y')
+        self.te_form = TimeEntryForm(self, self.app)
+        self.te_form.grid(row=0, column=1, sticky='n')
 
-        self.te_form = TimeEntryForm(sidebar, self.app)
-        self.te_form.pack(side='top', fill='y', padx=10, pady=10)
-
-        self.timer = Timer(sidebar, self.app)
-        self.timer.pack(side='bottom', fill='x', padx=10, pady=10)
-
-        """
-        # Tksheets
-        sheet = tksheet.Sheet(self,
-                              theme='dark green',
-                              header=headers)
-        sheet.pack(fill="both")
-        sheet.set_sheet_data(row_data)
-        sheet.enable_bindings(("single_select",
-                               "row_select",
-                               "arrowkeys",
-                               "column_width_resize",
-                               "row_height_resize",
-                               "copy",
-                               "edit_cell"))
-        sheet.readonly_columns(columns=[1,5], readonly=True)
-        sheet.align_columns(columns=[3,4,5,], align="e", align_header=False)
-        """
+        self.timer = Timer(self, self.app)
+        self.timer.grid(row=1, column=1)
 
     def on_tb_tableview_select(self, _):
         try:
@@ -86,7 +69,7 @@ class TimeEntriesList(tb.Frame):
             print('Index not found.')
 
     def add_entry(self, te: TimeEntry):
-        self.table.insert_row(tb.END, te.to_list())
+        self.table.insert_row(0, te.to_list())
         self.table.load_table_data()
 
     def update_entry(self, te: TimeEntry):
@@ -100,3 +83,18 @@ class TimeEntriesList(tb.Frame):
         self.table.delete_rows()
         self.table.insert_rows(tb.END, row_data)
         self.table.load_table_data()
+
+    def start_new_entry(self):
+        self.te_form.form_for_new_entry()
+
+    def resume_entry(self, curr_pause_duration):
+        self.te_form.te_pause.delete(0, tb.END)
+        self.te_form.te_pause.insert(
+            0, str(curr_pause_duration).split('.', 2)[0]
+        )
+
+    def stop_entry(self, curr_duration):
+        self.te_form.te_end.delete(0, tb.END)
+        self.te_form.te_end.insert(0, datetime.now().strftime('%H:%M:%S'))
+
+        self.te_form.te_duration['text'] = str(curr_duration).split('.', 2)[0]

@@ -103,7 +103,7 @@ class TimeEntry(Base):
             self.get_weekday(),
             self.get_start_time(),
             self.get_end_time(),
-            self.get_pause_seconds(),
+            self.get_pause_timedelta(),
             self.get_duration_timedelta(),
             self.project_id,
             self.get_project_name(),
@@ -121,11 +121,22 @@ class TimeEntry(Base):
                 f'{time_entry_list[1]} {time_entry_list[4]}',
                 '%Y-%m-%d %H:%M:%S'
             )
+        pause_datetime = datetime.strptime(time_entry_list[5], '%H:%M:%S')
+        pause_duration = timedelta(hours=pause_datetime.hour,
+                                   minutes=pause_datetime.minute,
+                                   seconds=pause_datetime.second)
+        """
+        pause_datetime = datetime.strptime(self.te_pause.get(), '%H:%M:%S')
+        pause_duration = timedelta(hours=pause_datetime.hour,
+                                   minutes=pause_datetime.minute,
+                                   seconds=pause_datetime.second)
+        new_entry.pause = int(pause_duration.total_seconds())
+        """
         new_entry = TimeEntry(
             id=time_entry_list[0],
             start=start,
             stop=stop,
-            pause=time_entry_list[5],
+            pause=pause_duration.total_seconds(),
             project_id=time_entry_list[6],
             activity_id=time_entry_list[7]
         )

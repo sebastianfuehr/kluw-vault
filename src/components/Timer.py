@@ -12,8 +12,6 @@ class Timer(tb.Frame):
         self.app = app
         self.timer_controller = TimerController()
 
-        fps = 25
-        self.framerate = int(1000/fps)
         self.state = 'off'
 
         self.grid_columnconfigure(0, weight=1)
@@ -54,7 +52,7 @@ class Timer(tb.Frame):
         self.btn_stop = tb.Button(
             master=self,
             text='Stop',
-            command=self.timer_controller.stop,
+            command=self.stop_handler,
             bootstyle='danger',
             state='disabled'
         )
@@ -72,6 +70,7 @@ class Timer(tb.Frame):
     def start_handler(self):
         if self.state == 'off':
             self.timer_controller.start()
+            self.parent.start_new_entry()
             self.state = 'on'
             self.update_display()
         elif self.state == 'on':
@@ -79,9 +78,16 @@ class Timer(tb.Frame):
             self.state = 'pause'
             self.update_display()
         elif self.state == 'pause':
-            self.timer_controller.resume()
+            curr_pause_duration = self.timer_controller.resume()
+            self.parent.resume_entry(curr_pause_duration)
             self.state = 'on'
             self.update_display()
+        self.update_buttons()
+
+    def stop_handler(self):
+        self.timer_controller.stop()
+        self.state = 'stopped'
+        self.parent.stop_entry(self.timer_controller.get_current_duration())
         self.update_buttons()
 
     def reset_handler(self):
@@ -94,9 +100,11 @@ class Timer(tb.Frame):
     def update_buttons(self):
         if self.state == 'off':
             self.btn_start_pause_resume.configure(text='Start',
+                                                  state='normal',
                                                   bootstyle='success')
             self.btn_stop.configure(state='disabled')
-            self.btn_reset.configure(state='disabled')
+            self.btn_reset.configure(state='disabled',
+                                     bootstyle='secondary-link')
         elif self.state == 'on':
             self.btn_start_pause_resume.configure(text='Pause',
                                                   bootstyle='info')
@@ -105,6 +113,10 @@ class Timer(tb.Frame):
         elif self.state == 'pause':
             self.btn_start_pause_resume.configure(text='Resume',
                                                   bootstyle='success')
+        elif self.state == 'stopped':
+            self.btn_start_pause_resume.configure(state='disabled')
+            self.btn_stop.configure(state='disabled')
+            self.btn_reset.configure(bootstyle='success-link')
 
     def update_display(self):
         if self.state == 'on':
@@ -113,35 +125,6 @@ class Timer(tb.Frame):
             self.after(100, self.update_display)
         elif self.state == 'pause':
             elapsed = self.timer_controller.get_current_pause_duration()
-            self.lbl_paused_time_display['text'] = str(elapsed).split('.', 2)[0]
+            self.lbl_paused_time_display['text'] = \
+                str(elapsed).split('.', 2)[0]
             self.after(100, self.update_display)
-
-    """
-    def __init__(self, container):
-        super().__init__(container)
-        self.container = container
-
-        self.state = 'Stopped'
-        self.minutes_total = 25
-        self.seconds_total = 0
-
-        self.minutes_curr = self.minutes_total
-        self.seconds_curr = self.seconds_total
-
-        self.lbl_time_left = ttk.Label(self, text='00:00:00')
-        self.lbl_time_left.pack()
-
-        self.countdown()
-
-        self.pack()
-
-    def countdown(self):
-        self.lbl_time_left['text'] = '{:02}:{:02}'.format(self.minutes_curr, self.seconds_curr)
-        self.container.container.after(1000, self.countdown)
-
-        if self.seconds_curr == 0:
-            self.minutes_curr -= 1
-            self.seconds_curr = 59
-        else:
-            self.seconds_curr -=1
-    """

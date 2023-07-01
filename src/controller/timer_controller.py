@@ -19,13 +19,15 @@ class TimerController():
         self.paused = False
         elapsed_time = datetime.now() - self.pause_time
         self.paused_seconds += elapsed_time.total_seconds()
+        return timedelta(seconds=self.paused_seconds)
 
     def stop(self):
         print('stop')
         if self.paused:
             elapsed_time = datetime.now() - self.pause_time
             self.paused_seconds += elapsed_time.total_seconds()
-        return self.start_time - datetime.now() - timedelta(seconds=self.paused_seconds)
+        return self.start_time - datetime.now() - \
+            timedelta(seconds=self.paused_seconds)
 
     def reset(self):
         print('reset')
@@ -36,10 +38,13 @@ class TimerController():
 
     def get_current_duration(self):
         if self.paused:
-            curr_duration = self.pause_time - self.start_time - timedelta(seconds=self.paused_seconds)
+            curr_duration = self.pause_time - self.start_time - \
+                timedelta(seconds=self.paused_seconds)
         else:
-            curr_duration = datetime.now() - self.start_time - timedelta(seconds=self.paused_seconds)
+            curr_duration = datetime.now() - self.start_time - \
+                timedelta(seconds=self.paused_seconds)
         return curr_duration
 
     def get_current_pause_duration(self):
-        return datetime.now() - self.pause_time + timedelta(seconds=self.paused_seconds)
+        return datetime.now() - self.pause_time + \
+            timedelta(seconds=self.paused_seconds)
