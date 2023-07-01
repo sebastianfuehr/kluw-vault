@@ -2,6 +2,7 @@ import ttkbootstrap as tb
 from ttkbootstrap.tableview import Tableview
 # Custom libraries
 from src.components.TimeEntryForm import TimeEntryForm
+from src.components.Timer import Timer
 from ..controller.time_entry_service import TimeEntryService
 from ..model.time_entry import TimeEntry
 
@@ -47,8 +48,14 @@ class TimeEntriesList(tb.Frame):
         self.table.pack(side='left', expand=True, fill='both')
 
         # Right sidebar form
-        self.te_form = TimeEntryForm(self, self.app)
-        self.te_form.pack(side='right', fill='y', padx=10, pady=10)
+        sidebar = tb.Frame(self)
+        sidebar.pack(side='right', fill='y')
+
+        self.te_form = TimeEntryForm(sidebar, self.app)
+        self.te_form.pack(side='top', fill='y', padx=10, pady=10)
+
+        self.timer = Timer(sidebar, self.app)
+        self.timer.pack(side='bottom', fill='x', padx=10, pady=10)
 
         """
         # Tksheets

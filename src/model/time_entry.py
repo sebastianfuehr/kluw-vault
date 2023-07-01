@@ -79,7 +79,7 @@ class TimeEntry(Base):
     def get_duration_timedelta(self):
         duration = timedelta(seconds=0)
         if self.start is not None and self.stop is not None:
-            duration = self.stop - self.start + self.get_pause_timedelta()
+            duration = self.stop - self.start - self.get_pause_timedelta()
         return duration
 
     def get_project_name(self):

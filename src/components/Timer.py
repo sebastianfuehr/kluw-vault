@@ -1,8 +1,98 @@
 # https://www.geeksforgeeks.org/create-countdown-timer-using-python-tkinter/
 
-from tkinter import ttk
+import ttkbootstrap as tb
 
-class Timer(ttk.Frame):
+from ..controller.timer_controller import TimerController
+
+
+class Timer(tb.Frame):
+    def __init__(self, parent, app):
+        super().__init__(parent)
+        self.parent = parent
+        self.app = app
+        self.timer_controller = TimerController()
+
+        fps = 25
+        self.framerate = int(1000/fps)
+        self.state = 'off'
+
+        self.init_gui_components()
+
+    def init_gui_components(self):
+        self.lbl_time_display = tb.Label(
+            master=self,
+            text='00:00'
+        )
+        self.lbl_time_display.pack()
+
+        self.btn_start_pause_resume = tb.Button(
+            master=self,
+            text='Start',
+            command=self.start_handler,
+            bootstyle='success'
+        )
+        self.btn_start_pause_resume.pack()
+
+        self.btn_stop = tb.Button(
+            master=self,
+            text='Stop',
+            command=self.timer_controller.stop,
+            bootstyle='danger',
+            state='disabled'
+        )
+        self.btn_stop.pack()
+
+        self.btn_reset = tb.Button(
+            master=self,
+            text='Reset',
+            command=self.reset_handler,
+            bootstyle='secondary-link',
+            state='disabled'
+        )
+        self.btn_reset.pack()
+
+    def start_handler(self):
+        if self.state == 'off':
+            self.timer_controller.start()
+            self.state = 'on'
+            self.update_display()
+        elif self.state == 'on':
+            self.timer_controller.pause()
+            self.state = 'pause'
+        elif self.state == 'pause':
+            self.timer_controller.resume()
+            self.state = 'on'
+            self.update_display()
+        self.update_buttons()
+
+    def reset_handler(self):
+        self.timer_controller.reset()
+        self.state = 'off'
+        self.update_buttons()
+        self.lbl_time_display['text'] = '0:00:00'
+
+    def update_buttons(self):
+        if self.state == 'off':
+            self.btn_start_pause_resume.configure(text='Start',
+                                                  bootstyle='success')
+            self.btn_stop.configure(state='disabled')
+            self.btn_reset.configure(state='disabled')
+        elif self.state == 'on':
+            self.btn_start_pause_resume.configure(text='Pause',
+                                                  bootstyle='info')
+            self.btn_stop.configure(state='normal')
+            self.btn_reset.configure(state='normal')
+        elif self.state == 'pause':
+            self.btn_start_pause_resume.configure(text='Resume',
+                                                  bootstyle='success')
+
+    def update_display(self):
+        if self.state == 'on':
+            elapsed = self.timer_controller.get_current_duration()
+            self.lbl_time_display['text'] = str(elapsed).split('.', 2)[0]
+            self.after(self.framerate, self.update_display)
+
+    """
     def __init__(self, container):
         super().__init__(container)
         self.container = container
@@ -30,3 +120,4 @@ class Timer(ttk.Frame):
             self.seconds_curr = 59
         else:
             self.seconds_curr -=1
+    """
