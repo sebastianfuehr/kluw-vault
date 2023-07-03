@@ -49,6 +49,10 @@ class App(tb.Window):
         self.title('Time Journal')
         MainFrame(self)
 
+    def update_statistics_sidebar(self, added_duration):
+        self.stats_sidebar.update_total_time(added_duration)
+        # self.stats_sidebar.update_goal_progress()
+
 
 if __name__ == '__main__':
     session_start = datetime.now()
