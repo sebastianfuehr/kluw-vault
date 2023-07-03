@@ -26,11 +26,11 @@ class App(tb.Window):
         super().__init__(themename='darkly')
 
         # Load and update configuration data
-        self.config = configparser.ConfigParser()
-        self.config.read('config.ini')
-        self.config['User']['last_login_datetime'] = str(datetime.now())
-        with open('config.ini', 'w') as configfile:
-            self.config.write(configfile)
+        # self.config = configparser.ConfigParser()
+        # self.config.read('config.ini')
+        # self.config['User']['last_login_datetime'] = str(datetime.now())
+        #with open('config.ini', 'w') as configfile:
+        #    self.config.write(configfile)
 
         # Options
         default_font = nametofont('TkDefaultFont')
@@ -48,10 +48,6 @@ class App(tb.Window):
         # GUI structure
         self.title('Time Journal')
         MainFrame(self)
-
-    def update_statistics_sidebar(self, added_duration):
-        self.stats_sidebar.update_total_time(added_duration)
-        # self.stats_sidebar.update_goal_progress()
 
 
 if __name__ == '__main__':

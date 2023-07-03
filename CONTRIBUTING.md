@@ -14,3 +14,9 @@ source venv-time-journal/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 ```
+
+## Building with PyInstaller
+
+```bash
+pyinstaller --onefile app.py --hidden-import='PIL._tkinter_finder'
+```

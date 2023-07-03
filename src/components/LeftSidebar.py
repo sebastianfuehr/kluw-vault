@@ -18,9 +18,9 @@ class LeftSidebar(tb.Frame):
         seconds_today = self.parent.parent.sc.total_time_today()
         self.lbl_progress = tb.Label(
             self,
-            text=str(timedelta(seconds=seconds_today)),
-            font=('Helvetica', 16, 'bold'))
-        self.lbl_progress.pack(padx=10, pady=10)
+            text=tc.timedelta_to_string(timedelta(seconds=seconds_today)),
+            font=('Helvetica', 24, 'bold'))
+        self.lbl_progress.pack(padx=10, pady=25)
 
         # Project category goals
         goals = self.parent.parent.pcgsc.get_goal_list(weekday=datetime.today().weekday())
@@ -36,7 +36,8 @@ class LeftSidebar(tb.Frame):
 
         self.update_goal_progress()
 
-        msg_user = f"Currently logged in as {self.config['User']['last_login_username']}"
+        #msg_user = f"Currently logged in as {self.config['User']['last_login_username']}"
+        msg_user = 'Alpha Version'
         lbl_username = tb.Label(self, text=msg_user)
         lbl_username.pack(side="bottom")
 

@@ -71,13 +71,16 @@ class TimeEntriesList(tb.Frame):
             print('Index not found.')
 
     def add_entry(self, te: TimeEntry):
-        self.table.insert_row(0, te.to_list())
-        self.table.load_table_data()
+        #self.table.insert_row(0, te.to_list())
+        #self.table.load_table_data()
+        self.rebuild_table()
+        self.app.stats_sidebar.update_goal_progress()
 
     def update_entry(self, te: TimeEntry):
         # Temporary database reload. TODO: Update tableview row.
         # self.table.view.item(self.selected_iid, values=te.to_list)
         self.rebuild_table()
+        self.app.stats_sidebar.update_goal_progress()
 
     def rebuild_table(self):
         entries = TimeEntryService.get_all(self.app.session).all()

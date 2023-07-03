@@ -124,7 +124,7 @@ class Timer(tb.Frame):
             elapsed = self.timer_controller.get_current_duration()
             self.lbl_time_display['text'] = tc.timedelta_to_string(elapsed)
             self.after(100, self.update_display)
-            self.app.update_statistics_sidebar(elapsed)
+            self.app.stats_sidebar.update_total_time(elapsed)
         elif self.state == 'pause':
             elapsed = self.timer_controller.get_current_pause_duration()
             self.lbl_paused_time_display['text'] = \
