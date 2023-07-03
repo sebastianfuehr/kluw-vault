@@ -3,6 +3,6 @@ __pycache__/
 *.db
 
 # PyInstaller
-app.spec
+*.spec
 build/
 dist/
