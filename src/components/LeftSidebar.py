@@ -39,6 +39,23 @@ class LeftSidebar(tb.Frame):
         lbl_username = tb.Label(self, text=msg_user)
         lbl_username.pack(side="bottom")
 
+        frame_file_operations = tb.Frame(self)
+        frame_file_operations.pack(side='bottom', padx=10, pady=10)
+
+        btn_open_db_file = tb.Button(
+            frame_file_operations,
+            text='Import',
+            command=self.btn_import_handler
+        )
+        btn_open_db_file.grid(row=0, column=0, padx=10)
+
+        btn_export_db_file = tb.Button(
+            frame_file_operations,
+            text='Export',
+            command=self.btn_export_handler
+        )
+        btn_export_db_file.grid(row=0, column=1, padx=10)
+
     def update_goal_progress(self):
         time_entries = self.parent.parent.pcgsc.get_time_entries_per_category()
         goal_progress_dict = {}
@@ -52,3 +69,22 @@ class LeftSidebar(tb.Frame):
             current_progress = int(goal_progress_dict[category_id])
             self.goal_dict[category_id]['progress_card'].update_progress(current_progress)
 
+    def btn_import_handler(self):
+        filename = filedialog.askopenfilename(
+            title='Import Database',
+            defaultextension='.db',
+            initialdir='~',
+            filetypes=(('db files', '*.db'), ('all files', '*.*'))
+        )
+        self.app.file_controller.import_database_file(filename)
+
+    def btn_export_handler(self):
+        filename = filedialog.asksaveasfilename(
+            title='Export Database',
+            confirmoverwrite=True,
+            defaultextension='.db',
+            initialdir='~',
+            filetypes=[('SQLite Database', '*.db')],
+            initialfile='backup.db'
+        )
+        self.app.file_controller.export_database_file(filename)
