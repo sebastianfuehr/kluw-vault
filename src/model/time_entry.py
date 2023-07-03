@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, Boolean, Text, String
 from sqlalchemy.orm import relationship
 from datetime import datetime, timedelta
 from .orm_base import Base
@@ -14,6 +14,9 @@ class TimeEntry(Base):
     project = relationship('Project')
     activity_id = Column(Integer, ForeignKey('activities.id'))
     activity = relationship('Activity')
+    tags = Column(String)
+    alone = Column(Boolean)
+    comment = Column(Text)
 
     def __init__(self,
                  id=None,
@@ -81,6 +84,9 @@ class TimeEntry(Base):
         if self.start is not None and self.stop is not None:
             duration = self.stop - self.start - self.get_pause_timedelta()
         return duration
+
+    def get_duration_minutes(self):
+        return self.get_duration_timedelta().total_seconds() / 60
 
     def get_project_name(self):
         if self.project is not None:

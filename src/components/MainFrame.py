@@ -16,7 +16,7 @@ class MainFrame(tb.Frame):
 
         # GUI components
         # MenuBar(self)
-        sb_left = LeftSidebar(self)
+        sb_left = LeftSidebar(self, self.parent)
         sb_left.pack(side="left", fill="y")
 
         tel = TimeEntriesList(self, app=self.parent)

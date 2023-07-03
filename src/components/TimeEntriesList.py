@@ -19,7 +19,7 @@ class TimeEntriesList(tb.Frame):
         self.build_components()
 
     def build_components(self):
-        # Columns
+        # Table
         self.columns = [
             'db_id',
             'Date',
@@ -34,6 +34,7 @@ class TimeEntriesList(tb.Frame):
             'Activity Name'
         ]
         hidden_columns_idx = [0, 7, 9]
+        columns_idx_align_right = [3, 4, 5, 6]
 
         entries = TimeEntryService.get_all(self.app.session).all()
         row_data = [entry.to_list() for entry in entries]
@@ -47,22 +48,23 @@ class TimeEntriesList(tb.Frame):
                                pagesize=50)
         for col_idx in hidden_columns_idx:
             self.table.hide_selected_column(cid=col_idx)
+        for col_idx in columns_idx_align_right:
+            self.table.align_column_right(cid=col_idx)
         self.table.sort_column_data(cid=1, sort=1)
         self.table.view.bind('<<TreeviewSelect>>', self.on_tb_tableview_select)
         self.table.grid(row=0, column=0, sticky='nsew', rowspan=2)
 
         # Right sidebar form
         self.te_form = TimeEntryForm(self, self.app)
-        self.te_form.grid(row=0, column=1, sticky='n')
+        self.te_form.grid(row=0, column=1, sticky='n', padx=20)
 
         self.timer = Timer(self, self.app)
-        self.timer.grid(row=1, column=1)
+        self.timer.grid(row=1, column=1, sticky='s', pady=50)
 
     def on_tb_tableview_select(self, _):
         try:
             self.selected_iid = self.table.view.selection()[0]
             values = self.table.view.item(self.selected_iid, 'values')
-            print(f'Selected {self.selected_iid}: {values}')
             selected_te = TimeEntry.from_list(values)
             self.te_form.set_time_entry(selected_te)
         except IndexError:

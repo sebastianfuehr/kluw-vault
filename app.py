@@ -11,10 +11,14 @@ from src.model.tracking_session import TrackingSession
 from src.components.MainFrame import MainFrame
 # Unused imports needed for relationship creation of SQLAlchemy
 from src.model.activity import Activity
-from src.model.tag import Tag
 from src.model.project_tag import ProjectTag
+from src.model.rel_project_tag import RelProjectTag
+from src.model.project_category import ProjectCategory
+from src.model.project_category_goal import ProjectCategoryGoal
 # Controller
 from src.controller.statistics_controller import StatisticsController
+from src.controller.project_category_goal_stats_controller import ProjectCategoryGoalStatsController
+from src.controller.file_controller import FileController
 
 
 class App(tb.Window):
@@ -35,7 +39,11 @@ class App(tb.Window):
         # Open a new database connection
         Base.metadata.create_all(db_engine)
         self.session = Session()
+        self.db_engine = db_engine
+
         self.sc = StatisticsController(self.session)
+        self.pcgsc = ProjectCategoryGoalStatsController(self.session)
+        self.file_controller = FileController(self)
 
         # GUI structure
         self.title('Time Journal')
