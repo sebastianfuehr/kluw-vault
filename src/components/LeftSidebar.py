@@ -3,6 +3,7 @@ from tkinter import filedialog
 from datetime import datetime, timedelta
 
 from ..controller.time_entry_service import TimeEntryService
+from ..controller.time_controller import TimeController as tc
 from ..model.time_entry import TimeEntry
 from src.components.ProjectCategoryProgressCard import ProjectCategoryProgressCard
 
@@ -15,11 +16,11 @@ class LeftSidebar(tb.Frame):
         self.app = app
 
         seconds_today = self.parent.parent.sc.total_time_today()
-        lbl_progress = tb.Label(
+        self.lbl_progress = tb.Label(
             self,
             text=str(timedelta(seconds=seconds_today)),
             font=('Helvetica', 16, 'bold'))
-        lbl_progress.pack(padx=10, pady=10)
+        self.lbl_progress.pack(padx=10, pady=10)
 
         # Project category goals
         goals = self.parent.parent.pcgsc.get_goal_list(weekday=datetime.today().weekday())
@@ -56,7 +57,12 @@ class LeftSidebar(tb.Frame):
         )
         btn_export_db_file.grid(row=0, column=1, padx=10)
 
+    def update_total_time(self, added_duration):
+        total_time = timedelta(seconds=self.parent.parent.sc.total_time_today()) + added_duration
+        self.lbl_progress['text'] = tc.timedelta_to_string(total_time)
+
     def update_goal_progress(self):
+        print('update_goal_progress')
         time_entries = self.parent.parent.pcgsc.get_time_entries_per_category()
         goal_progress_dict = {}
         for category_id in self.goal_dict.keys():

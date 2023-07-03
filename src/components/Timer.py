@@ -3,6 +3,7 @@
 import ttkbootstrap as tb
 
 from ..controller.timer_controller import TimerController
+from ..controller.time_controller import TimeController as tc
 
 
 class Timer(tb.Frame):
@@ -21,7 +22,7 @@ class Timer(tb.Frame):
     def init_gui_components(self):
         self.lbl_time_display = tb.Label(
             master=self,
-            text='0:00:00',
+            text='0h 0m 0s',
             anchor='center',
             font=('Helvetica', 22, 'bold')
         )
@@ -31,7 +32,7 @@ class Timer(tb.Frame):
 
         self.lbl_paused_time_display = tb.Label(
             master=self,
-            text='0:00:00',
+            text='0h 0m 0s',
             anchor='center',
             font=('Helvetica', 12)
         )
@@ -121,10 +122,11 @@ class Timer(tb.Frame):
     def update_display(self):
         if self.state == 'on':
             elapsed = self.timer_controller.get_current_duration()
-            self.lbl_time_display['text'] = str(elapsed).split('.', 2)[0]
+            self.lbl_time_display['text'] = tc.timedelta_to_string(elapsed)
             self.after(100, self.update_display)
+            self.app.update_statistics_sidebar(elapsed)
         elif self.state == 'pause':
             elapsed = self.timer_controller.get_current_pause_duration()
             self.lbl_paused_time_display['text'] = \
-                str(elapsed).split('.', 2)[0]
+                tc.timedelta_to_string(elapsed)
             self.after(100, self.update_display)

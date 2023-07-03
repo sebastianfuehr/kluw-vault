@@ -18,6 +18,7 @@ class MainFrame(tb.Frame):
         # MenuBar(self)
         sb_left = LeftSidebar(self, self.parent)
         sb_left.pack(side="left", fill="y")
+        self.parent.stats_sidebar = sb_left
 
         tel = TimeEntriesList(self, app=self.parent)
         tel.pack(side='right', expand=True, fill='both')
