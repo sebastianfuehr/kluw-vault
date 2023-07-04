@@ -1,7 +1,10 @@
 import ttkbootstrap as tb
+from ttkbootstrap.tooltip import ToolTip
 from tkinter import filedialog
 from datetime import datetime, timedelta
+from PIL import Image, ImageTk
 
+import config.definitions as definitions
 from ..controller.time_entry_service import TimeEntryService
 from ..controller.time_controller import TimeController as tc
 from ..model.time_entry import TimeEntry
@@ -15,14 +18,62 @@ class LeftSidebar(tb.Frame):
         self.config = parent.config
         self.app = app
 
-        seconds_today = self.parent.parent.sc.total_time_today()
+        self.seconds_today = self.parent.parent.sc.total_time_today()
+
+        self.__build_gui_components()
+        self.update_achievements()
+        self.update_goal_progress()
+
+    def __build_gui_components(self):
         self.lbl_progress = tb.Label(
             self,
-            text=tc.timedelta_to_string(timedelta(seconds=seconds_today)),
+            text=tc.timedelta_to_string(timedelta(seconds=self.seconds_today)),
             font=('Helvetica', 24, 'bold'))
         self.lbl_progress.pack(padx=10, pady=25)
 
+        # Achievements
+        frm_achievements = tb.Frame(self)
+        frm_achievements.pack(padx=10, pady=10, fill='x')
+
+        self.lbl_header_achievements = tb.Label(
+            frm_achievements,
+            text='Achievements',
+            font=(None, 20, 'bold'),
+            justify='left'
+        )
+
+        self.frm_medals = tb.Frame(frm_achievements)
+
+        bronze_img_orig = Image.open(f'{definitions.APP_ROOT_DIR}/assets/icons/medal-bronze.png').resize((64, 64))
+        bronze_img_tk = ImageTk.PhotoImage(bronze_img_orig)
+        self.lbl_medal_bronze = tb.Label(self.frm_medals, image=bronze_img_tk)
+        self.lbl_medal_bronze.photo = bronze_img_tk
+        txt = f'You worked for more than {tc.seconds_to_string(definitions.MEDAL_TH_BRONZE)}!'
+        ToolTip(self.lbl_medal_bronze, text=txt)
+
+        silver_img_orig = Image.open(f'{definitions.APP_ROOT_DIR}/assets/icons/medal-silver.png').resize((64, 64))
+        silver_img_tk = ImageTk.PhotoImage(silver_img_orig)
+        self.lbl_medal_silver = tb.Label(self.frm_medals, image=silver_img_tk)
+        self.lbl_medal_silver.photo = silver_img_tk
+        txt = f'You worked for more than {tc.seconds_to_string(definitions.MEDAL_TH_SILVER)}!'
+        ToolTip(self.lbl_medal_silver, text=txt)
+
+        gold_img_orig = Image.open(f'{definitions.APP_ROOT_DIR}/assets/icons/medal-gold.png').resize((64, 64))
+        gold_img_tk = ImageTk.PhotoImage(gold_img_orig)
+        self.lbl_medal_gold = tb.Label(self.frm_medals, image=gold_img_tk)
+        self.lbl_medal_gold.photo = gold_img_tk
+        txt = f'You worked for more than {tc.seconds_to_string(definitions.MEDAL_TH_GOLD)}!'
+        ToolTip(self.lbl_medal_gold, text=txt)
+
         # Project category goals
+        goals_section_heading = tb.Label(
+            self,
+            text=datetime.today().strftime('%A'),
+            font=(None, 20, 'bold'),
+            justify='left'
+        )
+        goals_section_heading.pack(padx=10, pady=0, fill='x')
+
         goals = self.parent.parent.pcgsc.get_goal_list(weekday=datetime.today().weekday())
         self.goal_dict = {}
 
@@ -34,9 +85,7 @@ class LeftSidebar(tb.Frame):
                 'progress_card': progress_card
             }
 
-        self.update_goal_progress()
-
-        #msg_user = f"Currently logged in as {self.config['User']['last_login_username']}"
+        # Versioning
         msg_user = 'Alpha Version'
         lbl_username = tb.Label(self, text=msg_user)
         lbl_username.pack(side="bottom")
@@ -59,8 +108,20 @@ class LeftSidebar(tb.Frame):
         btn_export_db_file.grid(row=0, column=1, padx=10)
 
     def update_total_time(self, added_duration):
-        total_time = timedelta(seconds=self.parent.parent.sc.total_time_today()) + added_duration
-        self.lbl_progress['text'] = tc.timedelta_to_string(total_time)
+        self.total_time = timedelta(seconds=self.parent.parent.sc.total_time_today()) + added_duration
+        self.lbl_progress['text'] = tc.timedelta_to_string(self.total_time)
+
+    def update_achievements(self):
+        if self.seconds_today >= (120*60):
+            self.lbl_header_achievements.pack(
+                side='top', padx=10, pady=0, fill='x'
+            )
+            self.frm_medals.pack()
+            self.lbl_medal_bronze.pack(side='left')
+        if self.seconds_today >= (240*60):
+            self.lbl_medal_silver.pack(side='left')
+        if self.seconds_today >= (360*60):
+            self.lbl_medal_gold.pack(side='left')
 
     def update_goal_progress(self):
         print('update_goal_progress')
