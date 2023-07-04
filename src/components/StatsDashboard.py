@@ -26,9 +26,10 @@ class StatsDashboard(tb.Frame):
         entries = TimeEntryService.get_all(self.app.session).all()
         row_data = [entry.to_list() for entry in entries]
         self.data = pd.DataFrame(row_data, columns=TimeEntry.get_column_names())[['Date', 'Duration']]
-        self.data['Date'] = pd.to_datetime(self.data['Date'])
+        self.data['Date'] = pd.to_datetime(self.data['Date'], errors='coerce')
 
-        self.build_gui_components()
+        if len(row_data) > 0:
+            self.build_gui_components()
 
     def build_gui_components(self):
         # Figure
