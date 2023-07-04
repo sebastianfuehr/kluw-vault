@@ -1,4 +1,5 @@
 import ttkbootstrap as tb
+from ttkbootstrap.tooltip import ToolTip
 from datetime import datetime, timedelta
 # Custom modules
 from ..model.time_entry import TimeEntry
@@ -103,13 +104,37 @@ class TimeEntryForm(tb.Frame):
         self.te_activity.grid(column=1, row=8, sticky='e', padx=10, pady=5)
         self.te_activity['values'] = activity_names
 
+        lbl_te_alone = tb.Label(self, text='Alone:')
+        lbl_te_alone.grid(column=0, row=9, sticky='w', padx=10, pady=5)
+        self.te_alone = tb.Checkbutton(self, bootstyle='round-toggle')
+        self.te_alone.grid(column=1, row=9, padx=10, pady=5)
+
+        lbl_te_tags = tb.Label(self, text='Tags:')
+        lbl_te_tags.grid(column=0, row=10, sticky='nw', padx=10, pady=5)
+        self.te_tags = tb.ScrolledText(
+            self, font=self.entry_font, width=14, height=3
+        )
+        self.te_tags.grid(column=1, row=10, sticky='e', padx=10, pady=5)
+        ToolTip(self.te_tags, text='One tag per line.')
+
+        lbl_te_comment = tb.Label(self, text='Comment:')
+        lbl_te_comment.grid(
+            column=0, row=11, columnspan=2, sticky='w', padx=10, pady=5
+        )
+        self.te_comment = tb.ScrolledText(
+            self, font=self.entry_font, width=20, height=3
+        )
+        self.te_comment.grid(
+            column=0, row=12, columnspan=2, sticky='ew', padx=10, pady=5
+        )
+
         # Button
         self.btn_save_entry = tb.Button(self,
                                         text='Save',
                                         command=self.save_entry,
                                         width=14)
         self.btn_save_entry.grid(column=0,
-                                 row=9,
+                                 row=13,
                                  columnspan=2,
                                  padx=10,
                                  pady=20)

@@ -52,14 +52,17 @@ class TimeEntriesList(tb.Frame):
             self.table.align_column_right(cid=col_idx)
         self.table.sort_column_data(cid=1, sort=1)
         self.table.view.bind('<<TreeviewSelect>>', self.on_tb_tableview_select)
-        self.table.grid(row=0, column=0, sticky='nsew', rowspan=2)
+        self.table.grid(row=0, column=0, sticky='nsew', rowspan=3)
 
         # Right sidebar form
         self.te_form = TimeEntryForm(self, self.app)
         self.te_form.grid(row=0, column=1, sticky='n', padx=20)
 
+        separator = tb.Separator(self)
+        separator.grid(row=1, column=1, sticky='ew')
+
         self.timer = Timer(self, self.app)
-        self.timer.grid(row=1, column=1, sticky='s', pady=50)
+        self.timer.grid(row=2, column=1, sticky='s', pady=30)       
 
     def on_tb_tableview_select(self, _):
         try:
