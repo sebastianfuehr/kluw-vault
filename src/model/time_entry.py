@@ -24,7 +24,12 @@ class TimeEntry(Base):
                  stop=None,
                  pause=0,
                  project_id=None,
-                 activity_id=None):
+                 project_name=None,
+                 activity_id=None,
+                 activity_name=None,
+                 alone=True,
+                 tags=None,
+                 comment=None):
         """
         Parameters
         ----------
@@ -42,7 +47,12 @@ class TimeEntry(Base):
             self.stop = None
         self.pause = int(pause)
         self.project_id = project_id
+        self.project_name = project_name
         self.activity_id = activity_id
+        self.activity_name = activity_name
+        self.alone = alone
+        self.tags = tags
+        self.comment = comment
 
     # GETTER AND SETTER #######################################################
 
@@ -91,12 +101,16 @@ class TimeEntry(Base):
     def get_project_name(self):
         if self.project is not None:
             return self.project.name
+        elif self.project_name is not None:
+            return self.project_name
         else:
             return None
 
     def get_activity_name(self):
         if self.activity is not None:
             return self.activity.name
+        elif self.activity_name is not None:
+            return self.activity_name
         else:
             return None
 
@@ -114,7 +128,10 @@ class TimeEntry(Base):
             self.project_id,
             self.get_project_name(),
             self.activity_id,
-            self.get_activity_name()
+            self.get_activity_name(),
+            self.alone,
+            self.tags,
+            self.comment
         ]
 
     def from_list(time_entry_list):
@@ -131,19 +148,17 @@ class TimeEntry(Base):
         pause_duration = timedelta(hours=pause_datetime.hour,
                                    minutes=pause_datetime.minute,
                                    seconds=pause_datetime.second)
-        """
-        pause_datetime = datetime.strptime(self.te_pause.get(), '%H:%M:%S')
-        pause_duration = timedelta(hours=pause_datetime.hour,
-                                   minutes=pause_datetime.minute,
-                                   seconds=pause_datetime.second)
-        new_entry.pause = int(pause_duration.total_seconds())
-        """
         new_entry = TimeEntry(
             id=time_entry_list[0],
             start=start,
             stop=stop,
             pause=pause_duration.total_seconds(),
-            project_id=time_entry_list[6],
-            activity_id=time_entry_list[7]
+            project_id=time_entry_list[7],
+            project_name=time_entry_list[8],
+            activity_id=time_entry_list[9],
+            activity_name=time_entry_list[10],
+            alone=time_entry_list[11],
+            tags=time_entry_list[12],
+            comment=time_entry_list[13]
         )
         return new_entry

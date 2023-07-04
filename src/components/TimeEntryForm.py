@@ -1,5 +1,6 @@
 import ttkbootstrap as tb
 from ttkbootstrap.tooltip import ToolTip
+from ttkbootstrap.scrolled import ScrolledText
 from datetime import datetime, timedelta
 # Custom modules
 from ..model.time_entry import TimeEntry
@@ -104,15 +105,22 @@ class TimeEntryForm(tb.Frame):
         self.te_activity.grid(column=1, row=8, sticky='e', padx=10, pady=5)
         self.te_activity['values'] = activity_names
 
+        self.te_alone_var = tb.IntVar(value=1)
         lbl_te_alone = tb.Label(self, text='Alone:')
         lbl_te_alone.grid(column=0, row=9, sticky='w', padx=10, pady=5)
-        self.te_alone = tb.Checkbutton(self, bootstyle='round-toggle')
+        self.te_alone = tb.Checkbutton(
+            self, variable=self.te_alone_var, bootstyle='round-toggle'
+        )
         self.te_alone.grid(column=1, row=9, padx=10, pady=5)
 
         lbl_te_tags = tb.Label(self, text='Tags:')
         lbl_te_tags.grid(column=0, row=10, sticky='nw', padx=10, pady=5)
-        self.te_tags = tb.ScrolledText(
-            self, font=self.entry_font, width=14, height=3
+        self.te_tags = ScrolledText(
+            self,
+            font=self.entry_font,
+            width=14,
+            height=3,
+            autohide=True
         )
         self.te_tags.grid(column=1, row=10, sticky='e', padx=10, pady=5)
         ToolTip(self.te_tags, text='One tag per line.')
@@ -121,8 +129,12 @@ class TimeEntryForm(tb.Frame):
         lbl_te_comment.grid(
             column=0, row=11, columnspan=2, sticky='w', padx=10, pady=5
         )
-        self.te_comment = tb.ScrolledText(
-            self, font=self.entry_font, width=20, height=3
+        self.te_comment = ScrolledText(
+            self,
+            font=self.entry_font,
+            width=20,
+            height=3,
+            autohide=True
         )
         self.te_comment.grid(
             column=0, row=12, columnspan=2, sticky='ew', padx=10, pady=5
@@ -166,6 +178,13 @@ class TimeEntryForm(tb.Frame):
             # TODO: Extra method for calculating the duration outside of the
             # time entry instance
             self.te_duration['text'] = '0:00:00'
+
+            self.selected_project.set('')
+            self.selected_activity.set('')
+
+            self.te_alone_var.set(1)
+            self.te_tags.text.delete('1.0', tb.END)
+            self.te_comment.text.delete('1.0', tb.END)
         else:
             # Fill form fields with time entry values
             self.te_date.delete(0, tb.END)
@@ -185,6 +204,17 @@ class TimeEntryForm(tb.Frame):
             self.te_pause.insert(0, self.time_entry.get_pause_timedelta())
 
             self.te_duration['text'] = self.time_entry.get_duration_timedelta()
+
+            self.selected_project.set(self.time_entry.get_project_name())
+            self.selected_activity.set(self.time_entry.get_activity_name())
+
+            self.te_alone_var.set(int(self.time_entry.alone == 'True'))
+
+            self.te_tags.text.delete(1.0, tb.END)
+            self.te_tags.text.insert(1.0, self.time_entry.tags)
+
+            self.te_comment.text.delete(1.0, tb.END)
+            self.te_comment.text.insert(1.0, self.time_entry.comment)
 
     def save_entry(self):
         if self.time_entry is None:
@@ -221,6 +251,14 @@ class TimeEntryForm(tb.Frame):
             id=new_entry.activity_id,
             name=activity_name
         )
+
+        alone_int = self.te_alone_var.get()
+        if alone_int is not None:
+            new_entry.alone = alone_int
+
+        new_entry.tags = self.te_tags.text.get(1.0, tb.END)
+        new_entry.comment = self.te_comment.get(1.0, tb.END)
+
         TimeEntryService.merge(self.app.session, new_entry)
 
         if self.time_entry is None:

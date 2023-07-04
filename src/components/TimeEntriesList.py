@@ -31,7 +31,10 @@ class TimeEntriesList(tb.Frame):
             'Project ID',
             'Project Name',
             'Activity ID',
-            'Activity Name'
+            'Activity Name',
+            'Alone',
+            'Tags',
+            'Comment'
         ]
         hidden_columns_idx = [0, 7, 9]
         columns_idx_align_right = [3, 4, 5, 6]
