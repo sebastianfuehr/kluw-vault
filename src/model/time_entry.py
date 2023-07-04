@@ -116,6 +116,24 @@ class TimeEntry(Base):
 
     # MISC. ###################################################################
 
+    def get_column_names():
+        return [
+            'db_id',
+            'Date',
+            'Day',
+            'Start',
+            'Stop',
+            'Pause',
+            'Duration',
+            'Project ID',
+            'Project Name',
+            'Activity ID',
+            'Activity Name',
+            'Alone',
+            'Tags',
+            'Comment'
+        ]
+
     def to_list(self):
         return [
             self.id,

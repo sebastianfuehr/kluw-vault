@@ -2,6 +2,7 @@ import ttkbootstrap as tb
 
 # GUI Components
 from src.components.LeftSidebar import LeftSidebar
+from src.components.StatsDashboard import StatsDashboard
 from src.components.TimeEntriesList import TimeEntriesList
 
 
@@ -24,6 +25,9 @@ class MainFrame(tb.Frame):
 
         tab_time_entries = TimeEntriesList(central_notebook, app=self.parent)
         central_notebook.add(tab_time_entries, text='Time Entries')
+
+        tab_stats_dashboard = StatsDashboard(central_notebook, app=self.parent)
+        central_notebook.add(tab_stats_dashboard, text='Dashboard')
 
         tab_projects = tb.Frame(central_notebook)
         central_notebook.add(tab_projects, text='Projects')
