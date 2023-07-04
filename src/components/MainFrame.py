@@ -3,9 +3,6 @@ import ttkbootstrap as tb
 # GUI Components
 from src.components.LeftSidebar import LeftSidebar
 from src.components.TimeEntriesList import TimeEntriesList
-from src.components.ProjectsList import ProjectsList
-from src.components.TimeTracker import TimeTracker
-from src.components.Timer import Timer
 
 
 class MainFrame(tb.Frame):
@@ -20,13 +17,24 @@ class MainFrame(tb.Frame):
         sb_left.pack(side="left", fill="y")
         self.parent.stats_sidebar = sb_left
 
-        tel = TimeEntriesList(self, app=self.parent)
-        tel.pack(side='right', expand=True, fill='both')
+        central_notebook = tb.Notebook(
+            self
+        )
+        central_notebook.pack(side='right', expand=True, fill='both')
+
+        tab_time_entries = TimeEntriesList(central_notebook, app=self.parent)
+        central_notebook.add(tab_time_entries, text='Time Entries')
+
+        tab_projects = tb.Frame(central_notebook)
+        central_notebook.add(tab_projects, text='Projects')
+
+        tab_categories = tb.Frame(central_notebook)
+        central_notebook.add(tab_categories, text='Categories')
+
+        tab_settings = tb.Frame(central_notebook)
+        central_notebook.add(tab_settings, text='Settings')
 
         #proj_l = ProjectsList(self, self.parent)
         #proj_l.pack(side="top", fill="x")
-
-        #tt = TimeTracker(self, self.parent)
-        #tt.pack(side="bottom", fill="x")
 
         self.pack(fill="both", expand=True)
