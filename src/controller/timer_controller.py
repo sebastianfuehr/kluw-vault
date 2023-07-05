@@ -6,23 +6,19 @@ class TimerController():
         self.reset()
 
     def start(self):
-        print('start')
         self.start_time = datetime.now()
 
     def pause(self):
-        print('pause')
         self.paused = True
         self.pause_time = datetime.now()
 
     def resume(self):
-        print('resume')
         self.paused = False
         elapsed_time = datetime.now() - self.pause_time
         self.paused_seconds += elapsed_time.total_seconds()
         return timedelta(seconds=self.paused_seconds)
 
     def stop(self):
-        print('stop')
         if self.paused:
             elapsed_time = datetime.now() - self.pause_time
             self.paused_seconds += elapsed_time.total_seconds()
@@ -30,7 +26,6 @@ class TimerController():
             timedelta(seconds=self.paused_seconds)
 
     def reset(self):
-        print('reset')
         self.start_time = None
         self.pause_time = None
         self.paused_seconds = 0

@@ -1,5 +1,7 @@
 import os
 
+APP_VERSION = 'v0.1.2-alpha'
+
 APP_ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
 
 # Medal thresholds in seconds (h*m*s)
