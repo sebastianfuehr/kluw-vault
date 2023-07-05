@@ -45,10 +45,7 @@ class ProjectCategoryProgressCard(tb.Frame):
 
     def update_progress(self, progress_value: int):
         if progress_value > self.goal_max:
-            new_progress_value = self.goal_max
             self.fg_goal_progress.configure(bootstyle='success')
-        else:
-            new_progress_value = progress_value
-        progress_str = f'{new_progress_value}/{self.goal_max}m'
+        progress_str = f'{progress_value}/{self.goal_max}m'
         self.lbl_goal_progress['text'] = progress_str
-        self.fg_goal_progress.configure(value=new_progress_value)
+        self.fg_goal_progress.configure(value=progress_value)
