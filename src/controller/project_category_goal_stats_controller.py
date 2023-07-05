@@ -11,11 +11,9 @@ class ProjectCategoryGoalStatsController():
     def __init__(self, db_session):
         self.db_session = db_session
 
-    def get_goal_list(self, weekday):
-        """Return a list of goals for the day.
-        """
+    def get_active_goals(self):
         stmt = select(ProjectCategoryGoal)\
-            .filter(ProjectCategoryGoal.weekday == weekday)
+            .filter(ProjectCategoryGoal.active == True)
         results = self.db_session.execute(stmt).scalars().all()
         return results
 

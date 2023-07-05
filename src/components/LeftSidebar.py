@@ -74,22 +74,25 @@ class LeftSidebar(tb.Frame):
         )
         goals_section_heading.pack(padx=10, pady=0, fill='x')
 
-        goals = self.parent.parent.pcgsc.get_goal_list(weekday=datetime.today().weekday())
+        goals = self.parent.parent.pcgsc.get_active_goals()
         self.goal_dict = {}
 
+        weekday = datetime.today().weekday()
         for goal in goals:
-            progress_card = ProjectCategoryProgressCard(self, self.app, goal)
-            progress_card.pack(fill='x', padx=10, pady=10)
-            self.goal_dict[goal.project_category_id] = {
-                'goal': goal,
-                'progress_card': progress_card
-            }
+            if goal.get_weekday_minute_goal(weekday) > 0:
+                progress_card = ProjectCategoryProgressCard(self, self.app, goal)
+                progress_card.pack(fill='x', padx=10, pady=10)
+                self.goal_dict[goal.project_category_id] = {
+                    'goal': goal,
+                    'progress_card': progress_card
+                }
 
         # Versioning
-        msg_user = 'Alpha Version'
+        msg_user = definitions.APP_VERSION
         lbl_username = tb.Label(self, text=msg_user)
-        lbl_username.pack(side="bottom")
+        lbl_username.pack(side="bottom", pady=10)
 
+        # Import/Export buttons
         frame_file_operations = tb.Frame(self)
         frame_file_operations.pack(side='bottom', padx=10, pady=10)
 
@@ -124,7 +127,6 @@ class LeftSidebar(tb.Frame):
             self.lbl_medal_gold.pack(side='left')
 
     def update_goal_progress(self):
-        print('update_goal_progress')
         time_entries = self.parent.parent.pcgsc.get_time_entries_per_category()
         goal_progress_dict = {}
         for category_id in self.goal_dict.keys():
