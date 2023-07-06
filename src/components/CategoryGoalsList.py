@@ -14,4 +14,4 @@ class CategoryGoalsList(tb.Frame):
         test.pack()
 
         res = self.goals_controller.get_active_goals()
-        print(res)
+        print(f'CategoryGoalsList: {res}')

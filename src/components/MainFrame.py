@@ -4,6 +4,7 @@ import ttkbootstrap as tb
 from src.components.LeftSidebar import LeftSidebar
 from src.components.StatsDashboard import StatsDashboard
 from src.components.TimeEntriesList import TimeEntriesList
+from src.components.ProjectsList import ProjectsList
 from src.components.CategoryGoalsList import CategoryGoalsList
 
 
@@ -29,7 +30,7 @@ class MainFrame(tb.Frame):
         tab_stats_dashboard = StatsDashboard(central_notebook, app=self.parent)
         central_notebook.add(tab_stats_dashboard, text='Dashboard')
 
-        tab_projects = tb.Frame(central_notebook)
+        tab_projects = ProjectsList(central_notebook, app=self.parent)
         central_notebook.add(tab_projects, text='Projects')
 
         tab_categories = CategoryGoalsList(central_notebook, self.parent)

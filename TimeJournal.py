@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+from tkinter import font
 # Python libraries
 import ttkbootstrap as tb
 from tkinter.font import nametofont
@@ -16,6 +16,7 @@ from src.model.rel_project_tag import RelProjectTag
 from src.model.project_category import ProjectCategory
 from src.model.project_category_goal import ProjectCategoryGoal
 # Controller
+from src.controller.project_service import ProjectService
 from src.controller.statistics_controller import StatisticsController
 from src.controller.project_category_goal_stats_controller import ProjectCategoryGoalStatsController
 from src.controller.file_controller import FileController

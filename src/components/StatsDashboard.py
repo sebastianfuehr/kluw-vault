@@ -97,9 +97,9 @@ class OverviewPanel(tb.Frame):
 
     def build_gui_components(self):
         self.block_goal_today = OverviewPanelBlock(self, self.app, 'GOAL TODAY', self.goal_today_str)
-        self.block_goal_today.grid(row=1, column=0, sticky='nsew')
+        self.block_goal_today.grid(row=1, column=0, sticky='nsew', padx=10)
         self.block_progress_today = OverviewPanelBlock(self, self.app, 'PROGRESS', self.progress_today)
-        self.block_progress_today.grid(row=2, column=0, sticky='nsew')
+        self.block_progress_today.grid(row=2, column=0, sticky='nsew', padx=10)
 
 
 class OverviewPanelBlock(tb.Frame):
@@ -108,13 +108,15 @@ class OverviewPanelBlock(tb.Frame):
         self.app = app
         self.value_str = value_str
 
+        self.configure(borderwidth=1, relief='solid')
+
         lbl_heading = tb.Label(
             self,
             text=heading,
             font=(None, 14, 'bold'),
             anchor='center'
         )
-        lbl_heading.pack(side='top', fill='x')
+        lbl_heading.pack(side='top', fill='x', pady=(20, 0))
 
         lbl_value = tb.Label(
             self,
@@ -153,7 +155,8 @@ class GraphTimePerDay(tb.Frame):
         data_by_date['Average'] = data_by_date['Minutes'].mean()
         axis = figure.add_subplot(111)
         line = axis.plot(data_by_date['Date'], data_by_date['Minutes'])[0]
-        line_avg = axis.plot(data_by_date['Date'], data_by_date['Average'])[0]
+        line_avg = axis.plot(data_by_date['Date'], data_by_date['Average'], linestyle='dashed', label='Average per Day')[0]
+        axis.legend(loc='upper right')
         line.set_color(HIGHLIGHT_COLOR)
 
         axis.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))

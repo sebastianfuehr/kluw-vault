@@ -20,5 +20,14 @@ class Project(Base):
         self.id = id
         self.name = name
 
+    def get_column_names():
+        return [
+            'id',
+            'Name',
+            'Description',
+            'Project Category ID',
+            'Project Tags'
+        ]
+
     def to_string(self):
         return f'id: {self.id}, name: {self.name}'
