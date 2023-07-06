@@ -19,7 +19,7 @@ class StatsDashboard(tb.Frame):
 
         self.has_content = False
         self.time_string = tb.StringVar(value=FILTER_PERIODS[4])
-        self.time_string.trace('w', self.draw_graphs)
+        self.time_string.trace('w', self.build_gui_components)
 
         self.update_data()
 
@@ -52,7 +52,7 @@ class StatsDashboard(tb.Frame):
         self.data_one_month = self.data_max[self.data_max['Date'] > ago_one_month]
         self.data_one_week = self.data_max[self.data_max['Date'] > ago_one_week]
 
-    def draw_graphs(self, *args):
+    def build_gui_components(self, *args):
         if self.has_content:
             self.graph_time_per_day.grid_forget()
 
@@ -64,9 +64,65 @@ class StatsDashboard(tb.Frame):
             case 'Week': data = self.data_one_week
 
         self.graph_time_per_day = GraphTimePerDay(self, self.app, data)
-        self.graph_time_per_day.grid(row=1, column=0, rowspan=2, columnspan=2, sticky='nsew')
+        self.graph_time_per_day.grid(row=2, column=0, columnspan=2, sticky='nsew')
+
+        self.overview_panel = OverviewPanel(self, self.app, data)
+        self.overview_panel.grid(row=1, column=0, columnspan=2, sticky='nsew')
 
         self.has_content = True
+
+
+class OverviewPanel(tb.Frame):
+    def __init__(self, parent, app, data):
+        super().__init__(master=parent)
+        self.app = app
+        self.data = data
+
+        self.grid_columnconfigure((0, 1, 2, 3), weight=1)
+
+        lbl_heading = tb.Label(
+            self,
+            text='Overview',
+            font=(None, DASHBOARD_HEADING_SIZE, 'bold'),
+            anchor='center'
+        )
+        lbl_heading.grid(row=0, column=0, columnspan=4, sticky='ew', pady=10)
+
+        self.calculate_values()
+        self.build_gui_components()
+
+    def calculate_values(self):
+        self.goal_today_str = tb.StringVar(self, f'{100}m')
+        self.progress_today = tb.StringVar(self, f'{50}%')
+
+    def build_gui_components(self):
+        self.block_goal_today = OverviewPanelBlock(self, self.app, 'GOAL TODAY', self.goal_today_str)
+        self.block_goal_today.grid(row=1, column=0, sticky='nsew')
+        self.block_progress_today = OverviewPanelBlock(self, self.app, 'PROGRESS', self.progress_today)
+        self.block_progress_today.grid(row=2, column=0, sticky='nsew')
+
+
+class OverviewPanelBlock(tb.Frame):
+    def __init__(self, parent, app, heading, value_str):
+        super().__init__(master=parent)
+        self.app = app
+        self.value_str = value_str
+
+        lbl_heading = tb.Label(
+            self,
+            text=heading,
+            font=(None, 14, 'bold'),
+            anchor='center'
+        )
+        lbl_heading.pack(side='top', fill='x')
+
+        lbl_value = tb.Label(
+            self,
+            text=value_str.get(),
+            font=(None, 32, 'bold'),
+            anchor='center'
+        )
+        lbl_value.pack(side='top', fill='x', pady=20)
 
 
 class GraphTimePerDay(tb.Frame):
@@ -78,7 +134,7 @@ class GraphTimePerDay(tb.Frame):
         lbl_heading = tb.Label(
             self,
             text='Time per Day',
-            font=(None, 24, 'bold'),
+            font=(None, DASHBOARD_HEADING_SIZE, 'bold'),
             anchor='center'
         )
         lbl_heading.pack(side='top', fill='x', pady=10)
