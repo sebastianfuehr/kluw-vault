@@ -49,16 +49,16 @@ class App(tb.Window):
         self.title('Time Journal')
         MainFrame(self)
 
+        session_start = datetime.now()
+        self.mainloop()
+
+        # Close the database connection and save tracking session data
+        session_end = datetime.now()
+        session_data = TrackingSession(start=session_start, end=session_end)
+        self.session.add(session_data)
+        self.session.commit()
+        self.session.close()
+
 
 if __name__ == '__main__':
-    session_start = datetime.now()
-
     app = App()
-    app.mainloop()
-
-    # Close the database connection and save tracking session data
-    session_end = datetime.now()
-    session_data = TrackingSession(start=session_start, end=session_end)
-    app.session.add(session_data)
-    app.session.commit()
-    app.session.close()

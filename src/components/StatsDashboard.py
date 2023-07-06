@@ -3,9 +3,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import select
 
+from config.definitions import *
 from ..model.time_entry import TimeEntry
 from ..controller.time_entry_service import TimeEntryService
 
@@ -16,6 +17,18 @@ class StatsDashboard(tb.Frame):
         self.parent = parent
         self.app = app
 
+        self.has_content = False
+        self.time_string = tb.StringVar(value=FILTER_PERIODS[4])
+        self.time_string.trace('w', self.draw_graphs)
+
+        self.update_data()
+
+        self.grid_columnconfigure((0, 1, 2, 3), weight=1)
+        self.grid_rowconfigure((1, 2, 3, 4), weight=1)
+
+        filter_panel = FilterPanel(self, self.time_string)
+        filter_panel.grid(row=0, column=0, columnspan=4, sticky='ew')
+
         """
         self.data = pd.read_sql(
             sql=select(TimeEntry),
@@ -23,28 +36,100 @@ class StatsDashboard(tb.Frame):
         )
         """
 
+    def update_data(self):
         entries = TimeEntryService.get_all(self.app.session).all()
         row_data = [entry.to_list() for entry in entries]
-        self.data = pd.DataFrame(row_data, columns=TimeEntry.get_column_names())[['Date', 'Duration']]
-        self.data['Date'] = pd.to_datetime(self.data['Date'], errors='coerce')
+        self.data_max = pd.DataFrame(row_data, columns=TimeEntry.get_column_names())
+        self.data_max['Date'] = pd.to_datetime(self.data_max['Date'], errors='coerce')
 
-        if len(row_data) > 0:
-            self.build_gui_components()
+        # self.data_max[self.data_max['Date'] > '2023-07-04']
+        ago_one_year = str((datetime.today() - timedelta(days=365)).date())
+        ago_six_months = str((datetime.today() - timedelta(days=182)).date())
+        ago_one_month = str((datetime.today() - timedelta(days=31)).date())
+        ago_one_week = str((datetime.today() - timedelta(days=7)).date())
+        self.data_one_year = self.data_max[self.data_max['Date'] > ago_one_year]
+        self.data_six_months = self.data_max[self.data_max['Date'] > ago_six_months]
+        self.data_one_month = self.data_max[self.data_max['Date'] > ago_one_month]
+        self.data_one_week = self.data_max[self.data_max['Date'] > ago_one_week]
 
-    def build_gui_components(self):
+    def draw_graphs(self, *args):
+        if self.has_content:
+            self.graph_time_per_day.grid_forget()
+
+        match self.time_string.get():
+            case 'Max': data = self.data_max
+            case '1 Year': data = self.data_one_year
+            case '6 Months': data = self.data_six_months
+            case 'Month': data = self.data_one_month
+            case 'Week': data = self.data_one_week
+
+        self.graph_time_per_day = GraphTimePerDay(self, self.app, data)
+        self.graph_time_per_day.grid(row=1, column=0, rowspan=2, columnspan=2, sticky='nsew')
+
+        self.has_content = True
+
+
+class GraphTimePerDay(tb.Frame):
+    def __init__(self, parent, app, data):
+        super().__init__(master=parent)
+        self.app = app
+        self.data = data
         # Figure
         figure = plt.Figure()
-        axis = figure.add_subplot(111)
+        figure.subplots_adjust(left=0.1, bottom=0.1, right=1, top=1)
+        figure.patch.set_facecolor(self.app.style.colors.bg)
 
         # Graph
         tmp_data = self.data
         data_by_date = tmp_data.groupby(pd.Grouper(key='Date', freq='D'))['Duration'].sum()
         data_by_date = data_by_date.reset_index()
         data_by_date['Minutes'] = data_by_date['Duration'].dt.total_seconds() / 60
-        axis.plot(data_by_date['Date'], data_by_date['Minutes'])
+        axis = figure.add_subplot(111)
+        line = axis.plot(data_by_date['Date'], data_by_date['Minutes'])[0]
+
         axis.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+        axis.set_facecolor(self.app.style.colors.bg)
+        for side in ['left', 'bottom']:
+            axis.spines[side].set_color('white')
+        for side in ['right', 'top']:
+            axis.spines[side].set_color(self.app.style.colors.bg)
+        line.set_color(HIGHLIGHT_COLOR)
         figure.autofmt_xdate()
+
+        # Ticks
+        axis.tick_params(axis='x', colors='white')
+        axis.tick_params(axis='y', colors='white')
 
         # Widget
         fig_widget = FigureCanvasTkAgg(figure, master=self)
         fig_widget.get_tk_widget().pack()
+
+
+class FilterPanel(tb.Frame):
+    def __init__(self, parent, time_string):
+        super().__init__(master=parent)
+        self.buttons = [FilterTextButton(self, text, time_string) for text in FILTER_PERIODS]
+        time_string.trace('w', self.__unselect_filter_buttons)
+
+    def __unselect_filter_buttons(self, *args):
+        [button.unselect() for button in self.buttons]
+
+
+class FilterTextButton(tb.Label):
+    def __init__(self, parent, text, time_string):
+        super().__init__(master=parent, text=text, foreground=TEXT_COLOR)
+        self.pack(side='right', padx=10, pady=10)
+        self.bind('<Button-1>', self.__select_handler)
+
+        self.text = text
+        self.time_string = time_string
+
+        if time_string.get() == text:
+            self.__select_handler()
+
+    def __select_handler(self, event=None):
+        self.time_string.set(self.text)
+        self.configure(foreground=HIGHLIGHT_COLOR)
+
+    def unselect(self):
+        self.configure(foreground=TEXT_COLOR)
