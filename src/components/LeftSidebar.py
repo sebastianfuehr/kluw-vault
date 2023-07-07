@@ -127,13 +127,17 @@ class LeftSidebar(tb.Frame):
             self.lbl_medal_gold.pack(side='left')
 
     def update_goal_progress(self):
+        """Update the progress value for all active project category
+        goals iteratively.
+        """
         time_entries = self.parent.parent.pcgsc.get_time_entries_per_category()
         goal_progress_dict = {}
         for category_id in self.goal_dict.keys():
             goal_progress_dict[category_id] = 0
 
-        for category_id, te in time_entries:
-            goal_progress_dict[category_id] += te.get_duration_minutes()
+        for category_id, entry in time_entries:
+            if category_id in self.goal_dict:
+                goal_progress_dict[category_id] += entry.get_duration_minutes()
 
         for category_id in self.goal_dict.keys():
             current_progress = int(goal_progress_dict[category_id])

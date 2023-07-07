@@ -12,6 +12,9 @@ from ..controller.activity_service import ActivityService
 
 
 class TimeEntryForm(tb.Frame):
+    """A form for editing and adding new time entries.
+    """
+
     def __init__(self, parent, app):
         super().__init__(parent)
         self.parent = parent
@@ -23,6 +26,8 @@ class TimeEntryForm(tb.Frame):
         self.set_time_entry(None)
 
     def build_form_components(self):
+        """Creates the GUI widgets for this component.
+        """
         frame_heading = tb.Frame(self)
         frame_heading.grid(row=0, column=0, columnspan=2, sticky='ew', pady=20)
 
@@ -87,6 +92,7 @@ class TimeEntryForm(tb.Frame):
         else:
             init_proj_name = project_names[0]
         self.selected_project = tb.StringVar(value=init_proj_name)
+        self.selected_project.trace('w', self.__populate_activities_list)
 
         lbl_te_project = tb.Label(self, text='Project:')
         lbl_te_project.grid(column=0, row=7, sticky='w', padx=10, pady=5)
@@ -101,14 +107,7 @@ class TimeEntryForm(tb.Frame):
         self.te_project['values'] = project_names
 
         # Activity combobox
-        activities = ActivityService.get_all(self.app.session).all()
-        activity_names = [activity.name for activity in activities]
-        if len(activity_names) == 0:
-            init_act_name = None
-        else:
-            init_act_name = activity_names[0]
-        self.selected_activity = tb.StringVar(value=init_act_name)
-
+        self.selected_activity = tb.StringVar()
         lbl_te_activity = tb.Label(self, text='Activity:')
         lbl_te_activity.grid(column=0, row=8, sticky='w', padx=10, pady=5)
         self.te_activity = tb.Combobox(
@@ -119,7 +118,7 @@ class TimeEntryForm(tb.Frame):
             justify='right'
         )
         self.te_activity.grid(column=1, row=8, sticky='e', padx=10, pady=5)
-        self.te_activity['values'] = activity_names
+        self.__populate_activities_list()
 
         self.te_alone_var = tb.IntVar(value=1)
         lbl_te_alone = tb.Label(self, text='Alone:')
@@ -170,7 +169,24 @@ class TimeEntryForm(tb.Frame):
             pady=20
         )
 
+    def __populate_activities_list(self, *args):
+        self.selected_activity.set('')
+        project_name = self.selected_project.get()
+        if project_name == '':
+            self.te_activity['values'] = []
+        else:
+            project = ProjectService.get_project_by_name(
+                self.app.session,
+                project_name
+            )
+            activity_names = [activity.name for activity in project.activities]
+            self.te_activity['values'] = activity_names
+            if len(activity_names) > 0:
+                self.selected_activity.set(activity_names[0])
+
     def form_for_new_entry(self):
+        """Callback wrapper for set_tim_entry(None).
+        """
         self.set_time_entry(None)
 
     def set_time_entry(self, time_entry: TimeEntry):
@@ -236,6 +252,9 @@ class TimeEntryForm(tb.Frame):
             self.te_comment.text.insert(1.0, self.time_entry.comment)
 
     def save_entry(self):
+        """Parses the form contents to create a new time entry and save
+        it to the database.
+        """
         if self.time_entry is None:
             new_entry = TimeEntry(None)
         else:
