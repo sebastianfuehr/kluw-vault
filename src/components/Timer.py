@@ -7,10 +7,11 @@ from ..controller.time_controller import TimeController as tc
 
 
 class Timer(tb.Frame):
-    def __init__(self, parent, app):
+    def __init__(self, parent, app, new_entry_var):
         super().__init__(parent)
         self.parent = parent
         self.app = app
+        self.new_entry_var = new_entry_var
         self.timer_controller = TimerController()
 
         self.state = 'off'
@@ -70,6 +71,7 @@ class Timer(tb.Frame):
 
     def start_handler(self):
         if self.state == 'off':
+            self.new_entry_var.set(True)
             self.timer_controller.start()
             self.parent.start_new_entry()
             self.state = 'on'
@@ -92,7 +94,9 @@ class Timer(tb.Frame):
         self.update_buttons()
 
     def reset_handler(self):
+        self.new_entry_var.set(False)
         self.timer_controller.reset()
+        self.parent.start_new_entry()
         self.state = 'off'
         self.update_buttons()
         self.lbl_time_display['text'] = '0:00:00'

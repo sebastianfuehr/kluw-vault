@@ -15,10 +15,11 @@ class TimeEntryForm(tb.Frame):
     """A form for editing and adding new time entries.
     """
 
-    def __init__(self, parent, app):
+    def __init__(self, parent, app, new_entry_var):
         super().__init__(parent)
         self.parent = parent
         self.app = app
+        self.new_entry_var = new_entry_var
 
         self.entry_font = ('Helvetica', 16)
 
@@ -40,7 +41,7 @@ class TimeEntryForm(tb.Frame):
             frame_heading,
             text='New',
             bootstyle='success',
-            command=self.form_for_new_entry
+            command=self.__select_handler_new_entry
         )
         self.btn_new_entry.pack(side='right')
 
@@ -184,10 +185,21 @@ class TimeEntryForm(tb.Frame):
             if len(activity_names) > 0:
                 self.selected_activity.set(activity_names[0])
 
+    def __select_handler_new_entry(self, *args):
+        if self.new_entry_var.get():
+            self.new_entry_var.set(False)
+        else:
+            self.new_entry_var.set(True)
+        self.form_for_new_entry()
+
     def form_for_new_entry(self):
         """Callback wrapper for set_tim_entry(None).
         """
         self.set_time_entry(None)
+        if self.new_entry_var.get():
+            self.btn_new_entry.configure(bootstyle='danger', text='Cancel')
+        else:
+            self.btn_new_entry.configure(bootstyle='success', text='New')
 
     def set_time_entry(self, time_entry: TimeEntry):
         self.time_entry = time_entry
@@ -305,3 +317,6 @@ class TimeEntryForm(tb.Frame):
             self.parent.add_entry(te=new_entry)
         else:
             self.parent.update_entry(te=new_entry)
+
+        self.new_entry_var.set(False)
+        self.form_for_new_entry()

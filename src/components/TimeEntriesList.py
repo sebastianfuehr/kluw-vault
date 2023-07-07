@@ -14,6 +14,9 @@ class TimeEntriesList(tb.Frame):
         self.parent = parent
         self.app = app
 
+        self.new_entry = tb.BooleanVar(self, False)
+        self.new_entry.trace('w', self.__handle_new_entry_panel)
+
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
         self.build_components()
@@ -57,15 +60,34 @@ class TimeEntriesList(tb.Frame):
         self.table.view.bind('<<TreeviewSelect>>', self.on_tb_tableview_select)
         self.table.grid(row=0, column=0, sticky='nsew', rowspan=3)
 
+        self.frm_new_entry = tb.Frame(self)
+        self.frm_new_entry.grid_columnconfigure(0, weight=1)
+        self.frm_new_entry.grid_rowconfigure((0, 3), weight=1)
+        lbl_new_entry = tb.Label(
+            self.frm_new_entry,
+            text='New Time Entry',
+            font=(None, 18)
+        )
+        lbl_new_entry.grid(row=1, column=0)
+        lbl_new_entry_description = tb.Label(
+            self.frm_new_entry,
+            text='You are currently creating a new time entry or the timer is running.',
+            foreground='#a8a8a8'
+        )
+        lbl_new_entry_description.grid(row=2, column=0, pady=(10, 0))
+
+        sep_vertical = tb.Separator(self, orient='vertical')
+        sep_vertical.grid(row=0, column=1, sticky='ns', rowspan=3)
+
         # Right sidebar form
-        self.te_form = TimeEntryForm(self, self.app)
-        self.te_form.grid(row=0, column=1, sticky='n', padx=20)
+        self.te_form = TimeEntryForm(self, self.app, self.new_entry)
+        self.te_form.grid(row=0, column=2, sticky='n', padx=20)
 
         separator = tb.Separator(self)
-        separator.grid(row=1, column=1, sticky='ew')
+        separator.grid(row=1, column=2, sticky='ew')
 
-        self.timer = Timer(self, self.app)
-        self.timer.grid(row=2, column=1, sticky='s', pady=30)       
+        self.timer = Timer(self, self.app, self.new_entry)
+        self.timer.grid(row=2, column=2, sticky='s', pady=30)       
 
     def on_tb_tableview_select(self, _):
         try:
@@ -75,6 +97,19 @@ class TimeEntriesList(tb.Frame):
             self.te_form.set_time_entry(selected_te)
         except IndexError:
             print('Index not found.')
+
+    def __handle_new_entry_panel(self, *args):
+        """Overlay the time entry tabel with an information panel,
+        while a new time entry is being created or the timer is
+        running.
+        """
+        print(f'Handle new_entry_var with curr value of {self.new_entry.get()}')
+        if self.new_entry.get():
+            self.table.grid_forget()
+            self.frm_new_entry.grid(row=0, column=0, sticky='nsew', rowspan=3)
+        else:
+            self.frm_new_entry.grid_forget()
+            self.table.grid(row=0, column=0, sticky='nsew', rowspan=3)
 
     def add_entry(self, te: TimeEntry):
         #self.table.insert_row(0, te.to_list())
