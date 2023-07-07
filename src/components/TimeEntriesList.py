@@ -103,7 +103,6 @@ class TimeEntriesList(tb.Frame):
         while a new time entry is being created or the timer is
         running.
         """
-        print(f'Handle new_entry_var with curr value of {self.new_entry.get()}')
         if self.new_entry.get():
             self.table.grid_forget()
             self.frm_new_entry.grid(row=0, column=0, sticky='nsew', rowspan=3)

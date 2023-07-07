@@ -9,6 +9,7 @@ from sqlalchemy import select
 from config.definitions import *
 from ..model.time_entry import TimeEntry
 from ..controller.time_entry_service import TimeEntryService
+from .. controller.time_controller import TimeController
 
 
 class StatsDashboard(tb.Frame):
@@ -92,8 +93,17 @@ class OverviewPanel(tb.Frame):
         self.build_gui_components()
 
     def calculate_values(self):
-        self.goal_today_str = tb.StringVar(self, f'{100}m')
-        self.progress_today = tb.StringVar(self, f'{50}%')
+        goals = self.app.pcgsc.get_active_goals()
+        weekday = datetime.today().weekday()
+        total_goal_minutes = 0
+        for goal in goals:
+            if goal.get_weekday_minute_goal(weekday) > 0:
+                total_goal_minutes += goal.get_weekday_minute_goal(weekday)
+
+        goal_str = TimeController.seconds_to_string(total_goal_minutes * 60)
+        self.goal_today_str = tb.StringVar(self, goal_str)
+        curr_ratio = self.app.sc.total_time_today() / 60 / total_goal_minutes
+        self.progress_today = tb.StringVar(self, f'{round(curr_ratio*100, 1)}%')
 
     def build_gui_components(self):
         self.block_goal_today = OverviewPanelBlock(self, self.app, 'GOAL TODAY', self.goal_today_str)

@@ -26,6 +26,8 @@ class ProjectCategoryGoal(Base):
         ]
 
     def get_weekday_minute_goal(self, weekday):
+        """Returns the minute goal for any given weekday.
+        """
         match weekday:
             case 0: return self.min_monday
             case 1: return self.min_tuesday
