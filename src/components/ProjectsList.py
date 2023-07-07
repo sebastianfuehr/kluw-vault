@@ -19,7 +19,9 @@ class ProjectsList(tb.Frame):
         frm_list_selection.grid(row=0, column=0, sticky='ns')
 
         self.projects = ProjectService.get_all(self.app.session).all()
-        self.selected_project_id = tb.IntVar(self, self.projects[0].id)
+        self.selected_project_id = tb.IntVar()
+        if len(self.projects) > 0:
+            self.selected_project_id.set(self.projects[0].id)
         self.buttons = [ProjectListItem(
             frm_list_selection,
             self.app,
@@ -37,7 +39,7 @@ class ProjectsList(tb.Frame):
         sep_list_seleection = tb.Separator(self, orient='vertical')
         sep_list_seleection.grid(row=0, column=1, rowspan=3, sticky='ns')
 
-        self.project_detail_panel = ProjectDetailPanel(self, self.app, self.projects[0])
+        self.project_detail_panel = ProjectDetailPanel(self, self.app, None)
         self.project_detail_panel.grid(row=0, rowspan=3, column=2, sticky='nsew')
 
     def __update_screen(self, *args):
@@ -76,8 +78,11 @@ class ProjectDetailPanel(tb.Frame):
         super().__init__(master=parent)
         self.edit_mode = False
         self.project = project
-        self.project_name = tb.StringVar(self, self.project.name)
-        self.project_category = tb.StringVar(self, self.project.project_category.name)
+        self.project_name = tb.StringVar()
+        self.project_category = tb.StringVar()
+        if project is not None:
+            self.project_name.set(self.project.name)
+            self.project_category.set(self.project.project_category.name)
 
         self.grid_columnconfigure((1), weight=1)
 
@@ -118,10 +123,11 @@ class ProjectDetailPanel(tb.Frame):
         lbl_description_heading.grid(row=3, column=1, padx=lbl_padx, pady=lbl_pady, sticky='w')
         self.inp_description_value = ScrolledText(
             self,
-            text=self.project.description,
             height=4,
             state='disabled'
         )
+        if self.project is not None:
+            self.inp_description_value.text.insert(1.0, self.project.description)
         self.inp_description_value.grid(row=4, column=1, padx=lbl_padx, pady=inp_pady, sticky='nsew')
 
         lbl_activities_heading = tb.Label(
@@ -158,7 +164,8 @@ class ActivitiesList(tb.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        self.build_list(project)
+        if project is not None:
+            self.build_list(project)
 
     def build_list(self, project):
         self.frm_activities = ScrolledFrame(

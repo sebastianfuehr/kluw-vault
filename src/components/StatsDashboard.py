@@ -41,6 +41,8 @@ class StatsDashboard(tb.Frame):
         entries = TimeEntryService.get_all(self.app.session).all()
         row_data = [entry.to_list() for entry in entries]
         self.data_max = pd.DataFrame(row_data, columns=TimeEntry.get_column_names())
+        if len(self.data_max) == 0:
+            return
         self.data_max['Date'] = pd.to_datetime(self.data_max['Date'], errors='coerce')
 
         # self.data_max[self.data_max['Date'] > '2023-07-04']
@@ -54,6 +56,8 @@ class StatsDashboard(tb.Frame):
         self.data_one_week = self.data_max[self.data_max['Date'] > ago_one_week]
 
     def build_gui_components(self, *args):
+        if len(self.data_max) == 0:
+            return
         if self.has_content:
             self.graph_time_per_day.grid_forget()
 
