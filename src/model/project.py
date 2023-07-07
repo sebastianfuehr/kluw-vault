@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
-from sqlalchemy.orm import relationship, Mapped
+from sqlalchemy.orm import relationship
 from .orm_base import Base
 
 
@@ -21,6 +21,7 @@ class Project(Base):
         self.id = id
         self.name = name
 
+    @staticmethod
     def get_column_names():
         return [
             'id',

@@ -1,9 +1,9 @@
 import ttkbootstrap as tb
 from ttkbootstrap.scrolled import ScrolledText, ScrolledFrame
 
-from ..controller.project_service import ProjectService
-from ..controller.activity_service import ActivityService
 from config.definitions import *
+from .. controller.project_service import ProjectService
+from .. controller.activity_service import ActivityService
 
 
 class ProjectsList(tb.Frame):
@@ -158,8 +158,6 @@ class ActivitiesList(tb.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(0, weight=1)
 
-        #self.frm_activities = ScrolledFrame(self, borderwidth=1, relief='solid')
-        #self.frm_activities.grid(row=0, column=0, sticky='nsew')
         self.build_list(project)
 
     def build_list(self, project):
@@ -193,7 +191,9 @@ class NewProjectForm(tb.Frame):
         inp_font = (None, 14)
         inp_pady = (0, 10)
 
-        lbl_heading = tb.Label(self, text='Create New Project', font=FORM_HEADING_FONT)
+        lbl_heading = tb.Label(
+            self, text='Create New Project', font=FORM_HEADING_FONT
+        )
         lbl_heading.grid(row=1, pady=(0, 30))
 
         lbl_name = tb.Label(self, text='Name', font=inp_lbl_font)
@@ -206,7 +206,9 @@ class NewProjectForm(tb.Frame):
         inp_description = tb.Entry(self, font=inp_font)
         inp_description.grid(row=5, pady=inp_pady)
 
-        lbl_project_category = tb.Label(self, text='Project Category', font=inp_lbl_font)
+        lbl_project_category = tb.Label(
+            self, text='Project Category', font=inp_lbl_font
+        )
         lbl_project_category.grid(row=6, pady=inp_lbl_pady)
         inp_project_category = tb.Combobox(self,
                                            textvariable=self.category_id_var,
