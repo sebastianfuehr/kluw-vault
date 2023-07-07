@@ -9,7 +9,7 @@ class Activity(Base):
     name = Column(String)
     description = Column(String)
     project_id = Column(Integer, ForeignKey('projects.id'))
-    project = relationship('Project')
+    project = relationship('Project', back_populates='activities')
 
     def __init__(self, id=None, name=None):
         self.id = id

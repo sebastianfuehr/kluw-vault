@@ -1,7 +1,8 @@
 import ttkbootstrap as tb
-from ttkbootstrap.scrolled import ScrolledText
-from ttkbootstrap.dialogs.dialogs import Dialog
+from ttkbootstrap.scrolled import ScrolledText, ScrolledFrame
+
 from ..controller.project_service import ProjectService
+from ..controller.activity_service import ActivityService
 from config.definitions import *
 
 
@@ -78,14 +79,18 @@ class ProjectDetailPanel(tb.Frame):
         self.project_name = tb.StringVar(self, self.project.name)
         self.project_category = tb.StringVar(self, self.project.project_category.name)
 
-        self.grid_columnconfigure((0, 1), weight=1)
+        self.grid_columnconfigure((1), weight=1)
+
+        lbl_padx = 10
+        lbl_pady = (15, 5)
+        inp_pady = 5
 
         lbl_heading = tb.Label(
             self,
             textvariable=self.project_name,
             font=(None, 36, 'bold')
         )
-        lbl_heading.grid(row=0, column=0, columnspan=2, padx=10, pady=25, sticky='ew')
+        lbl_heading.grid(row=0, column=0, columnspan=2, padx=lbl_padx, pady=25, sticky='ew')
 
         self.btn_edit_save = tb.Button(
             self,
@@ -99,25 +104,33 @@ class ProjectDetailPanel(tb.Frame):
             self,
             text='Category:'
         )
-        lbl_category_heading.grid(row=1, column=1, sticky='w')
-        inp_category_value = tb.Entry(
-            self,
-            textvariable=self.project_category,
-            state='disabled'
-        )
-        inp_category_value.grid(row=2, column=1, sticky='nsew')
+        lbl_category_heading.grid(row=1, column=1, padx=lbl_padx, pady=lbl_pady, sticky='w')
+        inp_category_value = tb.Combobox(self,
+                                         textvariable=self.project_category,
+                                         font=COMBO_BOX_FONT,
+                                         state='disabled')
+        inp_category_value.grid(row=2, column=1, padx=lbl_padx, pady=inp_pady, sticky='nsew')
 
         lbl_description_heading = tb.Label(
             self,
             text='Description:'
         )
-        lbl_description_heading.grid(row=3, column=1, sticky='w')
+        lbl_description_heading.grid(row=3, column=1, padx=lbl_padx, pady=lbl_pady, sticky='w')
         self.inp_description_value = ScrolledText(
             self,
             text=self.project.description,
+            height=4,
             state='disabled'
         )
-        self.inp_description_value.grid(row=4, column=1, sticky='nsew')
+        self.inp_description_value.grid(row=4, column=1, padx=lbl_padx, pady=inp_pady, sticky='nsew')
+
+        lbl_activities_heading = tb.Label(
+            self,
+            text='Activities:'
+        )
+        lbl_activities_heading.grid(row=5, column=1, padx=lbl_padx, pady=lbl_pady, sticky='w')
+        self.activities_list = ActivitiesList(self, self.project)
+        self.activities_list.grid(row=6, column=1, padx=lbl_padx, pady=inp_pady, sticky='nsew')
 
     def display_project(self, project):
         print(f'{project.id}: {project.name}')
@@ -128,6 +141,7 @@ class ProjectDetailPanel(tb.Frame):
         self.inp_description_value.text.delete(1.0, tb.END)
         if project.description is not None:
             self.inp_description_value.text.insert(1.0, project.description)
+        self.activities_list.build_list(project)
 
     def __select_handler(self, *args):
         if self.edit_mode:
@@ -136,6 +150,34 @@ class ProjectDetailPanel(tb.Frame):
         else:
             self.btn_edit_save.configure(text='Save')
             self.edit_mode = True
+
+
+class ActivitiesList(tb.Frame):
+    def __init__(self, parent, project):
+        super().__init__(parent)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+
+        #self.frm_activities = ScrolledFrame(self, borderwidth=1, relief='solid')
+        #self.frm_activities.grid(row=0, column=0, sticky='nsew')
+        self.build_list(project)
+
+    def build_list(self, project):
+        self.frm_activities = ScrolledFrame(
+            self,
+            height=120,
+            scrollheight=120,
+            borderwidth=1,
+            relief='solid'
+        )
+        self.frm_activities.grid(row=0, column=0, sticky='nsew')
+
+        for activity in project.activities:
+            lbl_activity = tb.Label(
+                self.frm_activities,
+                text=activity.name
+            )
+            lbl_activity.pack(fill='x', anchor='w')
 
 
 class NewProjectForm(tb.Frame):

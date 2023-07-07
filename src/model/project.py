@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
 from .orm_base import Base
 
 
@@ -13,6 +13,7 @@ class Project(Base):
     project_tags = relationship('ProjectTag',
                                 secondary='rel_project_tags',
                                 back_populates='projects')
+    activities = relationship('Activity', back_populates='project')
 
     def __init__(self,
                  id=None,

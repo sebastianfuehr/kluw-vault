@@ -15,6 +15,7 @@ MEDAL_TH_GOLD = 6*60*60
 # Font options
 DASHBOARD_HEADING_SIZE = 24
 FORM_HEADING_FONT = (None, 24, 'bold')
+COMBO_BOX_FONT = (None, 16)
 
 # Colors
 TEXT_COLOR = 'white'
