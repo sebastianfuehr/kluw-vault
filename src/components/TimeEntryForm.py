@@ -1,6 +1,6 @@
 import ttkbootstrap as tb
 from ttkbootstrap.tooltip import ToolTip
-from ttkbootstrap.scrolled import ScrolledText
+from ttkbootstrap.scrolled import ScrolledText, ScrolledFrame
 from datetime import datetime, timedelta
 # Custom modules
 from ..model.time_entry import TimeEntry
@@ -29,8 +29,13 @@ class TimeEntryForm(tb.Frame):
     def build_form_components(self):
         """Creates the GUI widgets for this component.
         """
+        frm_padx = 10
+        lbl_pax = 10
+        field_padx = 0
+        inp_width = 14
+
         frame_heading = tb.Frame(self)
-        frame_heading.grid(row=0, column=0, columnspan=2, sticky='ew', pady=20)
+        frame_heading.pack(fill='x', padx=frm_padx, pady=10)
 
         lbl_heading = tb.Label(
             frame_heading, text='Time Entry', font=(None, 24, 'bold')
@@ -45,44 +50,48 @@ class TimeEntryForm(tb.Frame):
         )
         self.btn_new_entry.pack(side='right')
 
-        lbl_te_date = tb.Label(self, text='Date:')
-        lbl_te_date.grid(column=0, row=1, sticky='w', padx=10, pady=5)
-        self.te_date = tb.Entry(
-            self, font=self.entry_font, width=14, justify='center'
-        )
-        self.te_date.grid(column=1, row=1, sticky='e', padx=10, pady=5)
+        scr_frame = ScrolledFrame(self, padding=0, width=315)
+        scr_frame.pack(expand=True, fill='both', padx=0)
+        scr_frame.grid_columnconfigure(1, weight=1)
 
-        lbl_te_weekday = tb.Label(self, text='Day:')
-        lbl_te_weekday.grid(column=0, row=2, sticky='w', padx=10, pady=5)
-        self.te_weekday = tb.Label(self, width=14, anchor='center')
-        self.te_weekday.grid(column=1, row=2, sticky='e', padx=10, pady=5)
+        lbl_te_date = tb.Label(scr_frame, text='Date:')
+        lbl_te_date.grid(column=0, row=1, sticky='w', padx=lbl_pax, pady=5)
+        self.te_date = tb.Entry(
+            scr_frame, width=inp_width, font=self.entry_font, justify='center'
+        )
+        self.te_date.grid(column=1, row=1, sticky='e', padx=field_padx, pady=5)
+
+        lbl_te_weekday = tb.Label(scr_frame, text='Day:')
+        lbl_te_weekday.grid(column=0, row=2, sticky='w', padx=lbl_pax, pady=5)
+        self.te_weekday = tb.Label(scr_frame, width=inp_width, anchor='center')
+        self.te_weekday.grid(column=1, row=2, sticky='e', padx=field_padx, pady=5)
         self.te_weekday['text'] = datetime.today().strftime('%a')
 
-        lbl_te_start = tb.Label(self, text='Start:')
-        lbl_te_start.grid(column=0, row=3, sticky='w', padx=10, pady=5)
+        lbl_te_start = tb.Label(scr_frame, text='Start:')
+        lbl_te_start.grid(column=0, row=3, sticky='w', padx=lbl_pax, pady=5)
         self.te_start = tb.Entry(
-            self, font=self.entry_font, width=14, justify='center'
+            scr_frame, font=self.entry_font, width=inp_width, justify='center'
         )
-        self.te_start.grid(column=1, row=3, sticky='e', padx=10, pady=5)
+        self.te_start.grid(column=1, row=3, sticky='e', padx=field_padx, pady=5)
 
-        lbl_te_end = tb.Label(self, text='End:')
-        lbl_te_end.grid(column=0, row=4, sticky='w', padx=10, pady=5)
+        lbl_te_end = tb.Label(scr_frame, text='End:')
+        lbl_te_end.grid(column=0, row=4, sticky='w', padx=lbl_pax, pady=5)
         self.te_end = tb.Entry(
-            self, font=self.entry_font, width=14, justify='center'
+            scr_frame, font=self.entry_font, width=inp_width, justify='center'
         )
-        self.te_end.grid(column=1, row=4, sticky='e', padx=10, pady=5)
+        self.te_end.grid(column=1, row=4, sticky='e', padx=field_padx, pady=5)
 
-        lbl_te_pause = tb.Label(self, text='Pause:')
-        lbl_te_pause.grid(column=0, row=5, sticky='w', padx=10, pady=5)
+        lbl_te_pause = tb.Label(scr_frame, text='Pause:')
+        lbl_te_pause.grid(column=0, row=5, sticky='w', padx=lbl_pax, pady=5)
         self.te_pause = tb.Entry(
-            self, font=self.entry_font, width=14, justify='center'
+            scr_frame, font=self.entry_font, width=inp_width, justify='center'
         )
-        self.te_pause.grid(column=1, row=5, sticky='e', padx=10, pady=5)
+        self.te_pause.grid(column=1, row=5, sticky='e', padx=field_padx, pady=5)
 
-        lbl_te_duration = tb.Label(self, text='Duration:')
-        lbl_te_duration.grid(column=0, row=6, sticky='w', padx=10, pady=5)
-        self.te_duration = tb.Label(self, width=14, anchor='center')
-        self.te_duration.grid(column=1, row=6, sticky='e', padx=10, pady=5)
+        lbl_te_duration = tb.Label(scr_frame, text='Duration:')
+        lbl_te_duration.grid(column=0, row=6, sticky='w', padx=lbl_pax, pady=5)
+        self.te_duration = tb.Label(scr_frame, width=inp_width, anchor='center')
+        self.te_duration.grid(column=1, row=6, sticky='e', padx=field_padx, pady=5)
         self.te_duration['text'] = '00:00:00'
 
         # Project combobox
@@ -95,70 +104,77 @@ class TimeEntryForm(tb.Frame):
         self.selected_project = tb.StringVar(value=init_proj_name)
         self.selected_project.trace('w', self.__populate_activities_list)
 
-        lbl_te_project = tb.Label(self, text='Project:')
-        lbl_te_project.grid(column=0, row=7, sticky='w', padx=10, pady=5)
+        lbl_te_project = tb.Label(scr_frame, text='Project:')
+        lbl_te_project.grid(column=0, row=7, sticky='w', padx=lbl_pax, pady=5)
         self.te_project = tb.Combobox(
-            self,
+            scr_frame,
             textvariable=self.selected_project,
             font=self.entry_font,
             width=12,
             justify='right'
         )
-        self.te_project.grid(column=1, row=7, sticky='e', padx=10, pady=5)
+        self.te_project.grid(column=1, row=7, sticky='e', padx=field_padx, pady=5)
         self.te_project['values'] = project_names
 
         # Activity combobox
         self.selected_activity = tb.StringVar()
-        lbl_te_activity = tb.Label(self, text='Activity:')
-        lbl_te_activity.grid(column=0, row=8, sticky='w', padx=10, pady=5)
+        lbl_te_activity = tb.Label(scr_frame, text='Activity:')
+        lbl_te_activity.grid(column=0, row=8, sticky='w', padx=lbl_pax, pady=5)
         self.te_activity = tb.Combobox(
-            self,
+            scr_frame,
             textvariable=self.selected_activity,
             font=self.entry_font,
             width=12,
             justify='right'
         )
-        self.te_activity.grid(column=1, row=8, sticky='e', padx=10, pady=5)
+        self.te_activity.grid(column=1, row=8, sticky='e', padx=field_padx, pady=5)
         self.__populate_activities_list()
 
         self.te_alone_var = tb.IntVar(value=1)
-        lbl_te_alone = tb.Label(self, text='Alone:')
-        lbl_te_alone.grid(column=0, row=9, sticky='w', padx=10, pady=5)
+        lbl_te_alone = tb.Label(scr_frame, text='Alone:')
+        lbl_te_alone.grid(column=0, row=9, sticky='w', padx=lbl_pax, pady=5)
         self.te_alone = tb.Checkbutton(
-            self, variable=self.te_alone_var, bootstyle='round-toggle'
+            scr_frame, variable=self.te_alone_var, bootstyle='round-toggle'
         )
-        self.te_alone.grid(column=1, row=9, padx=10, pady=5)
+        self.te_alone.grid(column=1, row=9, padx=field_padx, pady=5)
 
-        lbl_te_tags = tb.Label(self, text='Tags:')
-        lbl_te_tags.grid(column=0, row=10, sticky='nw', padx=10, pady=5)
+        lbl_te_tags = tb.Label(scr_frame, text='Tags:')
+        lbl_te_tags.grid(column=0, row=10, sticky='nw', padx=lbl_pax, pady=5)
         self.te_tags = ScrolledText(
-            self,
+            scr_frame,
             font=self.entry_font,
-            width=14,
+            width=inp_width,
             height=3,
             autohide=True
         )
-        self.te_tags.grid(column=1, row=10, sticky='e', padx=10, pady=5)
+        self.te_tags.grid(
+            column=1, row=10, sticky='e', padx=field_padx, pady=5
+        )
         ToolTip(self.te_tags, text='One tag per line.')
 
-        lbl_te_comment = tb.Label(self, text='Comment:')
+        lbl_te_comment = tb.Label(scr_frame, text='Comment:')
         lbl_te_comment.grid(
-            column=0, row=11, columnspan=2, sticky='w', padx=10, pady=5
+            column=0, row=11, columnspan=2, sticky='w', padx=lbl_pax, pady=5
         )
         self.te_comment = ScrolledText(
-            self,
+            scr_frame,
             font=self.entry_font,
-            width=20,
+            width=inp_width,
             height=3,
             autohide=True
         )
         self.te_comment.grid(
-            column=0, row=12, columnspan=2, sticky='ew', padx=10, pady=5
+            column=0,
+            row=12,
+            columnspan=2,
+            sticky='ew',
+            padx=(10, 0),
+            pady=5
         )
 
         # Button
         self.btn_save_entry = tb.Button(
-            self,
+            scr_frame,
             text='Save',
             command=self.save_entry,
             width=14)

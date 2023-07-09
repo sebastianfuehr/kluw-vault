@@ -34,5 +34,5 @@ class ProjectCategoryGoal(Base):
             case 2: return self.min_wednesday
             case 3: return self.min_thursday
             case 4: return self.min_friday
-            case 5: return self.goal.min_saturday
+            case 5: return self.min_saturday
             case 6: return self.min_sunday

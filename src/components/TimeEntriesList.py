@@ -81,7 +81,7 @@ class TimeEntriesList(tb.Frame):
 
         # Right sidebar form
         self.te_form = TimeEntryForm(self, self.app, self.new_entry)
-        self.te_form.grid(row=0, column=2, sticky='n', padx=20)
+        self.te_form.grid(row=0, column=2, sticky='nsew')
 
         separator = tb.Separator(self)
         separator.grid(row=1, column=2, sticky='ew')
