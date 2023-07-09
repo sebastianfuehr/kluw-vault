@@ -18,5 +18,5 @@ pip install -r requirements.txt
 ## Building with PyInstaller
 
 ```bash
-pyinstaller TimeJournal.py --name "TimeJournal v0.1.2-alpha" --hidden-import='PIL._tkinter_finder' --add-data "assets:assets"
+pyinstaller TimeJournal.py --name "TimeJournal v0.1.2-alpha" --hidden-import='PIL._tkinter_finder' --hiddenimport=['sqlalchemy.sql.default_comparator'] --add-data "assets:assets"
 ```
