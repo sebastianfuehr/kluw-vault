@@ -1,8 +1,8 @@
 import ttkbootstrap as tb
 
 # GUI Components
-from src.components.LeftSidebar import LeftSidebar
-from src.components.StatsDashboard import StatsDashboard
+from src.components.left_sidebar import LeftSidebar
+from src.components.dashboard import StatsDashboard
 from src.components.TimeEntriesList import TimeEntriesList
 from src.components.ProjectsList import ProjectsList
 from src.components.CategoryGoalsList import CategoryGoalsList
@@ -14,6 +14,10 @@ class MainFrame(tb.Frame):
         self.parent = parent
         self.config = parent.config
 
+        self.__build_gui_components()
+        self.pack(fill="both", expand=True)
+
+    def __build_gui_components(self):
         # GUI components
         sb_left = LeftSidebar(self, self.parent)
         sb_left.pack(side="left", fill="y")
@@ -38,5 +42,3 @@ class MainFrame(tb.Frame):
 
         tab_settings = tb.Frame(central_notebook)
         central_notebook.add(tab_settings, text='Settings')
-
-        self.pack(fill="both", expand=True)

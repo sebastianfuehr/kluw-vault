@@ -2,8 +2,8 @@ import ttkbootstrap as tb
 from ttkbootstrap.tableview import Tableview
 from datetime import datetime
 # Custom libraries
-from src.components.TimeEntryForm import TimeEntryForm
-from src.components.Timer import Timer
+from src.components.forms import TimeEntryForm
+from src.components.timer import Timer
 from ..controller.time_entry_service import TimeEntryService
 from ..model.time_entry import TimeEntry
 

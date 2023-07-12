@@ -8,7 +8,7 @@ from datetime import datetime
 # Custom libraries
 from src.model.orm_base import Session, db_engine, Base
 from src.model.tracking_session import TrackingSession
-from src.components.MainFrame import MainFrame
+from src.components.main_frame import MainFrame
 # Unused imports needed for relationship creation of SQLAlchemy
 from src.model.activity import Activity
 from src.model.project_tag import ProjectTag
