@@ -5,7 +5,7 @@ from config.definitions import *
 # GUI Components
 from src.components.left_sidebar import LeftSidebar
 from src.components.navigation import ButtonPanel
-from src.components.tabs import CategoriesListTab
+from src.components.tabs import CategoriesListTab, ProjectsListTab
 from src.components.dashboard import StatsDashboard
 from src.components.TimeEntriesList import TimeEntriesList
 from src.components.ProjectsList import ProjectsList
@@ -51,7 +51,8 @@ class MainFrame(tb.Frame):
         # Main tabs of the application
         self.tab_dashboard = StatsDashboard(self, app=self.parent)
         self.tab_time_entries = TimeEntriesList(self, app=self.parent)
-        self.tab_projects = ProjectsList(self, app=self.parent)
+        #self.tab_projects = ProjectsList(self, app=self.parent)
+        self.tab_projects = ProjectsListTab(self, db_session=self.parent.session)
         self.tab_categories = CategoriesListTab(
             self,
             db_session=self.parent.session) # CategoryGoalsList(self, app=self.parent)

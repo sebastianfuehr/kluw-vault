@@ -3,6 +3,7 @@ from ttkbootstrap.tooltip import ToolTip
 from ttkbootstrap.scrolled import ScrolledText, ScrolledFrame
 from datetime import datetime, timedelta
 # Custom modules
+from config.definitions import *
 from ..model.time_entry import TimeEntry
 from ..model.project import Project
 from ..model.activity import Activity
@@ -336,3 +337,75 @@ class TimeEntryForm(tb.Frame):
 
         self.new_entry_var.set(False)
         self.form_for_new_entry()
+
+
+class Form(tb.Frame):
+    """A generic class for an entity form. Automatically generates
+    simple text labels from a list of dictionaries, as well as a
+    generic close button for the form.
+    """
+    def __init__(self, master, config):
+        super().__init__(master=master)
+        for idx, weight in config['rowconfigure'].items():
+            self.grid_rowconfigure(idx, weight=weight)
+        for idx, weight in config['columnconfigure'].items():
+            self.grid_columnconfigure(idx, weight=weight)
+
+        labels = config['labels']
+        for label in labels:
+            tb.Label(
+                self,
+                text=label['text']
+            ).grid(
+                row=label['row'],
+                column=label['col'],
+                sticky=label['sticky']
+            )
+
+        btn = FORM_BTN_CLOSE
+        btn_close_form = tb.Label(
+            self,
+            text=btn['text'],
+            font=btn['font'])
+        btn_close_form.bind('<Button-1>', self.close_form)
+        btn_close_form.place(
+            relx=btn['relx'],
+            rely=btn['rely'],
+            anchor=btn['anchor']
+        )
+
+    def close_form(self, *_args):
+        """Close the currently opened form.
+        """
+        self.grid_forget()
+
+
+class ProjectForm(Form):
+    """A form to create or edit a project entity.
+    """
+    def __init__(self, master):
+        super().__init__(master=master, config=FORM_PROJECT_EDIT)
+        self.name_var = tb.StringVar()
+        self.category_var = tb.StringVar()
+        
+        self.build_form_components()
+    
+    def build_form_components(self):
+        """Create the GUI elements for this component.
+        """
+        inp_name = FORM_PROJECT_EDIT['inp_name']
+        tb.Entry(
+            self,
+            textvariable=self.name_var
+        ).grid(row=inp_name['row'], column=inp_name['col'])
+
+        inp_category = FORM_PROJECT_EDIT['inp_category']
+        tb.Combobox(self,
+                    textvariable=self.category_var
+        ).grid(row=inp_category['row'], column=inp_category['col'])
+
+    def save_entry(self):
+        """Read the values from the form fields, create a new Python
+        object, and save it into the database.
+        """
+        pass

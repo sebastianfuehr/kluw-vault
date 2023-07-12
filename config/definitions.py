@@ -72,3 +72,24 @@ LIST_ITEM = {
 }
 
 # FORMS
+FORM_BTN_CLOSE = {'text': 'X', 'font': (None, 24), 'relx': 0.98, 'rely': 0.02, 'anchor': 'ne'}
+
+FORM_STYLING = {
+    'label': {},
+    'entry': {},
+    'combobox': {}
+}
+
+FORM_PROJECT_EDIT = {
+    'rowconfigure': {0: 1, 8: 1},
+    'columnconfigure': {0: 1, 2: 1},
+    'labels': [
+        {'text': 'Name', 'row': 1, 'col': 1, 'sticky': 'ew'},
+        {'text': 'Description', 'row': 3, 'col': 1, 'sticky': 'ew'},
+        {'text': 'Project Category', 'row': 5, 'col': 1, 'sticky': 'ew'}
+    ],
+    'inp_name': {'row': 2, 'col': 1},
+    'inp_description': {'row': 4, 'col': 1},
+    'inp_category': {'row': 6, 'col': 1},
+    'btn_save': {'row': 7, 'col': 1}
+}

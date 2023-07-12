@@ -2,7 +2,9 @@ import ttkbootstrap as tb
 
 from config.definitions import *
 from src.controller.project_category_service import ProjectCategoryService
+from src.controller.project_service import ProjectService
 from src.components.navigation import ButtonPanel
+from src.components.forms import ProjectForm
 
 
 class TabFrame(tb.Frame):
@@ -30,11 +32,13 @@ class TabFrame(tb.Frame):
 
 
 class TabFrameList(TabFrame):
-    def __init__(self, master, db_service, db_session):
+    def __init__(self, master, db_service, db_session, form_edit):
         super().__init__(master=master)
         self.db_service = db_service
         self.db_session = db_session
+        self.form_edit = form_edit
 
+        self.frm_item_list = None
         self.category_str_var = tb.StringVar()
 
         self.grid_columnconfigure(0, weight=1)
@@ -46,8 +50,6 @@ class TabFrameList(TabFrame):
     def build_gui_components(self):
         """Create the GUI elements for this component.
         """
-        self.frm_item_list = None
-
         for separator in TAB_FRAME_LIST['separators']:
             sep_new = tb.Separator(self, orient=separator['orient'])
             sep_new.grid(
@@ -57,8 +59,15 @@ class TabFrameList(TabFrame):
                 sticky=separator['sticky']
             )
 
-        btn_new_item = tb.Button(self, text='New', bootstyle='success')
+        btn_new_item = tb.Button(
+            self,
+            text='New',
+            bootstyle='success',
+            command=self.open_form
+        )
         btn_new_item.grid(row=2, column=0, pady=25)
+
+        self.form = self.form_edit(self)
 
         self.register(self)
         self.refresh()
@@ -77,6 +86,9 @@ class TabFrameList(TabFrame):
             column=list_layout['col'],
             sticky=list_layout['sticky']
         )
+    
+    def open_form(self):
+        self.form.grid(row=0, rowspan=3, column=2, sticky='nsew')
 
 
 class CategoriesListTab(TabFrameList):
@@ -84,11 +96,17 @@ class CategoriesListTab(TabFrameList):
         super().__init__(
             master=master,
             db_service=ProjectCategoryService,
-            db_session=db_session
+            db_session=db_session,
+            form_edit=ProjectForm
         )
 
 
 class ProjectsListTab(TabFrameList):
-    def __init__(self, master):
-        pass
+    def __init__(self, master, db_session):
+        super().__init__(
+            master=master,
+            db_service=ProjectService,
+            db_session=db_session,
+            form_edit=ProjectForm
+        )
 
