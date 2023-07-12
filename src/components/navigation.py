@@ -56,7 +56,8 @@ class TextButton(tb.Label): # pylint: disable=too-many-ancestors
         self.pack(
             side=styling['side'],
             padx=styling['padx'],
-            pady=styling['pady']
+            pady=styling['pady'],
+            anchor=styling['anchor']
         )
 
     def select_handler(self, *_args):

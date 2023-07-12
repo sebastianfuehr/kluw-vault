@@ -5,10 +5,13 @@ from config.definitions import *
 # GUI Components
 from src.components.left_sidebar import LeftSidebar
 from src.components.navigation import ButtonPanel
+from src.components.tabs import CategoriesListTab
 from src.components.dashboard import StatsDashboard
 from src.components.TimeEntriesList import TimeEntriesList
 from src.components.ProjectsList import ProjectsList
 from src.components.CategoryGoalsList import CategoryGoalsList
+# DB Services
+from src.controller.project_category_service import ProjectCategoryService
 
 
 class MainFrame(tb.Frame):
@@ -49,7 +52,9 @@ class MainFrame(tb.Frame):
         self.tab_dashboard = StatsDashboard(self, app=self.parent)
         self.tab_time_entries = TimeEntriesList(self, app=self.parent)
         self.tab_projects = ProjectsList(self, app=self.parent)
-        self.tab_categories = CategoryGoalsList(self, app=self.parent)
+        self.tab_categories = CategoriesListTab(
+            self,
+            db_session=self.parent.session) # CategoryGoalsList(self, app=self.parent)
 
         # Main navigation tabs
         tab_nav = ButtonPanel(
@@ -77,3 +82,4 @@ class MainFrame(tb.Frame):
             case 'Categories':
                 self.central_frame = self.tab_categories
         self.central_frame.grid(row=2, column=2, sticky='nsew')
+        self.central_frame.update()
