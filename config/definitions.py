@@ -20,6 +20,9 @@ MEDAL_TH_GOLD = 6*60*60
 DASHBOARD_HEADING_SIZE = 24
 FORM_HEADING_FONT = (None, 24, 'bold')
 COMBO_BOX_FONT = (None, 16)
+FONTS = {
+    'default': (None, 16)
+}
 
 # Colors
 COLORS = {
@@ -36,7 +39,16 @@ MAINFRAME_TABS_NAV = {
     'elements': ['Dashboard', 'Time Entries', 'Projects', 'Categories'],
     'padx': (40, 0),
     'pady': 20,
+    'side': 'left',
     'font': (None, 20),
+    'colors': {'text': COLORS['text'], 'highlight': COLORS['highlight']}
+}
+FILTER_PERIODS = {
+    'elements': ['Max', '1 Year', '6 Months', 'Month', 'Week'],
+    'padx': 10,
+    'pady': 10,
+    'side': 'right',
+    'font': FONTS['default'],
     'colors': {'text': COLORS['text'], 'highlight': COLORS['highlight']}
 }
 

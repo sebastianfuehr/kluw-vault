@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from sqlalchemy import select
 
 from config.definitions import *
+from src.components.navigation import ButtonPanel
 from ..model.time_entry import TimeEntry
 from ..controller.time_entry_service import TimeEntryService
 from .. controller.time_controller import TimeController
@@ -19,7 +20,7 @@ class StatsDashboard(tb.Frame):
         self.app = app
 
         self.has_content = False
-        self.time_string = tb.StringVar(value=FILTER_PERIODS[4])
+        self.time_string = tb.StringVar(value=FILTER_PERIODS['elements'][4])
         self.time_string.trace('w', self.build_gui_components)
 
         self.update_data()
@@ -27,8 +28,15 @@ class StatsDashboard(tb.Frame):
         self.grid_columnconfigure((0, 1, 2, 3), weight=1)
         self.grid_rowconfigure((1, 2, 3, 4), weight=1)
 
-        filter_panel = FilterPanel(self, self.time_string)
+        filter_panel = ButtonPanel(
+            parent=self,
+            ttk_string_var=self.time_string,
+            labels=FILTER_PERIODS['elements'],
+            styling=FILTER_PERIODS
+        )
         filter_panel.grid(row=0, column=0, columnspan=4, sticky='ew')
+        #filter_panel = FilterPanel(self, self.time_string)
+        #filter_panel.grid(row=0, column=0, columnspan=4, sticky='ew')
 
         """
         self.data = pd.read_sql(
@@ -193,7 +201,7 @@ class GraphTimePerDay(tb.Frame):
 class FilterPanel(tb.Frame):
     def __init__(self, parent, time_string):
         super().__init__(master=parent)
-        self.buttons = [FilterTextButton(self, text, time_string) for text in FILTER_PERIODS]
+        self.buttons = [FilterTextButton(self, text, time_string) for text in FILTER_PERIODS['elements']]
         time_string.trace('w', self.__unselect_filter_buttons)
 
     def __unselect_filter_buttons(self, *args):
