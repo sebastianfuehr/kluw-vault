@@ -67,10 +67,10 @@ class ProjectListItem(tb.Label):
 
     def __select_handler(self, *args):
         self.selected_project_id.set(self.project.id)
-        self.configure(foreground=HIGHLIGHT_COLOR)
+        self.configure(foreground=COLORS['highlight'])
 
     def unselect(self):
-        self.configure(foreground=TEXT_COLOR)
+        self.configure(foreground=COLORS['text'])
 
 
 class ProjectDetailPanel(tb.Frame):

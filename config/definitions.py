@@ -22,9 +22,24 @@ FORM_HEADING_FONT = (None, 24, 'bold')
 COMBO_BOX_FONT = (None, 16)
 
 # Colors
-TEXT_COLOR = 'white'
-HIGHLIGHT_COLOR = '#21eaad'
+COLORS = {
+    'text': 'white',
+    'highlight': '#21eaad'
+}
 
 #######################################################################
-# LAYOUT
+# LAYOUT STYLING
 #######################################################################
+
+# MENUS
+MAINFRAME_TABS_NAV = {
+    'elements': ['Dashboard', 'Time Entries', 'Projects', 'Categories'],
+    'padx': (40, 0),
+    'pady': 20,
+    'font': (None, 20),
+    'colors': {'text': COLORS['text'], 'highlight': COLORS['highlight']}
+}
+
+# TABS
+
+# FORMS

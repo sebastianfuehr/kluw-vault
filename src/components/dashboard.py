@@ -171,7 +171,7 @@ class GraphTimePerDay(tb.Frame):
         line = axis.plot(data_by_date['Date'], data_by_date['Minutes'])[0]
         line_avg = axis.plot(data_by_date['Date'], data_by_date['Average'], linestyle='dashed', label='Average per Day')[0]
         axis.legend(loc='upper right')
-        line.set_color(HIGHLIGHT_COLOR)
+        line.set_color(COLORS['highlight'])
 
         axis.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
         axis.set_ylim(ymin=0)
@@ -202,7 +202,7 @@ class FilterPanel(tb.Frame):
 
 class FilterTextButton(tb.Label):
     def __init__(self, parent, text, time_string):
-        super().__init__(master=parent, text=text, foreground=TEXT_COLOR)
+        super().__init__(master=parent, text=text, foreground=COLORS['text'])
         self.pack(side='right', padx=10, pady=10)
         self.bind('<Button-1>', self.__select_handler)
 
@@ -214,7 +214,7 @@ class FilterTextButton(tb.Label):
 
     def __select_handler(self, event=None):
         self.time_string.set(self.text)
-        self.configure(foreground=HIGHLIGHT_COLOR)
+        self.configure(foreground=COLORS['highlight'])
 
     def unselect(self):
-        self.configure(foreground=TEXT_COLOR)
+        self.configure(foreground=COLORS['text'])
