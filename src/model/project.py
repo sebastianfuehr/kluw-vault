@@ -4,6 +4,11 @@ from .orm_base import Base
 
 
 class Project(Base):
+    """
+    Initialise with id=None to handle as a new project which will be
+    inserted into the database. If an id is given, an existing entry
+    is searched for and is updated.
+    """
     __tablename__ = 'projects'
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -16,8 +21,8 @@ class Project(Base):
     activities = relationship('Activity', back_populates='project')
 
     def __init__(self,
-                 id=None,
-                 name=None):
+                 id: int,
+                 name: str):
         self.id = id
         self.name = name
 

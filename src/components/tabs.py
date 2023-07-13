@@ -39,7 +39,7 @@ class TabFrameList(TabFrame):
         self.form_edit = form_edit
 
         self.frm_item_list = None
-        self.category_str_var = tb.StringVar()
+        self.item_str_var = tb.StringVar()
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(2, weight=7)
@@ -67,7 +67,7 @@ class TabFrameList(TabFrame):
         )
         btn_new_item.grid(row=2, column=0, pady=25)
 
-        self.form = self.form_edit(self)
+        self.form = self.form_edit(self, self.db_service, self.db_session)
 
         self.register(self)
         self.refresh()
@@ -77,7 +77,7 @@ class TabFrameList(TabFrame):
         items = self.db_service.get_all(self.db_session).all()
         self.frm_item_list = ButtonPanel(
             self,
-            self.category_str_var,
+            self.item_str_var,
             labels=[item.name for item in items],
             styling=LIST_ITEM
         )

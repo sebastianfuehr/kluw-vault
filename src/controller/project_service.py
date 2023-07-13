@@ -14,3 +14,10 @@ class ProjectService():
         stmt = select(Project).filter_by(name=project_name)
         result = db_session.execute(stmt).fetchone()[0]
         return result
+    
+    @staticmethod
+    def merge(db_session, project: Project):
+        """Insert or update a record.
+        """
+        db_session.merge(project)
+        db_session.commit()

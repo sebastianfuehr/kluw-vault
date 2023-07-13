@@ -6,9 +6,11 @@ from datetime import datetime, timedelta
 from config.definitions import *
 from ..model.time_entry import TimeEntry
 from ..model.project import Project
+from ..model.project_category import ProjectCategory
 from ..model.activity import Activity
 from ..controller.time_entry_service import TimeEntryService
 from ..controller.project_service import ProjectService
+from ..controller.project_category_service import ProjectCategoryService
 from ..controller.activity_service import ActivityService
 
 
@@ -344,8 +346,12 @@ class Form(tb.Frame):
     simple text labels from a list of dictionaries, as well as a
     generic close button for the form.
     """
-    def __init__(self, master, config):
+    def __init__(self, master, config, db_service, db_session):
         super().__init__(master=master)
+        self.master = master
+        self.db_service = db_service
+        self.db_session = db_session
+
         for idx, weight in config['rowconfigure'].items():
             self.grid_rowconfigure(idx, weight=weight)
         for idx, weight in config['columnconfigure'].items():
@@ -379,12 +385,27 @@ class Form(tb.Frame):
         """
         self.grid_forget()
 
+    def save_entry(self, new_object):
+        """Read the values from the form fields, create a new Python
+        object, and save it into the database.
+        """
+        self.db_service.merge(self.db_session, new_object)
+        self.master.refresh()
+        self.close_form()
+
 
 class ProjectForm(Form):
     """A form to create or edit a project entity.
     """
-    def __init__(self, master):
-        super().__init__(master=master, config=FORM_PROJECT_EDIT)
+    def __init__(self, master, db_service, db_session):
+        super().__init__(
+            master=master,
+            config=FORM_PROJECT_EDIT,
+            db_service=db_service,
+            db_session=db_session
+        )
+        self.db_session = db_session
+
         self.name_var = tb.StringVar()
         self.category_var = tb.StringVar()
         
@@ -404,8 +425,29 @@ class ProjectForm(Form):
                     textvariable=self.category_var
         ).grid(row=inp_category['row'], column=inp_category['col'])
 
-    def save_entry(self):
+        btn_save_dict = FORM_PROJECT_EDIT['btn_save']
+        btn_save = tb.Button(self, text='Save', command=self.save_entry)
+        btn_save.grid(row=btn_save_dict['row'], column=btn_save_dict['col'])
+
+    def save_entry(self, *_args):
         """Read the values from the form fields, create a new Python
         object, and save it into the database.
         """
-        pass
+        if self.name_var.get() == '':
+            print('Needs a name!')
+            return
+        new_project = Project(id=None, name=self.name_var.get())
+        description = None
+
+        # Project category
+        category = self.category_var.get()
+        if category != '':
+            new_project.project_category = \
+                ProjectCategoryService.get_category_by_name(
+                    db_session=self.db_session,
+                    category_name=category
+            )
+            new_project.project_category_id = new_project.project_category.id
+
+        super().save_entry(new_project)
+        
