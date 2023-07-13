@@ -1,6 +1,7 @@
 import ttkbootstrap as tb
 from ttkbootstrap.tooltip import ToolTip
 from ttkbootstrap.scrolled import ScrolledText, ScrolledFrame
+from ttkbootstrap.dialogs.dialogs import Messagebox
 from datetime import datetime, timedelta
 # Custom modules
 from config.definitions import *
@@ -397,13 +398,14 @@ class Form(tb.Frame):
 class ProjectForm(Form):
     """A form to create or edit a project entity.
     """
-    def __init__(self, master, db_service, db_session):
+    def __init__(self, master, app, db_service, db_session):
         super().__init__(
             master=master,
             config=FORM_PROJECT_EDIT,
             db_service=db_service,
             db_session=db_session
         )
+        self.app = app
         self.db_session = db_session
 
         self.name_var = tb.StringVar()
@@ -434,7 +436,11 @@ class ProjectForm(Form):
         object, and save it into the database.
         """
         if self.name_var.get() == '':
-            print('Needs a name!')
+            Messagebox.show_error(
+                message="You can't create a project without giving it a name!",
+                title='Error',
+                alert=self.app.settings['notifications.sound'].getboolean('error_messages')
+            )
             return
         new_project = Project(id=None, name=self.name_var.get())
         description = None

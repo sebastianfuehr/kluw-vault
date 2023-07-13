@@ -52,10 +52,16 @@ class MainFrame(tb.Frame):
         self.tab_dashboard = StatsDashboard(self, app=self.parent)
         self.tab_time_entries = TimeEntriesList(self, app=self.parent)
         #self.tab_projects = ProjectsList(self, app=self.parent)
-        self.tab_projects = ProjectsListTab(self, db_session=self.parent.session)
+        self.tab_projects = ProjectsListTab(
+            self,
+            app=self.parent,
+            db_session=self.parent.session
+        )
         self.tab_categories = CategoriesListTab(
             self,
-            db_session=self.parent.session) # CategoryGoalsList(self, app=self.parent)
+            app=self.parent,
+            db_session=self.parent.session
+        )
 
         # Main navigation tabs
         tab_nav = ButtonPanel(

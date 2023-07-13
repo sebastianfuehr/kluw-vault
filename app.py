@@ -31,7 +31,6 @@ class App(tb.Window):
 
         # Load and update configuration data
         self.settings = SettingsController.load_or_create_config_file()
-        print(self.settings.sections())
 
         # Options
         default_font = nametofont('TkDefaultFont')

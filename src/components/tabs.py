@@ -32,8 +32,9 @@ class TabFrame(tb.Frame):
 
 
 class TabFrameList(TabFrame):
-    def __init__(self, master, db_service, db_session, form_edit):
+    def __init__(self, master, app, db_service, db_session, form_edit):
         super().__init__(master=master)
+        self.app = app
         self.db_service = db_service
         self.db_session = db_session
         self.form_edit = form_edit
@@ -67,7 +68,12 @@ class TabFrameList(TabFrame):
         )
         btn_new_item.grid(row=2, column=0, pady=25)
 
-        self.form = self.form_edit(self, self.db_service, self.db_session)
+        self.form = self.form_edit(
+            self,
+            self.app,
+            self.db_service,
+            self.db_session
+        )
 
         self.register(self)
         self.refresh()
@@ -92,9 +98,10 @@ class TabFrameList(TabFrame):
 
 
 class CategoriesListTab(TabFrameList):
-    def __init__(self, master, db_session):
+    def __init__(self, master, app, db_session):
         super().__init__(
             master=master,
+            app=app,
             db_service=ProjectCategoryService,
             db_session=db_session,
             form_edit=ProjectForm
@@ -102,9 +109,10 @@ class CategoriesListTab(TabFrameList):
 
 
 class ProjectsListTab(TabFrameList):
-    def __init__(self, master, db_session):
+    def __init__(self, master, app, db_session):
         super().__init__(
             master=master,
+            app=app,
             db_service=ProjectService,
             db_session=db_session,
             form_edit=ProjectForm
