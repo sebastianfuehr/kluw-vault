@@ -429,17 +429,9 @@ class ProjectForm(Form):
         )
 
         # Project categories
-        """
-        categories = [
-            category.name for category in ProjectCategoryService\
-                .get_all(self.db_session)\
-                .all()
-        ]
-        """
         categories = {}
         for category in ProjectCategoryService.get_all(self.db_session).all():
             categories[category.id] = category.name
-        print(categories)
         self.inp_category = CustomCombobox(
             master=self,
             tk_key_var=self.category_id_var,
@@ -617,4 +609,3 @@ class CustomCombobox(tb.Combobox):
     def select_handler(self, *_args):
         """Callback function for when an item is selected."""
         self.tk_key_var.set(self.elements[self.get()])
-        print(f'Selected key {self.tk_key_var.get()} for value {self.get()}')

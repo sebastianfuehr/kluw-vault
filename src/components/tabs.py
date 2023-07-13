@@ -1,4 +1,5 @@
 import ttkbootstrap as tb
+from ttkbootstrap.scrolled import ScrolledFrame
 
 from config.definitions import *
 from src.controller.project_category_service import ProjectCategoryService
@@ -32,6 +33,15 @@ class TabFrame(tb.Frame):
 
 
 class TabFrameList(TabFrame):
+    """A frame with a default left sidebar to depict a selection of
+    objects. The central frame will be filled with the given detail
+    view frame and the given form frame.
+
+    Parameters
+    ----------
+    form_edit : forms.Form
+        A form for adding or editing an object of the list.
+    """
     def __init__(self, master, app, db_service, db_session, form_edit):
         super().__init__(master=master)
         self.app = app
@@ -60,6 +70,17 @@ class TabFrameList(TabFrame):
                 sticky=separator['sticky']
             )
 
+        list_layout = TAB_FRAME_LIST['sidebar']
+        self.scrolled_frame = ScrolledFrame(
+            master=self,
+            autohide=True
+        )
+        self.scrolled_frame.grid(
+            row=list_layout['row'],
+            column=list_layout['col'],
+            sticky=list_layout['sticky']
+        )
+
         btn_new_item = tb.Button(
             self,
             text='New',
@@ -72,19 +93,14 @@ class TabFrameList(TabFrame):
         self.refresh()
 
     def refresh(self):
-        list_layout = TAB_FRAME_LIST['sidebar']
         items = self.db_service.get_all(self.db_session).all()
         self.frm_item_list = ButtonPanel(
-            self,
+            self.scrolled_frame,
             self.item_str_var,
             labels=[item.name for item in items],
             styling=LIST_ITEM
         )
-        self.frm_item_list.grid(
-            row=list_layout['row'],
-            column=list_layout['col'],
-            sticky=list_layout['sticky']
-        )
+        self.frm_item_list.pack(expand=True, fill='both')
 
     def open_form(self):
         """Create a new form instance and put it on the grid layout.
