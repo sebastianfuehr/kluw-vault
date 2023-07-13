@@ -1,10 +1,9 @@
 #!/usr/bin/python
-from tkinter import font
 # Python libraries
 import ttkbootstrap as tb
 from tkinter.font import nametofont
-import configparser
 from datetime import datetime
+
 # Custom libraries
 from src.model.orm_base import Session, db_engine, Base
 from src.model.tracking_session import TrackingSession
@@ -16,7 +15,7 @@ from src.model.rel_project_tag import RelProjectTag
 from src.model.project_category import ProjectCategory
 from src.model.project_category_goal import ProjectCategoryGoal
 # Controller
-from src.controller.project_service import ProjectService
+from src.controller.settings_controller import SettingsController
 from src.controller.statistics_controller import StatisticsController
 from src.controller.project_category_goal_stats_controller import ProjectCategoryGoalStatsController
 from src.controller.file_controller import FileController
@@ -24,14 +23,15 @@ from src.controller.file_controller import FileController
 
 class App(tb.Window):
     def __init__(self):
-        super().__init__(themename='darkly')
+        super().__init__(
+            title='Time Journal',
+            themename='darkly',
+            minsize=(1080, 800)
+        )
 
         # Load and update configuration data
-        # self.config = configparser.ConfigParser()
-        # self.config.read('config.ini')
-        # self.config['User']['last_login_datetime'] = str(datetime.now())
-        #with open('config.ini', 'w') as configfile:
-        #    self.config.write(configfile)
+        self.settings = SettingsController.load_or_create_config_file()
+        print(self.settings.sections())
 
         # Options
         default_font = nametofont('TkDefaultFont')
@@ -47,7 +47,6 @@ class App(tb.Window):
         self.file_controller = FileController(self)
 
         # GUI structure
-        self.title('Time Journal')
         MainFrame(self)
 
         session_start = datetime.now()
