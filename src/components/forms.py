@@ -409,27 +409,52 @@ class ProjectForm(Form):
         self.db_session = db_session
 
         self.name_var = tb.StringVar()
-        self.category_var = tb.StringVar()
-        
+        self.category_id_var = tb.IntVar()
+        self.category_name_var = tb.StringVar()
+
         self.build_form_components()
-    
+
     def build_form_components(self):
         """Create the GUI elements for this component.
         """
-        inp_name = FORM_PROJECT_EDIT['inp_name']
-        tb.Entry(
-            self,
-            textvariable=self.name_var
-        ).grid(row=inp_name['row'], column=inp_name['col'])
+        # Name and description
+        CustomEntry(
+            master=self,
+            tk_variable=self.name_var,
+            layout=FORM_PROJECT_EDIT['inp_name']
+        )
+        self.inp_description =CustomScrolledText(
+            master=self,
+            layout=FORM_PROJECT_EDIT['inp_description']
+        )
 
-        inp_category = FORM_PROJECT_EDIT['inp_category']
-        tb.Combobox(self,
-                    textvariable=self.category_var
-        ).grid(row=inp_category['row'], column=inp_category['col'])
+        # Project categories
+        """
+        categories = [
+            category.name for category in ProjectCategoryService\
+                .get_all(self.db_session)\
+                .all()
+        ]
+        """
+        categories = {}
+        for category in ProjectCategoryService.get_all(self.db_session).all():
+            categories[category.id] = category.name
+        print(categories)
+        self.inp_category = CustomCombobox(
+            master=self,
+            tk_key_var=self.category_id_var,
+            tk_value_var=self.category_name_var,
+            elements=categories,
+            layout=FORM_PROJECT_EDIT['inp_category']
+        )
 
-        btn_save_dict = FORM_PROJECT_EDIT['btn_save']
-        btn_save = tb.Button(self, text='Save', command=self.save_entry)
-        btn_save.grid(row=btn_save_dict['row'], column=btn_save_dict['col'])
+        # Submit form
+        CustomButton(
+            master=self,
+            text='Save',
+            command=self.save_entry,
+            layout=FORM_PROJECT_EDIT['btn_save']
+        )
 
     def save_entry(self, *_args):
         """Read the values from the form fields, create a new Python
@@ -439,21 +464,157 @@ class ProjectForm(Form):
             Messagebox.show_error(
                 message="You can't create a project without giving it a name!",
                 title='Error',
-                alert=self.app.settings['notifications.sound'].getboolean('error_messages')
+                alert=self.app.settings['notifications.sound']\
+                    .getboolean('error_messages')
             )
             return
         new_project = Project(id=None, name=self.name_var.get())
-        description = None
+
+        # Project description
+        description = self.inp_description.get_text()
+        if description != '':
+            new_project.description = description
 
         # Project category
-        category = self.category_var.get()
-        if category != '':
-            new_project.project_category = \
-                ProjectCategoryService.get_category_by_name(
-                    db_session=self.db_session,
-                    category_name=category
+        category_id = self.category_id_var.get()
+        if category_id != '':
+            new_project.project_category = ProjectCategory(
+                id=category_id,
+                name=self.category_name_var.get()
             )
-            new_project.project_category_id = new_project.project_category.id
+            new_project.project_category_id = category_id
 
         super().save_entry(new_project)
-        
+
+
+#######################################################################
+# CUSTOM WIDGETS
+#######################################################################
+class CustomButton(tb.Button):
+    """A custom button widget which takes a layout dictionray which
+    has to contain the following attributes:
+    - row: int
+    - col: int
+    - sticky: str
+    - padx: int or Tuple(int, int)
+    - pady: int or Tuple(int, int)
+    - width: int
+    
+    The meaning of those attributes can be looked up in the tkinter
+    documentation.
+    """
+    def __init__(self, master, text, command, layout, bootstyle='default'):
+        super().__init__(
+            master=master,
+            text=text,
+            command=command,
+            width=layout['width'],
+            bootstyle=bootstyle
+        )
+        self.grid(
+            row=layout['row'],
+            column=layout['col'],
+            padx=layout['padx'],
+            pady=layout['pady']
+        )
+
+
+class CustomEntry(tb.Entry):
+    """Same as CustomButton."""
+    def __init__(self, master, tk_variable, layout):
+        super().__init__(
+            master=master,
+            textvariable=tk_variable,
+            width=layout['width'],
+            font=layout['font']
+        )
+        self.grid(
+            row=layout['row'],
+            column=layout['col'],
+            padx=layout['padx'],
+            pady=layout['pady'],
+            sticky=layout['sticky']
+        )
+
+
+class CustomScrolledText(ScrolledText):
+    """Same as CustomButton."""
+    def __init__(self, master, layout, autohide=True):
+        super().__init__(
+            master=master,
+            height=layout['height'],
+            autohide=autohide,
+            width=layout['width'],
+            font=layout['font'],
+            wrap=tb.WORD
+        )
+        self.grid(
+            row=layout['row'],
+            column=layout['col'],
+            padx=layout['padx'],
+            pady=layout['pady'],
+            sticky=layout['sticky']
+        )
+
+    def get_text(self) -> str:
+        """Returns the content of the text widget and removes any
+        trailing whitespace (or \\n).
+        """
+        return self.text.get(1.0, tb.END).rstrip()
+
+    def clear(self) -> None:
+        """Clears any input of the text widget.
+        """
+        self.text.delete(1.0, tb.END)
+
+
+class CustomCombobox(tb.Combobox):
+    """Same as CustomButton.
+    
+    Parameters
+    ----------
+    tk_key_var : ttkbootstrap.IntVar
+        The tkinter variable to be updated with the key of the selected
+        item.
+    tk_value_var : ttkbootstrap.StringVar
+        The tkinter variable to be updated with the value of the
+        selected item.
+    elements : dict(int: str)
+        Expects a dictionary with key value pairs. The values will be
+        displayed for selection, while both the key and value variables
+        will be updated upon selection.
+    """
+    def __init__(
+            self,
+            master,
+            tk_key_var,
+            tk_value_var,
+            layout,
+            elements=None
+        ):
+        super().__init__(
+            master=master,
+            textvariable=tk_value_var,
+            width=layout['width'],
+            font=layout['font'],
+            style='CustomCombobox'
+        )
+        self.grid(
+            row=layout['row'],
+            column=layout['col'],
+            padx=layout['padx'],
+            pady=layout['pady'],
+            sticky=layout['sticky']
+        )
+
+        tk_value_var.trace('w', self.select_handler)
+        self.tk_key_var = tk_key_var
+        self.elements = {v: k for k, v in elements.items()}
+
+        if elements is not None:
+            self['values'] = list(self.elements.keys())
+
+    def select_handler(self, *_args):
+        """Callback function for when an item is selected."""
+        self.tk_key_var.set(self.elements[self.get()])
+        print(f'Selected key {self.tk_key_var.get()} for value {self.get()}')

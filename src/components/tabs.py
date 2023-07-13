@@ -68,13 +68,6 @@ class TabFrameList(TabFrame):
         )
         btn_new_item.grid(row=2, column=0, pady=25)
 
-        self.form = self.form_edit(
-            self,
-            self.app,
-            self.db_service,
-            self.db_session
-        )
-
         self.register(self)
         self.refresh()
 
@@ -92,9 +85,17 @@ class TabFrameList(TabFrame):
             column=list_layout['col'],
             sticky=list_layout['sticky']
         )
-    
+
     def open_form(self):
-        self.form.grid(row=0, rowspan=3, column=2, sticky='nsew')
+        """Create a new form instance and put it on the grid layout.
+        """
+        form = self.form_edit(
+            self,
+            self.app,
+            self.db_service,
+            self.db_session
+        )
+        form.grid(row=0, rowspan=3, column=2, sticky='nsew')
 
 
 class CategoriesListTab(TabFrameList):
@@ -117,4 +118,3 @@ class ProjectsListTab(TabFrameList):
             db_session=db_session,
             form_edit=ProjectForm
         )
-

@@ -21,7 +21,13 @@ DASHBOARD_HEADING_SIZE = 24
 FORM_HEADING_FONT = (None, 24, 'bold')
 COMBO_BOX_FONT = (None, 16)
 FONTS = {
-    'default': (None, 16)
+    'default': (None, 16),
+    'form': {
+        'entry': (None, 16),
+        'combobox': (None, 16),
+        'scrolledtext': (None, 16),
+        'button': (None, 16)
+    }
 }
 
 # Simple color name-value pairs
@@ -75,7 +81,13 @@ LIST_ITEM = {
 }
 
 # FORMS
-FORM_BTN_CLOSE = {'text': 'X', 'font': (None, 24), 'relx': 0.98, 'rely': 0.02, 'anchor': 'ne'}
+FORM_BTN_CLOSE = {
+    'text': 'X',
+    'font': (None, 24),
+    'relx': 0.98,
+    'rely': 0.02,
+    'anchor': 'ne'
+}
 
 FORM_STYLING = {
     'label': {},
@@ -83,16 +95,18 @@ FORM_STYLING = {
     'combobox': {}
 }
 
+lbl_pady = (0, 25)
+inp_pady = (5, 30)
 FORM_PROJECT_EDIT = {
     'rowconfigure': {0: 1, 8: 1},
     'columnconfigure': {0: 1, 2: 1},
     'labels': [
-        {'text': 'Name', 'row': 1, 'col': 1, 'sticky': 'ew'},
-        {'text': 'Description', 'row': 3, 'col': 1, 'sticky': 'ew'},
-        {'text': 'Project Category', 'row': 5, 'col': 1, 'sticky': 'ew'}
+        {'text': 'Name', 'row': 1, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady},
+        {'text': 'Description', 'row': 3, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady},
+        {'text': 'Project Category', 'row': 5, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady}
     ],
-    'inp_name': {'row': 2, 'col': 1},
-    'inp_description': {'row': 4, 'col': 1},
-    'inp_category': {'row': 6, 'col': 1},
-    'btn_save': {'row': 7, 'col': 1}
+    'inp_name': {'row': 2, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'width': 40, 'font': FONTS['form']['entry']},
+    'inp_description': {'row': 4, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'height': 5, 'width': 36, 'font': FONTS['form']['scrolledtext']},
+    'inp_category': {'row': 6, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'width': 40, 'font': FONTS['form']['combobox']},
+    'btn_save': {'row': 7, 'col': 1, 'sticky': '', 'padx': 0, 'pady': (25, 0), 'width': 8}
 }

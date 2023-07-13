@@ -35,6 +35,7 @@ class App(tb.Window):
         # Options
         default_font = nametofont('TkDefaultFont')
         default_font.configure(size=16)
+        self.option_add("*TCombobox*Listbox*Font", (None, 16))
 
         # Open a new database connection
         Base.metadata.create_all(db_engine)
