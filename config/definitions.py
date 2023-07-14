@@ -81,7 +81,7 @@ TAB_FRAME_LIST = {
 
 LIST_ITEM = {
     'padx': 10,
-    'pady': (20, 0),
+    'pady': 10,
     'side': 'top',
     'anchor': 'w',
     'font': FONTS['default'],
@@ -112,7 +112,8 @@ VIEW_PROJECT_DETAIL = {
     ],
     'lbl_name': {'row': 0, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 20), 'font': FONTS['view']['title']},
     'lbl_category': {'row': 3, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
-    'lbl_description': {'row': 5, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'height': 5, 'width': 36, 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']}
+    'lbl_description': {'row': 5, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'height': 5, 'width': 36, 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
+    'lst_activities': {'row': 3, 'rowspan': 3, 'col': 2, 'columnspan': 2, 'sticky': 'nsew', 'padx': 0, 'pady': lbl_pady, 'font': LIST_ITEM}
 }
 
 # FORMS

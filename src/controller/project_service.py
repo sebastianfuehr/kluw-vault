@@ -14,6 +14,12 @@ class ProjectService():
         stmt = select(Project).filter_by(name=project_name)
         result = db_session.execute(stmt).fetchone()[0]
         return result
+
+    @staticmethod
+    def get_by_id(db_session, project_id):
+        stmt = select(Project).filter_by(id=project_id)
+        result = db_session.execute(stmt).fetchone()[0]
+        return result
     
     @staticmethod
     def merge(db_session, project: Project):

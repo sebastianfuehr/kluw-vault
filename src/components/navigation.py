@@ -19,9 +19,10 @@ class ButtonPanel(tb.Frame): # pylint: disable=too-many-ancestors
             ttk_string_var,
             labels,
             styling,
-            ttk_key_var=None
+            ttk_key_var=None,
+            **kwargs
         ):
-        super().__init__(master=parent)
+        super().__init__(master=parent, **kwargs)
 
         self.buttons = []
         if isinstance(labels, list):
