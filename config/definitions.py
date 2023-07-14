@@ -23,6 +23,7 @@ COMBO_BOX_FONT = (None, 16)
 FONTS = {
     'default': (None, 16),
     'form': {
+        'label': (None, 16),
         'entry': (None, 16),
         'combobox': (None, 16),
         'scrolledtext': (None, 16),
@@ -30,6 +31,7 @@ FONTS = {
     },
     'view': {
         'title': (None, 34, 'bold'),
+        'subtitle': (None, 30, 'bold'),
         'label': (None, 16, 'bold'),
         'text': (None, 16)
     }
@@ -97,14 +99,17 @@ lbl_pady = (0, 25)
 inp_pady = (5, 30)
 VIEW_PROJECT_DETAIL = {
     'grid-config': {
-        'rowconfigure': {0: 1, 8: 1},
+        'rowconfigure': {},
         'columnconfigure': {0: 1, 2: 1}
     },
     'labels': [
-        {'text': 'Description', 'row': 3, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
-        {'text': 'Project Category', 'row': 5, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
+        {'text': 'Total Time', 'row': 1, 'rowspan': 1, 'col': 0, 'columnspan': 1, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
+        {'text': 'Category', 'row': 2, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
+        {'text': 'Description', 'row': 4, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
+        {'text': 'Activities', 'row': 2, 'rowspan': 1, 'col': 2, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
+        {'text': 'Statistics', 'row': 6, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 10), 'font': FONTS['view']['subtitle']}
     ],
-    'lbl_name': {'row': 0, 'col': 0, 'columnspan': 2, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'font': FONTS['view']['title']}
+    'lbl_name': {'row': 0, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 20), 'font': FONTS['view']['title']}
 }
 
 # FORMS
@@ -116,7 +121,7 @@ FORM_BTN_CLOSE = {
     'anchor': 'ne'
 }
 
-lbl_pady = (0, 25)
+lbl_pady = 0
 inp_pady = (5, 30)
 FORM_PROJECT_EDIT = {
     'grid-config': {
@@ -124,9 +129,9 @@ FORM_PROJECT_EDIT = {
         'columnconfigure': {0: 1, 2: 1}
     },
     'labels': [
-        {'text': 'Name', 'row': 1, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady},
-        {'text': 'Description', 'row': 3, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady},
-        {'text': 'Project Category', 'row': 5, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady}
+        {'text': 'Name', 'row': 1, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Description', 'row': 3, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Project Category', 'row': 5, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']}
     ],
     'inp_name': {'row': 2, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'width': 40, 'font': FONTS['form']['entry']},
     'inp_description': {'row': 4, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'height': 5, 'width': 36, 'font': FONTS['form']['scrolledtext']},

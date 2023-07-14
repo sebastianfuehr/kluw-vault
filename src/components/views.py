@@ -46,3 +46,20 @@ class ProjectDetailView(DetailView):
             master=master,
             layout=VIEW_PROJECT_DETAIL
         )
+        self.build_gui_components()
+
+    def build_gui_components(self):
+        dict_name = VIEW_PROJECT_DETAIL['lbl_name']
+        tb.Label(
+            self,
+            text='Project Name',
+            font=dict_name['font']
+        ).grid(
+            row=dict_name['row'],
+            column=dict_name['col'],
+            rowspan=dict_name['rowspan'],
+            columnspan=dict_name['columnspan'],
+            sticky=dict_name['sticky'],
+            padx=dict_name['padx'],
+            pady=dict_name['pady']
+        )

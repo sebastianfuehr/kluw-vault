@@ -19,10 +19,15 @@ class AutoLayoutFrame(tb.Frame):
         for label in labels:
             tb.Label(
                 self,
-                text=label['text']
+                text=label['text'],
+                font=label['font']
             ).grid(
                 row=label['row'],
                 column=label['col'],
+                rowspan=label['rowspan'],
+                columnspan=label['columnspan'],
+                padx=label['padx'],
+                pady=label['pady'],
                 sticky=label['sticky']
             )
 
@@ -83,6 +88,7 @@ class ListFrame(tb.Frame, RefreshMixin):
         self.scrolled_frame = None
         self.frm_detail_view = None
 
+        self.item_key_var = tb.IntVar()
         self.item_str_var = tb.StringVar()
         self.item_str_var.trace('w', self.select_handler)
 
@@ -116,7 +122,6 @@ class ListFrame(tb.Frame, RefreshMixin):
         self.refresh()
 
     def select_handler(self, *_args):
-        print(f'Selected {self.item_str_var.get()}')
         if self.frm_detail_view:
             self.frm_detail_view.grid_forget()
         self.frm_detail_view = self.detail_view(
@@ -140,11 +145,15 @@ class ListFrame(tb.Frame, RefreshMixin):
         )
 
         items = self.db_service.get_all(self.db_session).all()
+        item_dict = {}
+        for item in items:
+            item_dict[item.id] = item.name
         frm_item_list = ButtonPanel(
-            self.scrolled_frame,
-            self.item_str_var,
-            labels=[item.name for item in items],
-            styling=LIST_ITEM
+            parent=self.scrolled_frame,
+            ttk_string_var=self.item_str_var,
+            labels=item_dict,
+            styling=LIST_ITEM,
+            ttk_key_var=self.item_key_var
         )
         frm_item_list.pack(expand=True, fill='both')
 
