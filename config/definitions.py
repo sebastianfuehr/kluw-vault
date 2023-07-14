@@ -32,7 +32,8 @@ FONTS = {
     'view': {
         'title': (None, 34, 'bold'),
         'subtitle': (None, 30, 'bold'),
-        'label': (None, 16, 'bold'),
+        'section': (None, 16, 'bold'),
+        'label': (None, 16),
         'text': (None, 16)
     }
 }
@@ -103,13 +104,15 @@ VIEW_PROJECT_DETAIL = {
         'columnconfigure': {0: 1, 2: 1}
     },
     'labels': [
-        {'text': 'Total Time', 'row': 1, 'rowspan': 1, 'col': 0, 'columnspan': 1, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
-        {'text': 'Category', 'row': 2, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
-        {'text': 'Description', 'row': 4, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
-        {'text': 'Activities', 'row': 2, 'rowspan': 1, 'col': 2, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
+        {'text': 'Total time:', 'row': 1, 'rowspan': 1, 'col': 0, 'columnspan': 1, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['section']},
+        {'text': 'Category', 'row': 2, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['section']},
+        {'text': 'Description', 'row': 4, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['section']},
+        {'text': 'Activities', 'row': 2, 'rowspan': 1, 'col': 2, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['section']},
         {'text': 'Statistics', 'row': 6, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 10), 'font': FONTS['view']['subtitle']}
     ],
-    'lbl_name': {'row': 0, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 20), 'font': FONTS['view']['title']}
+    'lbl_name': {'row': 0, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 20), 'font': FONTS['view']['title']},
+    'lbl_category': {'row': 3, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
+    'lbl_description': {'row': 5, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'height': 5, 'width': 36, 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']}
 }
 
 # FORMS

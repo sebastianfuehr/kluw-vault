@@ -520,14 +520,15 @@ class CustomEntry(tb.Entry):
 
 class CustomScrolledText(ScrolledText):
     """Same as CustomButton."""
-    def __init__(self, master, layout, autohide=True):
+    def __init__(self, master, layout, autohide=True, **kwargs):
         super().__init__(
             master=master,
             height=layout['height'],
             autohide=autohide,
             width=layout['width'],
             font=layout['font'],
-            wrap=tb.WORD
+            wrap=tb.WORD,
+            **kwargs
         )
         self.grid(
             row=layout['row'],
@@ -542,6 +543,9 @@ class CustomScrolledText(ScrolledText):
         trailing whitespace (or \\n).
         """
         return self.text.get(1.0, tb.END).rstrip()
+
+    def set_text(self, new_text):
+        self.text.insert(1.0, new_text)
 
     def clear(self) -> None:
         """Clears any input of the text widget.

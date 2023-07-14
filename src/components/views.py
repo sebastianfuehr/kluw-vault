@@ -1,10 +1,11 @@
 import ttkbootstrap as tb
 
 from config.definitions import *
-from .. components.frames import RefreshMixin, AutoLayoutFrame
+from .. components.frames import AutoLayoutFrame
+from .. components.forms import CustomScrolledText
 
 
-class DetailView(AutoLayoutFrame, RefreshMixin):
+class DetailView(AutoLayoutFrame):
     """A generic class to depict objects in great detail.
 
     Parameters
@@ -41,25 +42,65 @@ class DetailView(AutoLayoutFrame, RefreshMixin):
 
 
 class ProjectDetailView(DetailView):
-    def __init__(self, master):
+    def __init__(self, master, project):
         super().__init__(
             master=master,
             layout=VIEW_PROJECT_DETAIL
         )
+        self.project = project
+
         self.build_gui_components()
 
     def build_gui_components(self):
-        dict_name = VIEW_PROJECT_DETAIL['lbl_name']
-        tb.Label(
+        CustomLabel(
             self,
-            text='Project Name',
-            font=dict_name['font']
-        ).grid(
-            row=dict_name['row'],
-            column=dict_name['col'],
-            rowspan=dict_name['rowspan'],
-            columnspan=dict_name['columnspan'],
-            sticky=dict_name['sticky'],
-            padx=dict_name['padx'],
-            pady=dict_name['pady']
+            text=self.project.name,
+            layout=VIEW_PROJECT_DETAIL['lbl_name']
+        )
+
+        # Category
+        category_name = '-'
+        if self.project.project_category is not None:
+            category_name = self.project.project_category.name
+        CustomLabel(
+            self,
+            text=category_name,
+            layout=VIEW_PROJECT_DETAIL['lbl_category']
+        )
+
+        # Description
+        description = self.project.description
+        print(description)
+        if description is None:
+            description = '-'
+        CustomLabel(
+            self,
+            text=description,
+            layout=VIEW_PROJECT_DETAIL['lbl_description'],
+            wraplength=600
+        )
+
+    def refresh(self, project):
+        self.project = project
+        print('Refresh ProjectDetailView')
+
+#######################################################################
+# CUSTOM DETAILVIEW WIDGETS
+#######################################################################
+class CustomLabel(tb.Label):
+    def __init__(self, master, text, layout, **kwargs):
+        super().__init__(
+            master=master,
+            text=text,
+            font=layout['font'],
+            **kwargs
+        )
+        self.grid(
+            row=layout['row'],
+            column=layout['col'],
+            rowspan=layout['rowspan'],
+            columnspan=layout['columnspan'],
+            sticky=layout['sticky'],
+            padx=layout['padx'],
+            pady=layout['pady']
         )

@@ -86,8 +86,9 @@ class ListFrame(tb.Frame, RefreshMixin):
         self.detail_view = detail_view
 
         self.scrolled_frame = None
-        self.frm_detail_view = None
+        self.item_detail_view = None
 
+        self.objects = None
         self.item_key_var = tb.IntVar()
         self.item_str_var = tb.StringVar()
         self.item_str_var.trace('w', self.select_handler)
@@ -122,12 +123,11 @@ class ListFrame(tb.Frame, RefreshMixin):
         self.refresh()
 
     def select_handler(self, *_args):
-        if self.frm_detail_view:
-            self.frm_detail_view.grid_forget()
-        self.frm_detail_view = self.detail_view(
-            self
-        )
-        self.frm_detail_view.grid(row=0, rowspan=3, column=2, sticky='nsew')
+        if self.item_detail_view:
+            self.item_detail_view.grid_forget()
+        item = self.objects[self.item_key_var.get()]
+        self.item_detail_view = self.detail_view(self, item)
+        self.item_detail_view.grid(row=0, rowspan=3, column=2, sticky='nsew')
 
     def refresh(self):
         if self.scrolled_frame:
@@ -146,8 +146,10 @@ class ListFrame(tb.Frame, RefreshMixin):
 
         items = self.db_service.get_all(self.db_session).all()
         item_dict = {}
+        self.objects = {}
         for item in items:
             item_dict[item.id] = item.name
+            self.objects[item.id] = item
         frm_item_list = ButtonPanel(
             parent=self.scrolled_frame,
             ttk_string_var=self.item_str_var,
