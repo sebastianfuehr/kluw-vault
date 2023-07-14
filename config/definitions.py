@@ -27,6 +27,11 @@ FONTS = {
         'combobox': (None, 16),
         'scrolledtext': (None, 16),
         'button': (None, 16)
+    },
+    'view': {
+        'title': (None, 34, 'bold'),
+        'label': (None, 16, 'bold'),
+        'text': (None, 16)
     }
 }
 
@@ -80,6 +85,28 @@ LIST_ITEM = {
     'colors': COMPONENT_COLORS['list-item']
 }
 
+# CARDS
+VIEW_BTN_EDIT = {
+    'text': 'Edit',
+    'relx': 0.98,
+    'rely': 0.02,
+    'anchor': 'ne'
+}
+
+lbl_pady = (0, 25)
+inp_pady = (5, 30)
+VIEW_PROJECT_DETAIL = {
+    'grid-config': {
+        'rowconfigure': {0: 1, 8: 1},
+        'columnconfigure': {0: 1, 2: 1}
+    },
+    'labels': [
+        {'text': 'Description', 'row': 3, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
+        {'text': 'Project Category', 'row': 5, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
+    ],
+    'lbl_name': {'row': 0, 'col': 0, 'columnspan': 2, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'font': FONTS['view']['title']}
+}
+
 # FORMS
 FORM_BTN_CLOSE = {
     'text': 'X',
@@ -89,17 +116,13 @@ FORM_BTN_CLOSE = {
     'anchor': 'ne'
 }
 
-FORM_STYLING = {
-    'label': {},
-    'entry': {},
-    'combobox': {}
-}
-
 lbl_pady = (0, 25)
 inp_pady = (5, 30)
 FORM_PROJECT_EDIT = {
-    'rowconfigure': {0: 1, 8: 1},
-    'columnconfigure': {0: 1, 2: 1},
+    'grid-config': {
+        'rowconfigure': {0: 1, 8: 1},
+        'columnconfigure': {0: 1, 2: 1}
+    },
     'labels': [
         {'text': 'Name', 'row': 1, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady},
         {'text': 'Description', 'row': 3, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady},

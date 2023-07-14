@@ -5,6 +5,7 @@ from ttkbootstrap.dialogs.dialogs import Messagebox
 from datetime import datetime, timedelta
 # Custom modules
 from config.definitions import *
+from ..components.frames import AutoLayoutFrame
 from ..model.time_entry import TimeEntry
 from ..model.project import Project
 from ..model.project_category import ProjectCategory
@@ -342,32 +343,20 @@ class TimeEntryForm(tb.Frame):
         self.form_for_new_entry()
 
 
-class Form(tb.Frame):
+class Form(AutoLayoutFrame):
     """A generic class for an entity form. Automatically generates
     simple text labels from a list of dictionaries, as well as a
     generic close button for the form.
     """
     def __init__(self, master, config, db_service, db_session):
-        super().__init__(master=master)
+        super().__init__(
+            master=master,
+            config=config['grid-config'],
+            labels=config['labels']
+        )
         self.master = master
         self.db_service = db_service
         self.db_session = db_session
-
-        for idx, weight in config['rowconfigure'].items():
-            self.grid_rowconfigure(idx, weight=weight)
-        for idx, weight in config['columnconfigure'].items():
-            self.grid_columnconfigure(idx, weight=weight)
-
-        labels = config['labels']
-        for label in labels:
-            tb.Label(
-                self,
-                text=label['text']
-            ).grid(
-                row=label['row'],
-                column=label['col'],
-                sticky=label['sticky']
-            )
 
         btn = FORM_BTN_CLOSE
         btn_close_form = tb.Label(
@@ -469,7 +458,7 @@ class ProjectForm(Form):
 
         # Project category
         category_id = self.category_id_var.get()
-        if category_id != '':
+        if category_id != 0:
             new_project.project_category = ProjectCategory(
                 id=category_id,
                 name=self.category_name_var.get()

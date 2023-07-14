@@ -2,24 +2,44 @@ import ttkbootstrap as tb
 from ttkbootstrap.scrolled import ScrolledFrame
 
 from config.definitions import *
-from src.controller.project_category_service import ProjectCategoryService
-from src.controller.project_service import ProjectService
 from src.components.navigation import ButtonPanel
-from src.components.forms import ProjectForm
 
 
-class TabFrame(tb.Frame):
-    """A generic class for tabs.
+class AutoLayoutFrame(tb.Frame):
+    """Provides a frame class which supports automatic grid
+    configuration and placement of labels.
+    """
+    def __init__(self, master, config, labels):
+        super().__init__(master=master)
+        for idx, weight in config['rowconfigure'].items():
+            self.grid_rowconfigure(idx, weight=weight)
+        for idx, weight in config['columnconfigure'].items():
+            self.grid_columnconfigure(idx, weight=weight)
 
-    Parameters
-    ----------
+        for label in labels:
+            tb.Label(
+                self,
+                text=label['text']
+            ).grid(
+                row=label['row'],
+                column=label['col'],
+                sticky=label['sticky']
+            )
+
+
+class RefreshMixin:
+    """A mixin that allows a class to register its sub-components
+    and to refresh those upon request.
     """
 
-    def __init__(self, master):
-        super().__init__(master=master)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.registered_components = []
 
     def register(self, component):
+        """Registers a component to be refreshed, whenever the refresh
+        method of the tab frame is called.
+        """
         self.registered_components.append(component)
 
     def refresh(self):
@@ -32,7 +52,7 @@ class TabFrame(tb.Frame):
             component.refresh()
 
 
-class TabFrameList(TabFrame):
+class ListFrame(tb.Frame, RefreshMixin):
     """A frame with a default left sidebar to depict a selection of
     objects. The central frame will be filled with the given detail
     view frame and the given form frame.
@@ -41,16 +61,30 @@ class TabFrameList(TabFrame):
     ----------
     form_edit : forms.Form
         A form for adding or editing an object of the list.
+    detail_view : cards.DetailView
+        A frame for displaying the selected item in great detail.
     """
-    def __init__(self, master, app, db_service, db_session, form_edit):
+    def __init__(
+            self,
+            master,
+            app,
+            db_service,
+            db_session,
+            form_edit,
+            detail_view
+        ):
         super().__init__(master=master)
         self.app = app
         self.db_service = db_service
         self.db_session = db_session
         self.form_edit = form_edit
+        self.detail_view = detail_view
 
-        self.frm_item_list = None
+        self.scrolled_frame = None
+        self.frm_detail_view = None
+
         self.item_str_var = tb.StringVar()
+        self.item_str_var.trace('w', self.select_handler)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(2, weight=7)
@@ -70,17 +104,6 @@ class TabFrameList(TabFrame):
                 sticky=separator['sticky']
             )
 
-        list_layout = TAB_FRAME_LIST['sidebar']
-        self.scrolled_frame = ScrolledFrame(
-            master=self,
-            autohide=True
-        )
-        self.scrolled_frame.grid(
-            row=list_layout['row'],
-            column=list_layout['col'],
-            sticky=list_layout['sticky']
-        )
-
         btn_new_item = tb.Button(
             self,
             text='New',
@@ -92,15 +115,38 @@ class TabFrameList(TabFrame):
         self.register(self)
         self.refresh()
 
+    def select_handler(self, *_args):
+        print(f'Selected {self.item_str_var.get()}')
+        if self.frm_detail_view:
+            self.frm_detail_view.grid_forget()
+        self.frm_detail_view = self.detail_view(
+            self
+        )
+        self.frm_detail_view.grid(row=0, rowspan=3, column=2, sticky='nsew')
+
     def refresh(self):
+        if self.scrolled_frame:
+            self.scrolled_frame.grid_remove()
+
+        list_layout = TAB_FRAME_LIST['sidebar']
+        self.scrolled_frame = ScrolledFrame(
+            master=self,
+            autohide=True
+        )
+        self.scrolled_frame.grid(
+            row=list_layout['row'],
+            column=list_layout['col'],
+            sticky=list_layout['sticky']
+        )
+
         items = self.db_service.get_all(self.db_session).all()
-        self.frm_item_list = ButtonPanel(
+        frm_item_list = ButtonPanel(
             self.scrolled_frame,
             self.item_str_var,
             labels=[item.name for item in items],
             styling=LIST_ITEM
         )
-        self.frm_item_list.pack(expand=True, fill='both')
+        frm_item_list.pack(expand=True, fill='both')
 
     def open_form(self):
         """Create a new form instance and put it on the grid layout.
@@ -112,25 +158,3 @@ class TabFrameList(TabFrame):
             self.db_session
         )
         form.grid(row=0, rowspan=3, column=2, sticky='nsew')
-
-
-class CategoriesListTab(TabFrameList):
-    def __init__(self, master, app, db_session):
-        super().__init__(
-            master=master,
-            app=app,
-            db_service=ProjectCategoryService,
-            db_session=db_session,
-            form_edit=ProjectForm
-        )
-
-
-class ProjectsListTab(TabFrameList):
-    def __init__(self, master, app, db_session):
-        super().__init__(
-            master=master,
-            app=app,
-            db_service=ProjectService,
-            db_session=db_session,
-            form_edit=ProjectForm
-        )

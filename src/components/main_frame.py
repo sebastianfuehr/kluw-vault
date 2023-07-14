@@ -5,12 +5,13 @@ from config.definitions import *
 # GUI Components
 from src.components.left_sidebar import LeftSidebar
 from src.components.navigation import ButtonPanel
-from src.components.tabs import CategoriesListTab, ProjectsListTab
+from src.components.frames import ListFrame
 from src.components.dashboard import StatsDashboard
 from src.components.TimeEntriesList import TimeEntriesList
-from src.components.ProjectsList import ProjectsList
-from src.components.CategoryGoalsList import CategoryGoalsList
+from .. components.forms import ProjectForm
+from .. components.views import ProjectDetailView
 # DB Services
+from .. controller.project_service import ProjectService
 from src.controller.project_category_service import ProjectCategoryService
 
 
@@ -51,16 +52,21 @@ class MainFrame(tb.Frame):
         # Main tabs of the application
         self.tab_dashboard = StatsDashboard(self, app=self.parent)
         self.tab_time_entries = TimeEntriesList(self, app=self.parent)
-        #self.tab_projects = ProjectsList(self, app=self.parent)
-        self.tab_projects = ProjectsListTab(
-            self,
+        self.tab_projects = ListFrame(
+            master=self,
             app=self.parent,
-            db_session=self.parent.session
+            db_service=ProjectService,
+            db_session=self.parent.session,
+            form_edit=ProjectForm,
+            detail_view=ProjectDetailView
         )
-        self.tab_categories = CategoriesListTab(
-            self,
+        self.tab_categories = ListFrame(
+            master=self,
             app=self.parent,
-            db_session=self.parent.session
+            db_service=ProjectCategoryService,
+            db_session=self.parent.session,
+            form_edit=ProjectForm,
+            detail_view=ProjectDetailView
         )
 
         # Main navigation tabs
