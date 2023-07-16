@@ -1,8 +1,10 @@
 import ttkbootstrap as tb
 from ttkbootstrap.scrolled import ScrolledFrame
+from ttkbootstrap.dialogs.dialogs import Messagebox
 
 from config.definitions import *
-from src.components.navigation import ButtonPanel
+from .. components.notifications import Notifications
+from src.components.navigation import ButtonPanel, ContextMenu
 
 
 class AutoLayoutFrame(tb.Frame):
@@ -76,7 +78,8 @@ class ListFrame(tb.Frame, RefreshMixin):
             db_service,
             db_session,
             form_edit,
-            detail_view
+            detail_view,
+            db_delete_item
         ):
         super().__init__(master=master)
         self.app = app
@@ -84,6 +87,7 @@ class ListFrame(tb.Frame, RefreshMixin):
         self.db_session = db_session
         self.form_edit = form_edit
         self.detail_view = detail_view
+        self.db_delete_item = db_delete_item
 
         self.scrolled_frame = None
         self.item_detail_view = None
@@ -144,6 +148,11 @@ class ListFrame(tb.Frame, RefreshMixin):
             sticky=list_layout['sticky']
         )
 
+        # Context menu
+        context_menu = ContextMenu(self.app)
+        context_menu.add_command(label='Delete', command=self.delete_project)
+
+        # Item list
         items = self.db_service.get_all(self.db_session).all()
         item_dict = {}
         self.objects = {}
@@ -155,7 +164,8 @@ class ListFrame(tb.Frame, RefreshMixin):
             ttk_string_var=self.item_str_var,
             labels=item_dict,
             styling=LIST_ITEM,
-            ttk_key_var=self.item_key_var
+            ttk_key_var=self.item_key_var,
+            context_menu=context_menu
         )
         frm_item_list.pack(expand=True, fill='both')
 
@@ -169,3 +179,24 @@ class ListFrame(tb.Frame, RefreshMixin):
             self.db_session
         )
         form.grid(row=0, rowspan=3, column=2, sticky='nsew')
+
+    def delete_project(self, *_args):
+        usr_answ = Messagebox.okcancel(
+            message='Are you sure you want to delete that entry?',
+            title='Attention!'
+        )
+        if usr_answ == 'OK':
+            status = self.db_delete_item(self.db_session, self.item_key_var.get())
+            self.refresh()
+            if status == 1:
+                Notifications.show_info(
+                    message='The project has been deleted from the database.'
+                )
+            elif status == 0:
+                Notifications.show_error(
+                    message="The project couldn't be deleted."
+                )
+            else:
+                Notifications.show_error(
+                    message='There has been an unknown error!'
+                )

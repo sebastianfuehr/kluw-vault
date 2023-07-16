@@ -1,6 +1,8 @@
 import ttkbootstrap as tb
+from ttkbootstrap.dialogs.dialogs import Messagebox
 
 from config.definitions import *
+from .. components.notifications import Notifications
 from .. components.frames import AutoLayoutFrame
 from .. components.navigation import ButtonPanel, ContextMenu
 from .. components.forms import ProjectForm
@@ -89,9 +91,11 @@ class ProjectDetailView(DetailView):
             master=self,
             app=self.app,
             entity=self.project,
-            db_service_method=ActivityService.get_by_project_id,
+            db_get_by_id=ActivityService.get_by_project_id,
+            db_merge=None,
+            db_delete=ActivityService.delete,
             db_session=self.app.session,
-            form_edit=ProjectForm,
+            form_edit=None,
             layout=VIEW_PROJECT_DETAIL['lst_activities']
         )
 
@@ -123,13 +127,17 @@ class CustomLabel(tb.Label):
 
 class CustomEntityItemList(tb.Frame):
     """An interactive list of items, belonging to a specific entity.
+
+    Supports an automatic implementation of a context menu.
     """
     def __init__(
             self,
             master,
             app,
             entity,
-            db_service_method,
+            db_get_by_id,
+            db_merge,
+            db_delete,
             db_session,
             form_edit,
             layout,
@@ -147,7 +155,9 @@ class CustomEntityItemList(tb.Frame):
         )
         self.app = app
         self.entity = entity
-        self.db_service_method = db_service_method
+        self.db_get_by_id = db_get_by_id
+        self.db_merge = db_merge
+        self.db_delete = db_delete
         self.db_session = db_session
         self.form_edit = form_edit
 
@@ -184,7 +194,7 @@ class CustomEntityItemList(tb.Frame):
     def refresh(self):
         """Populate the list with items.
         """
-        items = self.db_service_method(self.db_session, self.entity.id)
+        items = self.db_get_by_id(self.db_session, self.entity.id)
         item_dict = {}
         for item in items:
             item_dict[item.id] = item.name
@@ -214,3 +224,9 @@ class CustomEntityItemList(tb.Frame):
 
     def delete_item(self, *_args):
         print(f'Delete item {self.item_key_var.get()}: {self.item_name_var.get()}')
+        usr_answ = Messagebox.okcancel(
+            message='Are you sure you want to delete that entry?',
+            title='Attention!'
+        )
+        if usr_answ == 'OK':
+            self.db_delete(self.db_session, self.item_key_var.get())

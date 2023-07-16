@@ -128,7 +128,7 @@ class ContextMenu(tb.Frame):
         super().__init__(master=app)
         self.app = app
         self.buttons = []
-        self.app.bind('<Button-1>', self.destroy)
+        self.app.bind('<Button-1>', self.destroy, add=True)
 
     def add_command(self, label, command):
         lbl = tb.Label(self, text=label)
@@ -151,5 +151,5 @@ class ContextMenu(tb.Frame):
         event.widget.configure(foreground='white')
 
     def destroy(self, event=None):
-        if event is not None and event.widget not in self.buttons:
+        if event is not None:
             self.place_forget()

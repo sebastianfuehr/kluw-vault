@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from ..model.project import Project
 
 
@@ -27,3 +27,11 @@ class ProjectService():
         """
         db_session.merge(project)
         db_session.commit()
+
+    def delete(db_session, project_id) -> int:
+        """Returns the number of entries affected by the operation.
+        Should be 1.
+        """
+        stmt = delete(Project).where(Project.id==project_id)
+        result = db_session.execute(stmt)
+        return result.rowcount

@@ -58,7 +58,8 @@ class MainFrame(tb.Frame):
             db_service=ProjectService,
             db_session=self.parent.session,
             form_edit=ProjectForm,
-            detail_view=ProjectDetailView
+            detail_view=ProjectDetailView,
+            db_delete_item=ProjectService.delete
         )
         self.tab_categories = ListFrame(
             master=self,
@@ -66,7 +67,8 @@ class MainFrame(tb.Frame):
             db_service=ProjectCategoryService,
             db_session=self.parent.session,
             form_edit=ProjectForm,
-            detail_view=ProjectDetailView
+            detail_view=ProjectDetailView,
+            db_delete_item=None
         )
 
         # Main navigation tabs

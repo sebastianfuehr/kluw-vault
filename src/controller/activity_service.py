@@ -1,4 +1,4 @@
-from sqlalchemy import select # pylint: disable=import-error
+from sqlalchemy import select, delete # pylint: disable=import-error
 from ..model.activity import Activity
 
 
@@ -27,3 +27,12 @@ class ActivityService():
         stmt = select(Activity).filter_by(project_id=project_id)
         result = db_session.execute(stmt)
         return result.scalars()
+
+    @staticmethod
+    def delete(db_session, activity_id) -> int:
+        """Returns the number of entries affected by the operation.
+        Should be 1.
+        """
+        stmt = delete(Activity).where(Activity.id==activity_id)
+        result = db_session.execute(stmt)
+        return result.rowcount
