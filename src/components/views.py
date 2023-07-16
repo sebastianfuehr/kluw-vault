@@ -2,7 +2,7 @@ import ttkbootstrap as tb
 
 from config.definitions import *
 from .. components.frames import AutoLayoutFrame
-from .. components.navigation import ButtonPanel
+from .. components.navigation import ButtonPanel, ContextMenu
 from .. components.forms import ProjectForm
 from ..controller.activity_service import ActivityService
 from .. controller.project_service import ProjectService
@@ -87,6 +87,7 @@ class ProjectDetailView(DetailView):
         # Activities
         CustomEntityItemList(
             master=self,
+            app=self.app,
             entity=self.project,
             db_service_method=ActivityService.get_by_project_id,
             db_session=self.app.session,
@@ -126,6 +127,7 @@ class CustomEntityItemList(tb.Frame):
     def __init__(
             self,
             master,
+            app,
             entity,
             db_service_method,
             db_session,
@@ -143,11 +145,13 @@ class CustomEntityItemList(tb.Frame):
             padx=layout['padx'],
             pady=layout['pady']
         )
+        self.app = app
         self.entity = entity
         self.db_service_method = db_service_method
         self.db_session = db_session
         self.form_edit = form_edit
 
+        self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
 
         self.item_key_var = tb.IntVar()
@@ -155,16 +159,25 @@ class CustomEntityItemList(tb.Frame):
 
         self.item_list = None
 
+        btn_pady = (10,0 )
         tb.Button(
             self,
             text='+',
-            width=2
-        ).grid(row=1, column=1, sticky='e', padx=10)
+            width=2,
+            command=self.add_item
+        ).grid(row=1, column=1, sticky='e', padx=10, pady=btn_pady)
+        tb.Button(
+            self,
+            text='E',
+            width=2,
+            command=self.edit_item
+        ).grid(row=1, column=2, sticky='e', padx=10, pady=btn_pady)
         tb.Button(
             self,
             text='-',
-            width=2
-        ).grid(row=1, column=2, sticky='e', padx=10)
+            width=2,
+            command=self.delete_item
+        ).grid(row=1, column=3, sticky='e', padx=10, pady=btn_pady)
 
         self.refresh()
 
@@ -176,6 +189,11 @@ class CustomEntityItemList(tb.Frame):
         for item in items:
             item_dict[item.id] = item.name
         print(item_dict)
+
+        context_menu = ContextMenu(self.app)
+        context_menu.add_command(label='Edit', command=self.edit_item)
+        context_menu.add_command(label='Delete', command=self.delete_item)
+
         self.item_list = ButtonPanel(
             parent=self,
             ttk_string_var=self.item_name_var,
@@ -183,6 +201,16 @@ class CustomEntityItemList(tb.Frame):
             styling=LIST_ITEM,
             ttk_key_var=self.item_key_var,
             borderwidth=1,
-            relief='solid'
+            relief='solid',
+            context_menu=context_menu
         )
-        self.item_list.grid(row=0, column=0, columnspan=3, sticky='nsew')
+        self.item_list.grid(row=0, column=0, columnspan=4, sticky='nsew')
+
+    def add_item(self, *_args):
+        print(f'Add item')
+
+    def edit_item(self, *_args):
+        print(f'Edit item {self.item_key_var.get()}: {self.item_name_var.get()}')
+
+    def delete_item(self, *_args):
+        print(f'Delete item {self.item_key_var.get()}: {self.item_name_var.get()}')

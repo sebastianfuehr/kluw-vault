@@ -6,12 +6,18 @@ class ButtonPanel(tb.Frame): # pylint: disable=too-many-ancestors
 
     Parameters
     ----------
-    ttk_string_var: ttkbootstrap.StringVar
+    ttk_string_var : ttkbootstrap.StringVar
         The string variable which is to be set by the buttons. The
         variable will be filled with the label of the selected button.
-    labels: list(str)
-        A list of strings which are to appear on the buttons.
-    styling: {padx: int, pady: int, font: (str, int), colors: {text: str, highlight: str}}
+    labels : list(str) or dict{int: str}
+        A list of strings which are to appear on the buttons. If a
+        dictionary with key-value pairs is given, also expect a
+        ttk_key_var which will be linked to the selected entry text.
+    styling : {padx: int, pady: int, font: (str, int), colors: {text: str, highlight: str}}
+    ttk_key_var : ttkbootstrap.IntVar
+        The variable to be set when an entry from the labels dictionary
+        is selected.
+    context_menu : ContextMenu
     """
     def __init__(
             self,
@@ -20,6 +26,7 @@ class ButtonPanel(tb.Frame): # pylint: disable=too-many-ancestors
             labels,
             styling,
             ttk_key_var=None,
+            context_menu=None,
             **kwargs
         ):
         super().__init__(master=parent, **kwargs)
@@ -32,7 +39,8 @@ class ButtonPanel(tb.Frame): # pylint: disable=too-many-ancestors
                     text=tab,
                     tab_nav_str=ttk_string_var,
                     button_group=self.buttons,
-                    styling=styling
+                    styling=styling,
+                    context_menu=context_menu
                 ))
         else:
             for key, value in labels.items():
@@ -43,7 +51,8 @@ class ButtonPanel(tb.Frame): # pylint: disable=too-many-ancestors
                     button_group=self.buttons,
                     styling=styling,
                     key=key,
-                    tab_nav_int=ttk_key_var
+                    tab_nav_int=ttk_key_var,
+                    context_menu=context_menu
                 ))
 
 
@@ -64,7 +73,8 @@ class TextButton(tb.Label): # pylint: disable=too-many-ancestors
             button_group,
             styling,
             key=None,
-            tab_nav_int=None
+            tab_nav_int=None,
+            context_menu=None
         ):
         self.colors = styling['colors']
         super().__init__(
@@ -73,8 +83,6 @@ class TextButton(tb.Label): # pylint: disable=too-many-ancestors
             foreground=self.colors['text'],
             font=styling['font']
         )
-        self.bind('<Button-1>', self.select_handler)
-
         self.button_group = button_group
         self.key = key
         self.text = text
@@ -90,6 +98,15 @@ class TextButton(tb.Label): # pylint: disable=too-many-ancestors
             pady=styling['pady'],
             anchor=styling['anchor']
         )
+        self.bind('<Button-1>', self.select_handler)
+
+        if context_menu:
+            self.context_menu = context_menu
+            self.bind('<Button-3>', self.open_context_menu)
+
+    def open_context_menu(self, event):
+        self.select_handler()
+        self.context_menu.open_popup(event)
 
     def select_handler(self, *_args):
         """Callback method for when the label is clicked on.
@@ -104,3 +121,35 @@ class TextButton(tb.Label): # pylint: disable=too-many-ancestors
     def unselect(self):
         """Resets the text color."""
         self.configure(foreground=self.colors['text'])
+
+
+class ContextMenu(tb.Frame):
+    def __init__(self, app):
+        super().__init__(master=app)
+        self.app = app
+        self.buttons = []
+        self.app.bind('<Button-1>', self.destroy)
+
+    def add_command(self, label, command):
+        lbl = tb.Label(self, text=label)
+        lbl.pack(fill='x', anchor='w', padx=5, pady=5)
+        lbl.bind('<Button-1>', command)
+        lbl.bind('<Enter>', self.hover_in)
+        lbl.bind('<Leave>', self.hover_out)
+        self.buttons.append(lbl)
+
+    def open_popup(self, event):
+        curr_x = self.app.winfo_pointerx() - self.app.winfo_x()
+        curr_y = self.app.winfo_pointery() - self.app.winfo_y()
+        self.place(x=curr_x+1, y=curr_y+1)
+        self.lift()
+
+    def hover_in(self, event):
+        event.widget.configure(foreground='gray')
+    
+    def hover_out(self, event):
+        event.widget.configure(foreground='white')
+
+    def destroy(self, event=None):
+        if event is not None and event.widget not in self.buttons:
+            self.place_forget()
