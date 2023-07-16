@@ -150,7 +150,7 @@ class ListFrame(tb.Frame, RefreshMixin):
 
         # Context menu
         context_menu = ContextMenu(self.app)
-        context_menu.add_command(label='Delete', command=self.delete_project)
+        context_menu.add_command(label='Delete', command=self.delete_entry)
 
         # Item list
         items = self.db_service.get_all(self.db_session).all()
@@ -180,7 +180,7 @@ class ListFrame(tb.Frame, RefreshMixin):
         )
         form.grid(row=0, rowspan=3, column=2, sticky='nsew')
 
-    def delete_project(self, *_args):
+    def delete_entry(self, *_args):
         usr_answ = Messagebox.okcancel(
             message='Are you sure you want to delete that entry?',
             title='Attention!'
@@ -190,11 +190,11 @@ class ListFrame(tb.Frame, RefreshMixin):
             self.refresh()
             if status == 1:
                 Notifications.show_info(
-                    message='The project has been deleted from the database.'
+                    message='The entry has been deleted from the database.'
                 )
             elif status == 0:
                 Notifications.show_error(
-                    message="The project couldn't be deleted."
+                    message="The entry couldn't be deleted."
                 )
             else:
                 Notifications.show_error(

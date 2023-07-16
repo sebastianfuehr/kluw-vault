@@ -468,6 +468,82 @@ class ProjectForm(Form):
         super().save_entry(new_project)
 
 
+class ActivityForm(Form):
+    """A form to create or edit a project activity entity.
+    """
+    def __init__(self, master, app, db_service, db_session, project_id, activity=None):
+        super().__init__(
+            master=master,
+            config=FORM_ACTIVITY_EDIT,
+            db_service=db_service,
+            db_session=db_session
+        )
+        self.app = app
+        self.db_session = db_session
+        self.project_id = project_id
+        self.activity = activity
+
+        self.name_var = tb.StringVar()
+
+        self.build_form_components()
+
+    def build_form_components(self):
+        """Create the GUI elements for this component.
+        """
+        # Build widgets
+        CustomEntry(
+            master=self,
+            tk_variable=self.name_var,
+            layout=FORM_ACTIVITY_EDIT['inp_name']
+        )
+        self.inp_description =CustomScrolledText(
+            master=self,
+            layout=FORM_ACTIVITY_EDIT['inp_description']
+        )
+
+        # Fill form
+        if self.activity is not None:
+            self.name_var.set(self.activity.name)
+            self.inp_description.set_text(self.activity.description)
+
+        # Submit form
+        CustomButton(
+            master=self,
+            text='Save',
+            command=self.save_entry,
+            layout=FORM_ACTIVITY_EDIT['btn_save']
+        )
+
+    def save_entry(self, *_args):
+        """Read the values from the form fields, create a new Python
+        object, and save it into the database.
+        """
+        if self.name_var.get() == '':
+            Messagebox.show_error(
+                message="You can't create an activity without giving it a name!",
+                title='Error',
+                alert=self.app.settings['notifications.sound']\
+                    .getboolean('error_messages')
+            )
+            return
+        new_activity = Activity(
+            id=None,
+            name=self.name_var.get()
+        )
+        if self.activity is not None:
+            new_activity.id = self.activity.id
+
+        # Activity description
+        description = self.inp_description.get_text()
+        if description != '':
+            new_activity.description = description
+
+        # Project
+        new_activity.project_id = self.project_id
+
+        super().save_entry(new_activity)
+
+
 #######################################################################
 # CUSTOM WIDGETS
 #######################################################################
@@ -545,7 +621,11 @@ class CustomScrolledText(ScrolledText):
         return self.text.get(1.0, tb.END).rstrip()
 
     def set_text(self, new_text):
-        self.text.insert(1.0, new_text)
+        self.clear()
+        if new_text is not None:
+            self.text.insert(1.0, new_text)
+        else:
+            self.text.insert(1.0, '')
 
     def clear(self) -> None:
         """Clears any input of the text widget.

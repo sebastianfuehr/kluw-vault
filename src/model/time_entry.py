@@ -109,7 +109,7 @@ class TimeEntry(Base):
     def get_activity_name(self):
         if self.activity is not None:
             return self.activity.name
-        elif self.activity_name is not None:
+        elif hasattr(self, 'activity_name') and self.activity_name is not None:
             return self.activity_name
         else:
             return None

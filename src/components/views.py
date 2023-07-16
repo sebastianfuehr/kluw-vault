@@ -1,11 +1,12 @@
 import ttkbootstrap as tb
+from ttkbootstrap.scrolled import ScrolledFrame
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
 from config.definitions import *
 from .. components.notifications import Notifications
 from .. components.frames import AutoLayoutFrame
 from .. components.navigation import ButtonPanel, ContextMenu
-from .. components.forms import ProjectForm
+from .. components.forms import ProjectForm, ActivityForm
 from ..controller.activity_service import ActivityService
 from .. controller.project_service import ProjectService
 
@@ -55,6 +56,9 @@ class ProjectDetailView(DetailView):
         self.app = app
         self.project = project
 
+        self.activity_id_var = tb.IntVar()
+        self.activity_name_var = tb.StringVar()
+
         self.build_gui_components()
 
     def build_gui_components(self):
@@ -76,7 +80,6 @@ class ProjectDetailView(DetailView):
 
         # Description
         description = self.project.description
-        print(description)
         if description is None:
             description = '-'
         CustomLabel(
@@ -85,23 +88,78 @@ class ProjectDetailView(DetailView):
             layout=VIEW_PROJECT_DETAIL['lbl_description'],
             wraplength=600
         )
+        self.refresh()
 
+    def refresh(self):
         # Activities
+        items = ActivityService.get_by_project_id(self.app.session, self.project.id)
+        item_dict = {}
+        for item in items:
+            item_dict[item.id] = item.name
+
         CustomEntityItemList(
             master=self,
             app=self.app,
             entity=self.project,
-            db_get_by_id=ActivityService.get_by_project_id,
-            db_merge=None,
-            db_delete=ActivityService.delete,
-            db_session=self.app.session,
-            form_edit=None,
+            item_key_var=self.activity_id_var,
+            item_name_var=self.activity_name_var,
+            item_dict=item_dict,
+            cmd_add_item=self.open_activity_creation_form,
+            cmd_edit_item=self.open_activity_edit_form,
+            cmd_delete_item=self.delete_activity,
             layout=VIEW_PROJECT_DETAIL['lst_activities']
         )
 
-    def refresh(self, project):
-        self.project = project
-        print('Refresh ProjectDetailView')
+    def open_activity_creation_form(self, *_args):
+        frm_dict = VIEW_PROJECT_DETAIL['frm_edit_activity']
+        form = ActivityForm(
+            master=self,
+            app=self.app,
+            db_service=ActivityService,
+            db_session=self.app.session,
+            project_id=self.project.id
+        )
+        form.grid(
+            row=frm_dict['row'],
+            column=frm_dict['col'],
+            rowspan=frm_dict['rowspan'],
+            columnspan=frm_dict['columnspan'],
+            sticky=frm_dict['sticky'],
+            padx=frm_dict['padx'],
+            pady=frm_dict['pady']
+        )
+
+    def open_activity_edit_form(self, *_args):
+        frm_dict = VIEW_PROJECT_DETAIL['frm_edit_activity']
+        activity = ActivityService.get_by_id(self.app.session, self.activity_id_var.get())
+
+        form = ActivityForm(
+            master=self,
+            app=self.app,
+            db_service=ActivityService,
+            db_session=self.app.session,
+            project_id=self.project.id,
+            activity=activity
+        )
+        form.grid(
+            row=frm_dict['row'],
+            column=frm_dict['col'],
+            rowspan=frm_dict['rowspan'],
+            columnspan=frm_dict['columnspan'],
+            sticky=frm_dict['sticky'],
+            padx=frm_dict['padx'],
+            pady=frm_dict['pady']
+        )
+
+    def delete_activity(self, *_args):
+        msg = f'Are you sure you want to delete the activity "{self.activity_name_var.get()}" in the "{self.project.name}" project?'
+        usr_answ = Messagebox.okcancel(
+            message=msg,
+            title='Attention!'
+        )
+        if usr_answ == 'OK':
+            ActivityService.delete(self.app.session, self.activity_id_var.get())
+        self.refresh()
 
 #######################################################################
 # CUSTOM DETAILVIEW WIDGETS
@@ -129,17 +187,27 @@ class CustomEntityItemList(tb.Frame):
     """An interactive list of items, belonging to a specific entity.
 
     Supports an automatic implementation of a context menu.
+
+    Parameters
+    ----------
+    layout : dict
+        Information for how to place the list component itself and all
+        it's subcomponents.
+    form_layout : dict
+        Information for how to place the the form for new and existing
+        entities with regards to the **master** component.
     """
     def __init__(
             self,
             master,
             app,
             entity,
-            db_get_by_id,
-            db_merge,
-            db_delete,
-            db_session,
-            form_edit,
+            item_key_var,
+            item_name_var,
+            item_dict,
+            cmd_add_item,
+            cmd_edit_item,
+            cmd_delete_item,
             layout,
             **kwargs
         ):
@@ -155,78 +223,84 @@ class CustomEntityItemList(tb.Frame):
         )
         self.app = app
         self.entity = entity
-        self.db_get_by_id = db_get_by_id
-        self.db_merge = db_merge
-        self.db_delete = db_delete
-        self.db_session = db_session
-        self.form_edit = form_edit
+        self.item_key_var = item_key_var
+        self.item_name_var = item_name_var
+        self.cmd_edit_item = cmd_edit_item
+        self.cmd_delete_item = cmd_delete_item
 
-        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self.item_key_var = tb.IntVar()
-        self.item_name_var = tb.StringVar()
-
+        self.scrolled_frame = None
         self.item_list = None
+
+        for separator in CUSTOM_ENTITIY_ITEM_LIST['separators']:
+            sep_new = tb.Separator(self, orient=separator['orient'])
+            sep_new.grid(
+                row=separator['row'],
+                column=separator['col'],
+                rowspan=separator['rowspan'],
+                sticky=separator['sticky']
+            )
 
         btn_pady = (10,0 )
         tb.Button(
             self,
             text='+',
             width=2,
-            command=self.add_item
-        ).grid(row=1, column=1, sticky='e', padx=10, pady=btn_pady)
-        tb.Button(
-            self,
-            text='E',
-            width=2,
-            command=self.edit_item
-        ).grid(row=1, column=2, sticky='e', padx=10, pady=btn_pady)
-        tb.Button(
-            self,
-            text='-',
-            width=2,
-            command=self.delete_item
-        ).grid(row=1, column=3, sticky='e', padx=10, pady=btn_pady)
+            command=cmd_add_item
+        ).grid(row=3, column=0, sticky='e', padx=10, pady=btn_pady)
 
-        self.refresh()
+        self.refresh(item_dict)
 
-    def refresh(self):
+    def refresh(self, item_dict):
         """Populate the list with items.
         """
-        items = self.db_get_by_id(self.db_session, self.entity.id)
-        item_dict = {}
-        for item in items:
-            item_dict[item.id] = item.name
-        print(item_dict)
+        if self.scrolled_frame:
+            self.scrolled_frame.grid_remove()
+        
+        list_layout = VIEW_PROJECT_DETAIL['lst_activities']
+        self.scrolled_frame = ScrolledFrame(
+            master=self,
+            autohide=True,
+            height=180
+        )
+        self.scrolled_frame.grid(
+            row=1,
+            column=0,
+            sticky='nsew'
+        )
 
         context_menu = ContextMenu(self.app)
-        context_menu.add_command(label='Edit', command=self.edit_item)
-        context_menu.add_command(label='Delete', command=self.delete_item)
+        context_menu.add_command(label='Edit', command=self.cmd_edit_item)
+        context_menu.add_command(label='Delete', command=self.cmd_delete_item)
 
         self.item_list = ButtonPanel(
-            parent=self,
+            parent=self.scrolled_frame,
             ttk_string_var=self.item_name_var,
             labels=item_dict,
             styling=LIST_ITEM,
             ttk_key_var=self.item_key_var,
-            borderwidth=1,
-            relief='solid',
             context_menu=context_menu
         )
-        self.item_list.grid(row=0, column=0, columnspan=4, sticky='nsew')
+        self.item_list.pack(expand=True, fill='both')
 
     def add_item(self, *_args):
-        print(f'Add item')
-
-    def edit_item(self, *_args):
-        print(f'Edit item {self.item_key_var.get()}: {self.item_name_var.get()}')
-
-    def delete_item(self, *_args):
-        print(f'Delete item {self.item_key_var.get()}: {self.item_name_var.get()}')
-        usr_answ = Messagebox.okcancel(
-            message='Are you sure you want to delete that entry?',
-            title='Attention!'
+        """Create a new form instance and put it on the grid layout.
+        """
+        form = self.form_edit(
+            self.master,
+            self.app,
+            self.db_service,
+            self.db_session,
+            project_id=self.item_key_var.get()
         )
-        if usr_answ == 'OK':
-            self.db_delete(self.db_session, self.item_key_var.get())
+        form.grid(
+            row=self.form_layout['row'],
+            column=self.form_layout['col'],
+            rowspan=self.form_layout['rowspan'],
+            columnspan=self.form_layout['columnspan'],
+            sticky=self.form_layout['sticky'],
+            padx=self.form_layout['padx'],
+            pady=self.form_layout['pady']
+        )

@@ -48,6 +48,14 @@ COMPONENT_COLORS = {
     'list-item': {'text': COLORS['text'], 'highlight': COLORS['highlight']}
 }
 
+# COMPONENTS
+CUSTOM_ENTITIY_ITEM_LIST = {
+    'separators': [
+        {'col': 0, 'row': 0, 'orient': 'horizontal', 'sticky': 'ew', 'rowspan': 1},
+        {'col': 0, 'row': 2, 'orient': 'horizontal', 'sticky': 'ew', 'rowspan': 1}
+    ]
+}
+
 # MENUS
 MAINFRAME_TABS_NAV = {
     'elements': ['Dashboard', 'Time Entries', 'Projects', 'Categories'],
@@ -113,7 +121,9 @@ VIEW_PROJECT_DETAIL = {
     'lbl_name': {'row': 0, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 20), 'font': FONTS['view']['title']},
     'lbl_category': {'row': 3, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
     'lbl_description': {'row': 5, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'height': 5, 'width': 36, 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
-    'lst_activities': {'row': 3, 'rowspan': 3, 'col': 2, 'columnspan': 2, 'sticky': 'nsew', 'padx': 0, 'pady': lbl_pady, 'font': LIST_ITEM}
+    'lst_activities': {'row': 3, 'rowspan': 3, 'col': 2, 'columnspan': 2, 'sticky': 'nsew', 'padx': 0, 'pady': lbl_pady, 'font': LIST_ITEM},
+    # This refers to the grid method of the master component of this view!
+    'frm_edit_activity': {'row': 0, 'rowspan': 8, 'col': 0, 'columnspan': 4, 'sticky': 'nsew', 'padx': 0, 'pady': 0},
 }
 
 # FORMS
@@ -141,4 +151,18 @@ FORM_PROJECT_EDIT = {
     'inp_description': {'row': 4, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'height': 5, 'width': 36, 'font': FONTS['form']['scrolledtext']},
     'inp_category': {'row': 6, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'width': 40, 'font': FONTS['form']['combobox']},
     'btn_save': {'row': 7, 'col': 1, 'sticky': '', 'padx': 0, 'pady': (25, 0), 'width': 8}
+}
+
+FORM_ACTIVITY_EDIT = {
+    'grid-config': {
+        'rowconfigure': {0: 1, 6: 1},
+        'columnconfigure': {0: 1, 2: 1}
+    },
+    'labels': [
+        {'text': 'Name', 'row': 1, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Description', 'row': 3, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']}
+    ],
+    'inp_name': {'row': 2, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'width': 40, 'font': FONTS['form']['entry']},
+    'inp_description': {'row': 4, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'height': 5, 'width': 36, 'font': FONTS['form']['scrolledtext']},
+    'btn_save': {'row': 5, 'col': 1, 'sticky': '', 'padx': 0, 'pady': (25, 0), 'width': 8}
 }
