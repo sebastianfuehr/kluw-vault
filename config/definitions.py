@@ -1,10 +1,11 @@
 import os
 
-APP_VERSION = 'v0.1.2-alpha'
+APP_VERSION = 'v0.1.3-alpha'
 CONFIG_FILE_VERSION = 1
 
+USER_HOME_DIR = os.path.expanduser("~")
 APP_ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
-APP_USER_DATA_FILE = os.path.join(os.getenv('HOME'), '.config', 'time-journal', 'config')
+APP_USER_DATA_FILE = os.path.join(USER_HOME_DIR, '.config', 'time-journal', 'config')
 APP_DEFAULT_USER_DATA_FILE = os.path.join(APP_ROOT_DIR, 'assets', 'default.ini')
 
 # Medal thresholds in seconds (h*m*s)
