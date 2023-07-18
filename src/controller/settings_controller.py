@@ -14,28 +14,38 @@ class SettingsController:
         """
         settings = configparser.ConfigParser()
 
-        APP_DEFAULT_USER_DATA_FILE = os.path.join(app_root_dir, 'assets', 'default.ini')
+        app_usr_data_file_default = os.path.join(app_root_dir, 'assets', 'default.ini')
         try:
-            USER_HOME_DIR = os.path.expanduser("~")
-            APP_USER_DATA_DIR = os.path.join(USER_HOME_DIR, '.config', 'time-journal')
-            APP_USER_DATA_FILE = os.path.join(APP_USER_DATA_DIR, 'config')
+            usr_home_dir = os.path.expanduser("~")
+            app_usr_data_dir = os.path.join(usr_home_dir, '.config', 'time-journal')
+            app_usr_data_file = os.path.join(app_usr_data_dir, 'config')
         except:
-            APP_USER_DATA_FILE = os.path.join(app_root_dir, 'assets', 'config')
+            app_usr_data_file = os.path.join(app_root_dir, 'assets', 'config')
 
-        print(f"Loading config file at: {APP_USER_DATA_FILE}")
-        if not os.path.isfile(APP_USER_DATA_FILE):
+        print(f"Loading config file at: {app_usr_data_file}")
+        if not os.path.isfile(app_usr_data_file):
             print(
-                f"Config file not found. Copying {APP_DEFAULT_USER_DATA_FILE}..."
+                f"Config file not found. Copying {app_usr_data_file_default}..."
             )
-            os.makedirs(APP_USER_DATA_DIR, exist_ok=True)
-            copyfile(APP_DEFAULT_USER_DATA_FILE, APP_USER_DATA_FILE)
+            os.makedirs(app_usr_data_dir, exist_ok=True)
+            copyfile(app_usr_data_file_default, app_usr_data_file)
 
-        settings.read(APP_USER_DATA_FILE)
-        SettingsController.compare_config_file_versions(settings, required_config_file_version)
+        settings.read(app_usr_data_file)
+        SettingsController.compare_config_file_versions(
+            settings=settings,
+            required_config_file_version=required_config_file_version,
+            app_usr_data_file=app_usr_data_file,
+            app_usr_data_file_default=app_usr_data_file_default
+        )
         return settings
 
     @staticmethod
-    def compare_config_file_versions(settings, required_config_file_version):
+    def compare_config_file_versions(
+            settings,
+            required_config_file_version,
+            app_usr_data_file,
+            app_usr_data_file_default
+        ):
         """Compares the config file version of the config file on the
         executing machine and the config file template
 
@@ -49,10 +59,10 @@ class SettingsController:
 
         if v_loaded != required_config_file_version:
             # Backup the old config file
-            backup = f"{APP_USER_DATA_FILE}-{v_loaded}"
-            copyfile(APP_USER_DATA_FILE, backup)
+            backup = f"{app_usr_data_file}-{v_loaded}"
+            copyfile(app_usr_data_file, backup)
             # Copy the new config file
-            copyfile(APP_DEFAULT_USER_DATA_FILE, APP_USER_DATA_FILE)
+            copyfile(app_usr_data_file_default, app_usr_data_file)
             # Notify the user
             play_sound = settings["notifications.sound"].getboolean(
                 "info_messages"
@@ -62,4 +72,4 @@ class SettingsController:
                 title="Config File Update",
                 alert=play_sound,
             )
-            settings.read(APP_USER_DATA_FILE)
+            settings.read(app_usr_data_file)
