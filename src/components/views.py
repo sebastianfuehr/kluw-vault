@@ -6,9 +6,10 @@ from config.definitions import *
 from .. components.notifications import Notifications
 from .. components.frames import AutoLayoutFrame
 from .. components.navigation import ButtonPanel, ContextMenu
-from .. components.forms import ProjectForm, ActivityForm
+from .. components.forms import ProjectForm, ActivityForm, ProjectCategoryGoalForm
 from ..controller.activity_service import ActivityService
 from .. controller.project_service import ProjectService
+from .. controller.project_category_goal_service import ProjectCategoryGoalService
 
 
 class DetailView(AutoLayoutFrame):
@@ -161,6 +162,150 @@ class ProjectDetailView(DetailView):
             ActivityService.delete(self.app.session, self.activity_id_var.get())
         self.refresh()
 
+
+class CategoryDetailView(DetailView):
+    def __init__(self, master, app, project_category):
+        super().__init__(
+            master=master,
+            layout=VIEW_PROJECT_CATEGORY_DETAIL
+        )
+        self.app = app
+        self.project_category = project_category
+
+        self.project_id_var = tb.IntVar()
+        self.project_name_var = tb.StringVar()
+        self.category_goal_id_var = tb.IntVar()
+
+        self.build_gui_components()
+
+    def build_gui_components(self):
+        CustomLabel(
+            self,
+            text=self.project_category.name,
+            layout=VIEW_PROJECT_CATEGORY_DETAIL['lbl_name']
+        )
+
+        # Description
+        description = self.project_category.description
+        if description is None:
+            description = '-'
+        CustomLabel(
+            self,
+            text=description,
+            layout=VIEW_PROJECT_CATEGORY_DETAIL['lbl_description'],
+            wraplength=600
+        )
+        self.refresh()
+
+    def refresh(self):
+        # Projects
+        items = ProjectService.get_by_category_id(self.app.session, self.project_category.id)
+        item_dict = {}
+        for item in items:
+            item_dict[item.id] = item.name
+
+        CustomEntityItemList(
+            master=self,
+            app=self.app,
+            entity=self.project_category,
+            item_key_var=self.project_id_var,
+            item_name_var=self.project_name_var,
+            item_dict=item_dict,
+            cmd_add_item=None,
+            cmd_edit_item=None,
+            cmd_delete_item=None,
+            layout=VIEW_PROJECT_CATEGORY_DETAIL['lst_projects']
+        )
+
+        goals = ProjectCategoryGoalService.get_by_category_id(self.app.session, self.project_category.id)
+        goal_dict = {}
+        for goal in goals:
+            goal_dict[goal.id] = goal
+        ProjectCategoryGoalList(
+            master=self,
+            item_key_var=self.category_goal_id_var,
+            item_dict=goal_dict,
+            cmd_edit_item=self.open_goal_edit_form,
+            layout=VIEW_PROJECT_CATEGORY_DETAIL['lst_goals']
+        )
+
+    def open_goal_edit_form(self, *_args):
+        frm_dict = VIEW_PROJECT_CATEGORY_DETAIL['frm_edit_activity']
+        goal = None
+        try:
+            goal = ProjectCategoryGoalService.get_by_id(self.app.session, self.category_goal_id_var.get())
+        except TypeError:
+            pass
+        form = ProjectCategoryGoalForm(
+            master=self,
+            app=self.app,
+            db_service=ProjectCategoryGoalService,
+            db_session=self.app.session,
+            category_id=self.project_category.id,
+            goal=goal
+        )
+        form.grid(
+            row=frm_dict['row'],
+            column=frm_dict['col'],
+            rowspan=frm_dict['rowspan'],
+            columnspan=frm_dict['columnspan'],
+            sticky=frm_dict['sticky'],
+            padx=frm_dict['padx'],
+            pady=frm_dict['pady']
+        )
+
+    def open_activity_creation_form(self, *_args):
+        frm_dict = VIEW_PROJECT_DETAIL['frm_edit_activity']
+        form = ActivityForm(
+            master=self,
+            app=self.app,
+            db_service=ActivityService,
+            db_session=self.app.session,
+            project_id=self.project_category.id
+        )
+        form.grid(
+            row=frm_dict['row'],
+            column=frm_dict['col'],
+            rowspan=frm_dict['rowspan'],
+            columnspan=frm_dict['columnspan'],
+            sticky=frm_dict['sticky'],
+            padx=frm_dict['padx'],
+            pady=frm_dict['pady']
+        )
+
+    def open_activity_edit_form(self, *_args):
+        frm_dict = VIEW_PROJECT_DETAIL['frm_edit_activity']
+        activity = ActivityService.get_by_id(self.app.session, self.project_id_var.get())
+
+        form = ActivityForm(
+            master=self,
+            app=self.app,
+            db_service=ActivityService,
+            db_session=self.app.session,
+            project_id=self.project_category.id,
+            activity=activity
+        )
+        form.grid(
+            row=frm_dict['row'],
+            column=frm_dict['col'],
+            rowspan=frm_dict['rowspan'],
+            columnspan=frm_dict['columnspan'],
+            sticky=frm_dict['sticky'],
+            padx=frm_dict['padx'],
+            pady=frm_dict['pady']
+        )
+
+    def delete_activity(self, *_args):
+        msg = f'Are you sure you want to delete the activity "{self.project_name_var.get()}" in the "{self.project_category.name}" project?'
+        usr_answ = Messagebox.okcancel(
+            message=msg,
+            title='Attention!'
+        )
+        if usr_answ == 'OK':
+            ActivityService.delete(self.app.session, self.project_id_var.get())
+        self.refresh()
+
+
 #######################################################################
 # CUSTOM DETAILVIEW WIDGETS
 #######################################################################
@@ -304,3 +449,95 @@ class CustomEntityItemList(tb.Frame):
             padx=self.form_layout['padx'],
             pady=self.form_layout['pady']
         )
+
+
+class ProjectCategoryGoalList(AutoLayoutFrame):
+    def __init__(
+            self,
+            master,
+            item_key_var,
+            item_dict,
+            cmd_edit_item,
+            layout,
+            **kwargs
+        ):
+        config = VIEW_PROJECT_CATEGORY_GOAL_DETAIL
+        super().__init__(
+            master=master,
+            config=config['grid_config'],
+            labels=config['labels']
+        )
+        self.item_key_var = item_key_var
+        self.cmd_edit_item = cmd_edit_item
+
+        self.grid(
+            row=layout['row'],
+            column=layout['col'],
+            rowspan=layout['rowspan'],
+            columnspan=layout['columnspan'],
+            sticky=layout['sticky'],
+            padx=layout['padx'],
+            pady=layout['pady']
+        )
+
+        for separator in config['separators']:
+            sep_new = tb.Separator(self, orient=separator['orient'])
+            sep_new.grid(
+                row=separator['row'],
+                column=separator['col'],
+                rowspan=separator['rowspan'],
+                columnspan=separator['columnspan'],
+                sticky=separator['sticky']
+            )
+
+        btn_config = config['btn_edit']
+        row_config = config['row_min_label']
+        curr_row = row_config['row']
+        for goal_id, goal in item_dict.items():
+            btn = tb.Button(
+                self,
+                text='Edit',
+                width=btn_config['width'],
+                command=lambda: self.open_edit_form(goal_id)
+            ).grid(
+                row=curr_row,
+                column=btn_config['col'],
+                sticky=btn_config['sticky'],
+                padx=btn_config['padx'],
+                pady=btn_config['pady']
+            )
+
+            goal_values = goal.get_goal_list()
+            goal_value_idx = 0
+            for curr_col in range(row_config['col'], row_config['col']+7):
+                lbl = tb.Label(
+                    self,
+                    text=goal_values[goal_value_idx],
+                    width=row_config['width'],
+                    font=row_config['font']
+                ).grid(
+                    row=curr_row,
+                    column=curr_col,
+                    sticky=row_config['sticky'],
+                    padx=row_config['padx'],
+                    pady=row_config['pady']
+                )
+                goal_value_idx += 1
+        
+        if len(item_dict.keys()) == 0:
+            btn = tb.Button(
+                self,
+                text='New',
+                width=btn_config['width'],
+                command=lambda: self.cmd_edit_item()
+            ).grid(
+                row=0,
+                column=btn_config['col'],
+                sticky=btn_config['sticky'],
+                padx=btn_config['padx'],
+                pady=btn_config['pady']
+            )
+    
+    def open_edit_form(self, item_id):
+        self.item_key_var.set(item_id)
+        self.cmd_edit_item()

@@ -8,8 +8,8 @@ from src.components.navigation import ButtonPanel
 from src.components.frames import ListFrame
 from src.components.dashboard import StatsDashboard
 from src.components.TimeEntriesList import TimeEntriesList
-from .. components.forms import ProjectForm
-from .. components.views import ProjectDetailView
+from .. components.forms import ProjectForm, ProjectCategoryForm
+from .. components.views import ProjectDetailView, CategoryDetailView
 # DB Services
 from .. controller.project_service import ProjectService
 from src.controller.project_category_service import ProjectCategoryService
@@ -66,9 +66,9 @@ class MainFrame(tb.Frame):
             app=self.parent,
             db_service=ProjectCategoryService,
             db_session=self.parent.session,
-            form_edit=ProjectForm,
-            detail_view=ProjectDetailView,
-            db_delete_item=None
+            form_edit=ProjectCategoryForm,
+            detail_view=CategoryDetailView,
+            db_delete_item=ProjectCategoryService.delete
         )
 
         # Main navigation tabs

@@ -9,11 +9,13 @@ from ..components.frames import AutoLayoutFrame
 from ..model.time_entry import TimeEntry
 from ..model.project import Project
 from ..model.project_category import ProjectCategory
+from .. model.project_category_goal import ProjectCategoryGoal
 from ..model.activity import Activity
 from ..controller.time_entry_service import TimeEntryService
 from ..controller.project_service import ProjectService
 from ..controller.project_category_service import ProjectCategoryService
 from ..controller.activity_service import ActivityService
+from .. controller.project_category_goal_service import ProjectCategoryGoalService
 
 
 class TimeEntryForm(tb.Frame):
@@ -542,6 +544,168 @@ class ActivityForm(Form):
         new_activity.project_id = self.project_id
 
         super().save_entry(new_activity)
+
+
+class ProjectCategoryForm(Form):
+    """A form to create or edit a project entity.
+    """
+    def __init__(self, master, app, db_service, db_session):
+        super().__init__(
+            master=master,
+            config=FORM_PROJECT_CATEGORY_EDIT,
+            db_service=db_service,
+            db_session=db_session
+        )
+        self.app = app
+        self.db_session = db_session
+
+        self.name_var = tb.StringVar()
+
+        self.build_form_components()
+
+    def build_form_components(self):
+        """Create the GUI elements for this component.
+        """
+        # Name and description
+        CustomEntry(
+            master=self,
+            tk_variable=self.name_var,
+            layout=FORM_PROJECT_CATEGORY_EDIT['inp_name']
+        )
+        self.inp_description =CustomScrolledText(
+            master=self,
+            layout=FORM_PROJECT_CATEGORY_EDIT['inp_description']
+        )
+
+        # Submit form
+        CustomButton(
+            master=self,
+            text='Save',
+            command=self.save_entry,
+            layout=FORM_PROJECT_CATEGORY_EDIT['btn_save']
+        )
+
+    def save_entry(self, *_args):
+        """Read the values from the form fields, create a new Python
+        object, and save it into the database.
+        """
+        if self.name_var.get() == '':
+            Messagebox.show_error(
+                message="You can't create a project category without giving it a name!",
+                title='Error',
+                alert=self.app.settings['notifications.sound']\
+                    .getboolean('error_messages')
+            )
+            return
+        new_project_category = ProjectCategory(id=None, name=self.name_var.get())
+
+        # Project description
+        description = self.inp_description.get_text()
+        if description != '':
+            new_project_category.description = description
+
+        super().save_entry(new_project_category)
+
+class ProjectCategoryGoalForm(Form):
+    """A form to create or edit a project activity entity.
+    """
+    def __init__(self, master, app, db_service, db_session, category_id, goal=None):
+        super().__init__(
+            master=master,
+            config=FORM_PROJECT_CATEGORY_GOAL_EDIT,
+            db_service=db_service,
+            db_session=db_session
+        )
+        self.app = app
+        self.db_session = db_session
+        self.category_id = category_id
+        self.goal = goal
+
+        self.min_monday_var = tb.IntVar()
+        self.min_tuesday_var = tb.IntVar()
+        self.min_wednesday_var = tb.IntVar()
+        self.min_thursday_var = tb.IntVar()
+        self.min_friday_var = tb.IntVar()
+        self.min_saturday_var = tb.IntVar()
+        self.min_sunday_var = tb.IntVar()
+
+        self.build_form_components()
+
+    def build_form_components(self):
+        """Create the GUI elements for this component.
+        """
+        # Build widgets
+        CustomEntry(
+            master=self,
+            tk_variable=self.min_monday_var,
+            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT['inp_monday']
+        )
+        CustomEntry(
+            master=self,
+            tk_variable=self.min_tuesday_var,
+            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT['inp_tuesday']
+        )
+        CustomEntry(
+            master=self,
+            tk_variable=self.min_wednesday_var,
+            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT['inp_wednesday']
+        )
+        CustomEntry(
+            master=self,
+            tk_variable=self.min_thursday_var,
+            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT['inp_thursday']
+        )
+        CustomEntry(
+            master=self,
+            tk_variable=self.min_friday_var,
+            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT['inp_friday']
+        )
+        CustomEntry(
+            master=self,
+            tk_variable=self.min_saturday_var,
+            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT['inp_saturday']
+        )
+        CustomEntry(
+            master=self,
+            tk_variable=self.min_sunday_var,
+            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT['inp_sunday']
+        )
+
+        # Fill form
+        if self.goal is not None:
+            self.min_monday_var.set(self.goal.min_monday)
+            self.min_tuesday_var.set(self.goal.min_tuesday)
+            self.min_wednesday_var.set(self.goal.min_wednesday)
+            self.min_thursday_var.set(self.goal.min_thursday)
+            self.min_friday_var.set(self.goal.min_friday)
+            self.min_saturday_var.set(self.goal.min_saturday)
+            self.min_sunday_var.set(self.goal.min_sunday)
+
+        # Submit form
+        CustomButton(
+            master=self,
+            text='Save',
+            command=self.save_entry,
+            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT['btn_save']
+        )
+
+    def save_entry(self, *_args):
+        """Read the values from the form fields, create a new Python
+        object, and save it into the database.
+        """
+        new_goal = ProjectCategoryGoal(id=None)
+        new_goal.project_category_id = self.category_id
+        new_goal.project_category = ProjectCategoryService.get_by_id(self.db_session, self.category_id)
+
+        new_goal.min_monday = self.min_monday_var.get()
+        new_goal.min_tuesday = self.min_tuesday_var.get()
+        new_goal.min_wednesday = self.min_wednesday_var.get()
+        new_goal.min_thursday = self.min_thursday_var.get()
+        new_goal.min_friday = self.min_friday_var.get()
+        new_goal.min_saturday = self.min_saturday_var.get()
+        new_goal.min_sunday = self.min_sunday_var.get()
+
+        super().save_entry(new_goal)
 
 
 #######################################################################

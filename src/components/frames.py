@@ -186,7 +186,7 @@ class ListFrame(tb.Frame, RefreshMixin):
             title='Attention!'
         )
         if usr_answ == 'OK':
-            status = self.db_delete_item(self.db_session, self.item_key_var.get())
+            status = self.db_service.delete(self.db_session, self.item_key_var.get())
             self.refresh()
             if status == 1:
                 Notifications.show_info(

@@ -126,6 +126,54 @@ VIEW_PROJECT_DETAIL = {
     'frm_edit_activity': {'row': 0, 'rowspan': 8, 'col': 0, 'columnspan': 4, 'sticky': 'nsew', 'padx': 0, 'pady': 0},
 }
 
+VIEW_PROJECT_CATEGORY_DETAIL = {
+    'grid-config': {
+        'rowconfigure': {},
+        'columnconfigure': {0: 1, 2: 1}
+    },
+    'labels': [
+        {'text': 'Total time:', 'row': 1, 'rowspan': 1, 'col': 0, 'columnspan': 1, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['section']},
+        {'text': 'Description', 'row': 2, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['section']},
+        {'text': 'Goals', 'row': 4, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 10), 'font': FONTS['view']['subtitle']},
+        {'text': 'Projects', 'row': 1, 'rowspan': 1, 'col': 2, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['section']},
+        {'text': 'Statistics', 'row': 6, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 10), 'font': FONTS['view']['subtitle']}
+    ],
+    'lbl_name': {'row': 0, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 20), 'font': FONTS['view']['title']},
+    'lbl_description': {'row': 3, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'height': 5, 'width': 36, 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
+    'lst_projects': {'row': 2, 'rowspan': 2, 'col': 2, 'columnspan': 2, 'sticky': 'nsew', 'padx': 0, 'pady': lbl_pady, 'font': LIST_ITEM},
+    'lst_goals': {'row': 5, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady},
+    # This refers to the grid method of the master component of this view!
+    'frm_edit_activity': {'row': 0, 'rowspan': 8, 'col': 0, 'columnspan': 4, 'sticky': 'nsew', 'padx': 0, 'pady': 0},
+}
+
+# Represents a table of category goals
+first_lbl_col = 0
+lbl_sticky = 'ew'
+lbl_padx = 0
+lbl_pady = 0
+lbl_width = 8
+VIEW_PROJECT_CATEGORY_GOAL_DETAIL = {
+    'grid_config': {
+        'rowconfigure': {},
+        'columnconfigure': {(0, 1, 2, 3, 4, 5, 6): 1}
+    },
+    'separators': [
+        {'col': 0, 'columnspan': 8, 'row': 1, 'rowspan': 1, 'orient': 'horizontal', 'sticky': 'ew', 'columnspan': 8},
+        {'col': 0, 'columnspan': 8, 'row': 3, 'rowspan': 1, 'orient': 'horizontal', 'sticky': 'ew', 'columnspan': 8}
+    ],
+    'labels': [
+        {'text': 'Mon', 'row': 0, 'rowspan': 1, 'col': first_lbl_col, 'columnspan': 1, 'sticky': lbl_sticky, 'padx': lbl_padx, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Tue', 'row': 0, 'rowspan': 1, 'col': first_lbl_col+1, 'columnspan': 1, 'sticky': lbl_sticky, 'padx': lbl_padx, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Wed', 'row': 0, 'rowspan': 1, 'col': first_lbl_col+2, 'columnspan': 1, 'sticky': lbl_sticky, 'padx': lbl_padx, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Thu', 'row': 0, 'rowspan': 1, 'col': first_lbl_col+3, 'columnspan': 1, 'sticky': lbl_sticky, 'padx': lbl_padx, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Fri', 'row': 0, 'rowspan': 1, 'col': first_lbl_col+4, 'columnspan': 1, 'sticky': lbl_sticky, 'padx': lbl_padx, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Sat', 'row': 0, 'rowspan': 1, 'col': first_lbl_col+5, 'columnspan': 1, 'sticky': lbl_sticky, 'padx': lbl_padx, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Sun', 'row': 0, 'rowspan': 1, 'col': first_lbl_col+6, 'columnspan': 1, 'sticky': lbl_sticky, 'padx': lbl_padx, 'pady': lbl_pady, 'font': FONTS['form']['label']}
+    ],
+    'row_min_label': {'row': 2, 'col': first_lbl_col, 'sticky': lbl_sticky, 'padx': lbl_padx, 'pady': lbl_pady, 'width': None, 'font': FONTS['form']['entry']},
+    'btn_edit': {'row': 2, 'col': first_lbl_col+7, 'sticky': '', 'padx': 0, 'pady': 0, 'width': 8}
+}
+
 # FORMS
 FORM_BTN_CLOSE = {
     'text': 'X',
@@ -165,4 +213,46 @@ FORM_ACTIVITY_EDIT = {
     'inp_name': {'row': 2, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'width': 40, 'font': FONTS['form']['entry']},
     'inp_description': {'row': 4, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'height': 5, 'width': 36, 'font': FONTS['form']['scrolledtext']},
     'btn_save': {'row': 5, 'col': 1, 'sticky': '', 'padx': 0, 'pady': (25, 0), 'width': 8}
+}
+
+FORM_PROJECT_CATEGORY_EDIT = {
+    'grid-config': {
+        'rowconfigure': {0: 1, 6: 1},
+        'columnconfigure': {0: 1, 2: 1}
+    },
+    'labels': [
+        {'text': 'Name', 'row': 1, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Description', 'row': 3, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']}
+    ],
+    'inp_name': {'row': 2, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'width': 40, 'font': FONTS['form']['entry']},
+    'inp_description': {'row': 4, 'col': 1, 'sticky': 'ew', 'padx': 0, 'pady': inp_pady, 'height': 5, 'width': 36, 'font': FONTS['form']['scrolledtext']},
+    'btn_save': {'row': 5, 'col': 1, 'sticky': '', 'padx': 0, 'pady': (25, 0), 'width': 8}
+}
+
+inp_sticky = ''
+inp_padx = 5
+inp_pady = 10
+inp_width = 10
+FORM_PROJECT_CATEGORY_GOAL_EDIT = {
+    'grid-config': {
+        'rowconfigure': {0: 1, 4: 1},
+        'columnconfigure': {0: 1, 8: 1}
+    },
+    'labels': [
+        {'text': 'Monday', 'row': 1, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Tuesday', 'row': 1, 'rowspan': 1, 'col': 2, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Wednesday', 'row': 1, 'rowspan': 1, 'col': 3, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Thursday', 'row': 1, 'rowspan': 1, 'col': 4, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Friday', 'row': 1, 'rowspan': 1, 'col': 5, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Saturday', 'row': 1, 'rowspan': 1, 'col': 6, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']},
+        {'text': 'Sunday', 'row': 1, 'rowspan': 1, 'col': 7, 'columnspan': 1, 'sticky': 'ew', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['form']['label']}
+    ],
+    'inp_monday': {'row': 2, 'col': 1, 'sticky': inp_sticky, 'padx': inp_padx, 'pady': inp_pady, 'width': inp_width, 'font': FONTS['form']['entry']},
+    'inp_tuesday': {'row': 2, 'col': 2, 'sticky': inp_sticky, 'padx': inp_padx, 'pady': inp_pady, 'width': inp_width, 'font': FONTS['form']['entry']},
+    'inp_wednesday': {'row': 2, 'col': 3, 'sticky': inp_sticky, 'padx': inp_padx, 'pady': inp_pady, 'width': inp_width, 'font': FONTS['form']['entry']},
+    'inp_thursday': {'row': 2, 'col': 4, 'sticky': inp_sticky, 'padx': inp_padx, 'pady': inp_pady, 'width': inp_width, 'font': FONTS['form']['entry']},
+    'inp_friday': {'row': 2, 'col': 5, 'sticky': inp_sticky, 'padx': inp_padx, 'pady': inp_pady, 'width': inp_width, 'font': FONTS['form']['entry']},
+    'inp_saturday': {'row': 2, 'col': 6, 'sticky': inp_sticky, 'padx': inp_padx, 'pady': inp_pady, 'width': inp_width, 'font': FONTS['form']['entry']},
+    'inp_sunday': {'row': 2, 'col': 7, 'sticky': inp_sticky, 'padx': inp_padx, 'pady': inp_pady, 'width': inp_width, 'font': FONTS['form']['entry']},
+    'btn_save': {'row': 3, 'col': 4, 'sticky': '', 'padx': 0, 'pady': (25, 0), 'width': 8}
 }

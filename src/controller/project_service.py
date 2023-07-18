@@ -16,6 +16,12 @@ class ProjectService():
         return result
 
     @staticmethod
+    def get_by_category_id(db_session, category_id):
+        stmt = select(Project).filter_by(project_category_id=category_id)
+        result = db_session.execute(stmt)
+        return result.scalars()
+
+    @staticmethod
     def get_by_id(db_session, project_id):
         stmt = select(Project).filter_by(id=project_id)
         result = db_session.execute(stmt).fetchone()[0]
@@ -29,8 +35,8 @@ class ProjectService():
         db_session.commit()
 
     def delete(db_session, project_id) -> int:
-        """Returns the number of entries affected by the operation.
-        Should be 1.
+        """Deletes the entry with the specified ID. Returns the number
+        of entries affected by the operation. Should be 1.
         """
         stmt = delete(Project).where(Project.id==project_id)
         result = db_session.execute(stmt)
