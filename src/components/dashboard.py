@@ -1,3 +1,4 @@
+import logging
 import ttkbootstrap as tb
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -6,7 +7,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from datetime import datetime, timedelta
 from sqlalchemy import select
 
-from config.definitions import *
 from src.components.navigation import ButtonPanel
 from ..model.time_entry import TimeEntry
 from ..controller.time_entry_service import TimeEntryService
@@ -20,7 +20,7 @@ class StatsDashboard(tb.Frame):
         self.app = app
 
         self.has_content = False
-        self.time_string = tb.StringVar(value=FILTER_PERIODS["elements"][4])
+        self.time_string = tb.StringVar(value=self.app.definitions.FILTER_PERIODS["elements"][4])
         self.time_string.trace("w", self.build_gui_components)
 
         self.update_data()
@@ -31,8 +31,8 @@ class StatsDashboard(tb.Frame):
         filter_panel = ButtonPanel(
             parent=self,
             ttk_string_var=self.time_string,
-            labels=FILTER_PERIODS["elements"],
-            styling=FILTER_PERIODS,
+            labels=self.app.definitions.FILTER_PERIODS["elements"],
+            styling=self.app.definitions.FILTER_PERIODS,
         )
         filter_panel.grid(row=0, column=0, columnspan=4, sticky="ew")
         # filter_panel = FilterPanel(self, self.time_string)
@@ -115,7 +115,7 @@ class OverviewPanel(tb.Frame):
         lbl_heading = tb.Label(
             self,
             text="Overview",
-            font=(None, DASHBOARD_HEADING_SIZE, "bold"),
+            font=(None, self.app.definitions.DASHBOARD_HEADING_SIZE, "bold"),
             anchor="center",
         )
         lbl_heading.grid(row=0, column=0, columnspan=4, sticky="ew", pady=10)
@@ -180,7 +180,7 @@ class GraphTimePerDay(tb.Frame):
         lbl_heading = tb.Label(
             self,
             text="Time per Day",
-            font=(None, DASHBOARD_HEADING_SIZE, "bold"),
+            font=(None, self.app.definitions.DASHBOARD_HEADING_SIZE, "bold"),
             anchor="center",
         )
         lbl_heading.pack(side="top", fill="x", pady=10)
@@ -210,7 +210,7 @@ class GraphTimePerDay(tb.Frame):
             label="Average per Day",
         )[0]
         axis.legend(loc="upper right")
-        line.set_color(COLORS["highlight"])
+        line.set_color(self.app.definitions.COLORS["highlight"])
 
         axis.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
         axis.set_ylim(ymin=0)
@@ -234,7 +234,7 @@ class FilterPanel(tb.Frame):
         super().__init__(master=parent)
         self.buttons = [
             FilterTextButton(self, text, time_string)
-            for text in FILTER_PERIODS["elements"]
+            for text in self.app.definitions.FILTER_PERIODS["elements"]
         ]
         time_string.trace("w", self.__unselect_filter_buttons)
 
@@ -256,7 +256,7 @@ class FilterTextButton(tb.Label):
 
     def __select_handler(self, event=None):
         self.time_string.set(self.text)
-        self.configure(foreground=COLORS["highlight"])
+        self.configure(foreground=self.app.definitions.COLORS["highlight"])
 
     def unselect(self):
-        self.configure(foreground=COLORS["text"])
+        self.configure(foreground=self.app.definitions.COLORS["text"])

@@ -5,7 +5,6 @@ from ttkbootstrap.dialogs.dialogs import Messagebox
 from datetime import datetime, timedelta
 
 # Custom modules
-from config.definitions import *
 from ..components.frames import AutoLayoutFrame
 from ..model.time_entry import TimeEntry
 from ..model.project import Project
@@ -348,17 +347,18 @@ class Form(AutoLayoutFrame):
     generic close button for the form.
     """
 
-    def __init__(self, master, config, db_service, db_session):
+    def __init__(self, master, app, config, db_service, db_session):
         super().__init__(
             master=master,
             config=config["grid-config"],
             labels=config["labels"],
         )
         self.master = master
+        self.app = app
         self.db_service = db_service
         self.db_session = db_session
 
-        btn = FORM_BTN_CLOSE
+        btn = self.app.definitions.FORM_BTN_CLOSE
         btn_close_form = tb.Label(self, text=btn["text"], font=btn["font"])
         btn_close_form.bind("<Button-1>", self.close_form)
         btn_close_form.place(
@@ -384,7 +384,8 @@ class ProjectForm(Form):
     def __init__(self, master, app, db_service, db_session):
         super().__init__(
             master=master,
-            config=FORM_PROJECT_EDIT,
+            app=app,
+            config=app.definitions.FORM_PROJECT_EDIT,
             db_service=db_service,
             db_session=db_session,
         )
@@ -403,10 +404,10 @@ class ProjectForm(Form):
         CustomEntry(
             master=self,
             tk_variable=self.name_var,
-            layout=FORM_PROJECT_EDIT["inp_name"],
+            layout=self.app.definitions.FORM_PROJECT_EDIT["inp_name"],
         )
         self.inp_description = CustomScrolledText(
-            master=self, layout=FORM_PROJECT_EDIT["inp_description"]
+            master=self, layout=self.app.definitions.FORM_PROJECT_EDIT["inp_description"]
         )
 
         # Project categories
@@ -418,7 +419,7 @@ class ProjectForm(Form):
             tk_key_var=self.category_id_var,
             tk_value_var=self.category_name_var,
             elements=categories,
-            layout=FORM_PROJECT_EDIT["inp_category"],
+            layout=self.app.definitions.FORM_PROJECT_EDIT["inp_category"],
         )
 
         # Submit form
@@ -426,7 +427,7 @@ class ProjectForm(Form):
             master=self,
             text="Save",
             command=self.save_entry,
-            layout=FORM_PROJECT_EDIT["btn_save"],
+            layout=self.app.definitions.FORM_PROJECT_EDIT["btn_save"],
         )
 
     def save_entry(self, *_args):
@@ -468,7 +469,8 @@ class ActivityForm(Form):
     ):
         super().__init__(
             master=master,
-            config=FORM_ACTIVITY_EDIT,
+            app=app,
+            config=app.definitions.FORM_ACTIVITY_EDIT,
             db_service=db_service,
             db_session=db_session,
         )
@@ -487,10 +489,10 @@ class ActivityForm(Form):
         CustomEntry(
             master=self,
             tk_variable=self.name_var,
-            layout=FORM_ACTIVITY_EDIT["inp_name"],
+            layout=self.app.definitions.FORM_ACTIVITY_EDIT["inp_name"],
         )
         self.inp_description = CustomScrolledText(
-            master=self, layout=FORM_ACTIVITY_EDIT["inp_description"]
+            master=self, layout=self.app.definitions.FORM_ACTIVITY_EDIT["inp_description"]
         )
 
         # Fill form
@@ -503,7 +505,7 @@ class ActivityForm(Form):
             master=self,
             text="Save",
             command=self.save_entry,
-            layout=FORM_ACTIVITY_EDIT["btn_save"],
+            layout=self.app.definitions.FORM_ACTIVITY_EDIT["btn_save"],
         )
 
     def save_entry(self, *_args):
@@ -540,7 +542,8 @@ class ProjectCategoryForm(Form):
     def __init__(self, master, app, db_service, db_session):
         super().__init__(
             master=master,
-            config=FORM_PROJECT_CATEGORY_EDIT,
+            app=app,
+            config=app.definitions.FORM_PROJECT_CATEGORY_EDIT,
             db_service=db_service,
             db_session=db_session,
         )
@@ -557,10 +560,10 @@ class ProjectCategoryForm(Form):
         CustomEntry(
             master=self,
             tk_variable=self.name_var,
-            layout=FORM_PROJECT_CATEGORY_EDIT["inp_name"],
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_EDIT["inp_name"],
         )
         self.inp_description = CustomScrolledText(
-            master=self, layout=FORM_PROJECT_CATEGORY_EDIT["inp_description"]
+            master=self, layout=self.app.definitions.FORM_PROJECT_CATEGORY_EDIT["inp_description"]
         )
 
         # Submit form
@@ -568,7 +571,7 @@ class ProjectCategoryForm(Form):
             master=self,
             text="Save",
             command=self.save_entry,
-            layout=FORM_PROJECT_CATEGORY_EDIT["btn_save"],
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_EDIT["btn_save"],
         )
 
     def save_entry(self, *_args):
@@ -604,7 +607,8 @@ class ProjectCategoryGoalForm(Form):
     ):
         super().__init__(
             master=master,
-            config=FORM_PROJECT_CATEGORY_GOAL_EDIT,
+            app=app,
+            config=app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT,
             db_service=db_service,
             db_session=db_session,
         )
@@ -629,37 +633,37 @@ class ProjectCategoryGoalForm(Form):
         CustomEntry(
             master=self,
             tk_variable=self.min_monday_var,
-            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_monday"],
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_monday"],
         )
         CustomEntry(
             master=self,
             tk_variable=self.min_tuesday_var,
-            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_tuesday"],
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_tuesday"],
         )
         CustomEntry(
             master=self,
             tk_variable=self.min_wednesday_var,
-            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_wednesday"],
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_wednesday"],
         )
         CustomEntry(
             master=self,
             tk_variable=self.min_thursday_var,
-            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_thursday"],
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_thursday"],
         )
         CustomEntry(
             master=self,
             tk_variable=self.min_friday_var,
-            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_friday"],
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_friday"],
         )
         CustomEntry(
             master=self,
             tk_variable=self.min_saturday_var,
-            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_saturday"],
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_saturday"],
         )
         CustomEntry(
             master=self,
             tk_variable=self.min_sunday_var,
-            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_sunday"],
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_sunday"],
         )
 
         # Fill form
@@ -677,7 +681,7 @@ class ProjectCategoryGoalForm(Form):
             master=self,
             text="Save",
             command=self.save_entry,
-            layout=FORM_PROJECT_CATEGORY_GOAL_EDIT["btn_save"],
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT["btn_save"],
         )
 
     def save_entry(self, *_args):

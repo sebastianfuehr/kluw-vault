@@ -1,12 +1,7 @@
-"""
-    Example
-"""
-
 import ttkbootstrap as tb
 from ttkbootstrap.scrolled import ScrolledFrame
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
-from config.definitions import *
 from ..components.notifications import Notifications
 from ..components.frames import AutoLayoutFrame
 from ..components.navigation import ButtonPanel, ContextMenu
@@ -35,14 +30,14 @@ class DetailView(AutoLayoutFrame):
         - labels : dict
     """
 
-    def __init__(self, master, layout):
+    def __init__(self, master, app, layout):
         super().__init__(
             master=master,
             config=layout["grid-config"],
             labels=layout["labels"],
         )
 
-        btn = VIEW_BTN_EDIT
+        btn = app.definitions.VIEW_BTN_EDIT
         btn_edit = tb.Button(self, text=btn["text"])
         btn_edit.bind("<Button-1>", self.open_edit_form)
         btn_edit.place(
@@ -56,7 +51,7 @@ class DetailView(AutoLayoutFrame):
 
 class ProjectDetailView(DetailView):
     def __init__(self, master, app, project):
-        super().__init__(master=master, layout=VIEW_PROJECT_DETAIL)
+        super().__init__(master=master, app=app, layout=app.definitions.VIEW_PROJECT_DETAIL)
         self.app = app
         self.project = project
 
@@ -69,7 +64,7 @@ class ProjectDetailView(DetailView):
         CustomLabel(
             self,
             text=self.project.name,
-            layout=VIEW_PROJECT_DETAIL["lbl_name"],
+            layout=self.app.definitions.VIEW_PROJECT_DETAIL["lbl_name"],
         )
 
         # Category
@@ -79,7 +74,7 @@ class ProjectDetailView(DetailView):
         CustomLabel(
             self,
             text=category_name,
-            layout=VIEW_PROJECT_DETAIL["lbl_category"],
+            layout=self.app.definitions.VIEW_PROJECT_DETAIL["lbl_category"],
         )
 
         # Description
@@ -89,7 +84,7 @@ class ProjectDetailView(DetailView):
         CustomLabel(
             self,
             text=description,
-            layout=VIEW_PROJECT_DETAIL["lbl_description"],
+            layout=self.app.definitions.VIEW_PROJECT_DETAIL["lbl_description"],
             wraplength=600,
         )
         self.refresh()
@@ -113,11 +108,11 @@ class ProjectDetailView(DetailView):
             cmd_add_item=self.open_activity_creation_form,
             cmd_edit_item=self.open_activity_edit_form,
             cmd_delete_item=self.delete_activity,
-            layout=VIEW_PROJECT_DETAIL["lst_activities"],
+            layout=self.app.definitions.VIEW_PROJECT_DETAIL["lst_activities"],
         )
 
     def open_activity_creation_form(self, *_args):
-        frm_dict = VIEW_PROJECT_DETAIL["frm_edit_activity"]
+        frm_dict = self.app.definitions.VIEW_PROJECT_DETAIL["frm_edit_activity"]
         form = ActivityForm(
             master=self,
             app=self.app,
@@ -136,7 +131,7 @@ class ProjectDetailView(DetailView):
         )
 
     def open_activity_edit_form(self, *_args):
-        frm_dict = VIEW_PROJECT_DETAIL["frm_edit_activity"]
+        frm_dict = self.app.definitions.VIEW_PROJECT_DETAIL["frm_edit_activity"]
         activity = ActivityService.get_by_id(
             self.app.session, self.activity_id_var.get()
         )
@@ -171,7 +166,7 @@ class ProjectDetailView(DetailView):
 
 class CategoryDetailView(DetailView):
     def __init__(self, master, app, project_category):
-        super().__init__(master=master, layout=VIEW_PROJECT_CATEGORY_DETAIL)
+        super().__init__(master=master, app=app, layout=app.definitions.VIEW_PROJECT_CATEGORY_DETAIL)
         self.app = app
         self.project_category = project_category
 
@@ -185,7 +180,7 @@ class CategoryDetailView(DetailView):
         CustomLabel(
             self,
             text=self.project_category.name,
-            layout=VIEW_PROJECT_CATEGORY_DETAIL["lbl_name"],
+            layout=self.app.definitions.VIEW_PROJECT_CATEGORY_DETAIL["lbl_name"],
         )
 
         # Description
@@ -195,7 +190,7 @@ class CategoryDetailView(DetailView):
         CustomLabel(
             self,
             text=description,
-            layout=VIEW_PROJECT_CATEGORY_DETAIL["lbl_description"],
+            layout=self.app.definitions.VIEW_PROJECT_CATEGORY_DETAIL["lbl_description"],
             wraplength=600,
         )
         self.refresh()
@@ -219,7 +214,7 @@ class CategoryDetailView(DetailView):
             cmd_add_item=None,
             cmd_edit_item=None,
             cmd_delete_item=None,
-            layout=VIEW_PROJECT_CATEGORY_DETAIL["lst_projects"],
+            layout=self.app.definitions.VIEW_PROJECT_CATEGORY_DETAIL["lst_projects"],
         )
 
         goals = ProjectCategoryGoalService.get_by_category_id(
@@ -230,14 +225,15 @@ class CategoryDetailView(DetailView):
             goal_dict[goal.id] = goal
         ProjectCategoryGoalList(
             master=self,
+            app=self.app,
             item_key_var=self.category_goal_id_var,
             item_dict=goal_dict,
             cmd_edit_item=self.open_goal_edit_form,
-            layout=VIEW_PROJECT_CATEGORY_DETAIL["lst_goals"],
+            layout=self.app.definitions.VIEW_PROJECT_CATEGORY_DETAIL["lst_goals"],
         )
 
     def open_goal_edit_form(self, *_args):
-        frm_dict = VIEW_PROJECT_CATEGORY_DETAIL["frm_edit_activity"]
+        frm_dict = self.app.definitions.VIEW_PROJECT_CATEGORY_DETAIL["frm_edit_activity"]
         goal = None
         try:
             goal = ProjectCategoryGoalService.get_by_id(
@@ -264,7 +260,7 @@ class CategoryDetailView(DetailView):
         )
 
     def open_activity_creation_form(self, *_args):
-        frm_dict = VIEW_PROJECT_DETAIL["frm_edit_activity"]
+        frm_dict = self.app.definitions.VIEW_PROJECT_DETAIL["frm_edit_activity"]
         form = ActivityForm(
             master=self,
             app=self.app,
@@ -283,7 +279,7 @@ class CategoryDetailView(DetailView):
         )
 
     def open_activity_edit_form(self, *_args):
-        frm_dict = VIEW_PROJECT_DETAIL["frm_edit_activity"]
+        frm_dict = self.app.definitions.VIEW_PROJECT_DETAIL["frm_edit_activity"]
         activity = ActivityService.get_by_id(
             self.app.session, self.project_id_var.get()
         )
@@ -385,7 +381,7 @@ class CustomEntityItemList(tb.Frame):
         self.scrolled_frame = None
         self.item_list = None
 
-        for separator in CUSTOM_ENTITIY_ITEM_LIST["separators"]:
+        for separator in self.app.definitions.CUSTOM_ENTITIY_ITEM_LIST["separators"]:
             sep_new = tb.Separator(self, orient=separator["orient"])
             sep_new.grid(
                 row=separator["row"],
@@ -406,7 +402,7 @@ class CustomEntityItemList(tb.Frame):
         if self.scrolled_frame:
             self.scrolled_frame.grid_remove()
 
-        list_layout = VIEW_PROJECT_DETAIL["lst_activities"]
+        list_layout = self.app.definitions.VIEW_PROJECT_DETAIL["lst_activities"]
         self.scrolled_frame = ScrolledFrame(
             master=self, autohide=True, height=180
         )
@@ -420,7 +416,7 @@ class CustomEntityItemList(tb.Frame):
             parent=self.scrolled_frame,
             ttk_string_var=self.item_name_var,
             labels=item_dict,
-            styling=LIST_ITEM,
+            styling=self.app.definitions.LIST_ITEM,
             ttk_key_var=self.item_key_var,
             context_menu=context_menu,
         )
@@ -448,14 +444,15 @@ class CustomEntityItemList(tb.Frame):
 
 class ProjectCategoryGoalList(AutoLayoutFrame):
     def __init__(
-        self, master, item_key_var, item_dict, cmd_edit_item, layout, **kwargs
+        self, master, app, item_key_var, item_dict, cmd_edit_item, layout, **kwargs
     ):
-        config = VIEW_PROJECT_CATEGORY_GOAL_DETAIL
+        config = app.definitions.VIEW_PROJECT_CATEGORY_GOAL_DETAIL
         super().__init__(
             master=master,
             config=config["grid_config"],
             labels=config["labels"],
         )
+        self.app = app
         self.item_key_var = item_key_var
         self.cmd_edit_item = cmd_edit_item
 

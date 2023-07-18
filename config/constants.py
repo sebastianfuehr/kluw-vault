@@ -1,0 +1,2 @@
+APP_VERSION = 'v0.1.3-alpha'
+CONFIG_FILE_VERSION = 1

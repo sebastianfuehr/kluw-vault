@@ -4,10 +4,10 @@ from tkinter import filedialog
 from datetime import datetime, timedelta
 from PIL import Image, ImageTk
 
-import config.definitions as definitions
 from ..controller.time_entry_service import TimeEntryService
 from ..controller.time_controller import TimeController as tc
 from ..model.time_entry import TimeEntry
+from config.constants import APP_VERSION
 
 
 class LeftSidebar(tb.Frame):
@@ -45,30 +45,30 @@ class LeftSidebar(tb.Frame):
         self.frm_medals = tb.Frame(frm_achievements)
 
         bronze_img_orig = Image.open(
-            f"{definitions.APP_ROOT_DIR}/assets/icons/medal-bronze.png"
+            f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-bronze.png"
         ).resize((64, 64))
         bronze_img_tk = ImageTk.PhotoImage(bronze_img_orig)
         self.lbl_medal_bronze = tb.Label(self.frm_medals, image=bronze_img_tk)
         self.lbl_medal_bronze.photo = bronze_img_tk
-        txt = f"You worked for more than {tc.seconds_to_string(definitions.MEDAL_TH_BRONZE)}!"
+        txt = f"You worked for more than {tc.seconds_to_string(self.app.definitions.MEDAL_TH_BRONZE)}!"
         ToolTip(self.lbl_medal_bronze, text=txt)
 
         silver_img_orig = Image.open(
-            f"{definitions.APP_ROOT_DIR}/assets/icons/medal-silver.png"
+            f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-silver.png"
         ).resize((64, 64))
         silver_img_tk = ImageTk.PhotoImage(silver_img_orig)
         self.lbl_medal_silver = tb.Label(self.frm_medals, image=silver_img_tk)
         self.lbl_medal_silver.photo = silver_img_tk
-        txt = f"You worked for more than {tc.seconds_to_string(definitions.MEDAL_TH_SILVER)}!"
+        txt = f"You worked for more than {tc.seconds_to_string(self.app.definitions.MEDAL_TH_SILVER)}!"
         ToolTip(self.lbl_medal_silver, text=txt)
 
         gold_img_orig = Image.open(
-            f"{definitions.APP_ROOT_DIR}/assets/icons/medal-gold.png"
+            f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-gold.png"
         ).resize((64, 64))
         gold_img_tk = ImageTk.PhotoImage(gold_img_orig)
         self.lbl_medal_gold = tb.Label(self.frm_medals, image=gold_img_tk)
         self.lbl_medal_gold.photo = gold_img_tk
-        txt = f"You worked for more than {tc.seconds_to_string(definitions.MEDAL_TH_GOLD)}!"
+        txt = f"You worked for more than {tc.seconds_to_string(self.app.definitions.MEDAL_TH_GOLD)}!"
         ToolTip(self.lbl_medal_gold, text=txt)
 
         # Project category goals
@@ -96,9 +96,8 @@ class LeftSidebar(tb.Frame):
                 }
 
         # Versioning
-        msg_user = definitions.APP_VERSION
-        lbl_username = tb.Label(self, text=msg_user)
-        lbl_username.pack(side="bottom", pady=10)
+        lbl_version = tb.Label(self, text=APP_VERSION)
+        lbl_version.pack(side="bottom", pady=10)
 
         # Import/Export buttons
         frame_file_operations = tb.Frame(self)

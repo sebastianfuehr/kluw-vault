@@ -1,5 +1,7 @@
 #!/usr/bin/python
 # Python libraries
+import logging
+import os
 import ttkbootstrap as tb
 from tkinter.font import nametofont
 from datetime import datetime
@@ -23,16 +25,19 @@ from src.controller.project_category_goal_stats_controller import (
     ProjectCategoryGoalStatsController,
 )
 from src.controller.file_controller import FileController
+from config.definitions import Definitions
+from config.constants import CONFIG_FILE_VERSION
 
 
 class App(tb.Window):
     def __init__(self):
+        # Load config data
+        self.definitions = Definitions()
+        self.settings = SettingsController.load_or_create_config_file(self.definitions.APP_ROOT_DIR, CONFIG_FILE_VERSION)
+        theme = self.settings["Appearance"]["theme"]
         super().__init__(
-            title="Time Journal", themename="darkly", minsize=(1080, 800)
+            title="Time Journal", themename=theme, minsize=(1080, 800)
         )
-
-        # Load and update configuration data
-        self.settings = SettingsController.load_or_create_config_file()
 
         # Options
         default_font = nametofont("TkDefaultFont")

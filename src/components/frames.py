@@ -2,7 +2,6 @@ import ttkbootstrap as tb
 from ttkbootstrap.scrolled import ScrolledFrame
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
-from config.definitions import *
 from ..components.notifications import Notifications
 from src.components.navigation import ButtonPanel, ContextMenu
 
@@ -103,7 +102,7 @@ class ListFrame(tb.Frame, RefreshMixin):
 
     def build_gui_components(self):
         """Create the GUI elements for this component."""
-        for separator in TAB_FRAME_LIST["separators"]:
+        for separator in self.app.definitions.TAB_FRAME_LIST["separators"]:
             sep_new = tb.Separator(self, orient=separator["orient"])
             sep_new.grid(
                 row=separator["row"],
@@ -131,7 +130,7 @@ class ListFrame(tb.Frame, RefreshMixin):
         if self.scrolled_frame:
             self.scrolled_frame.grid_remove()
 
-        list_layout = TAB_FRAME_LIST["sidebar"]
+        list_layout = self.app.definitions.TAB_FRAME_LIST["sidebar"]
         self.scrolled_frame = ScrolledFrame(master=self, autohide=True)
         self.scrolled_frame.grid(
             row=list_layout["row"],
@@ -154,7 +153,7 @@ class ListFrame(tb.Frame, RefreshMixin):
             parent=self.scrolled_frame,
             ttk_string_var=self.item_str_var,
             labels=item_dict,
-            styling=LIST_ITEM,
+            styling=self.app.definitions.LIST_ITEM,
             ttk_key_var=self.item_key_var,
             context_menu=context_menu,
         )

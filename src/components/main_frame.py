@@ -1,4 +1,5 @@
 import ttkbootstrap as tb
+import logging
 
 # Custom modules
 from config.definitions import *
@@ -7,8 +8,8 @@ from config.definitions import *
 from src.components.left_sidebar import LeftSidebar
 from src.components.navigation import ButtonPanel
 from src.components.frames import ListFrame
-from src.components.dashboard import StatsDashboard
 from src.components.TimeEntriesList import TimeEntriesList
+from src.components.dashboard import StatsDashboard
 from ..components.forms import ProjectForm, ProjectCategoryForm
 from ..components.views import ProjectDetailView, CategoryDetailView
 
@@ -25,6 +26,7 @@ class MainFrame(tb.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+        self.app = parent
         self.config = parent.config
 
         self.tab_nav_str = tb.StringVar()  # The currently selected tab
@@ -35,7 +37,7 @@ class MainFrame(tb.Frame):
         self.grid_columnconfigure(2, weight=1)
 
         self.__build_gui_components()
-        self.tab_nav_str.set(MAINFRAME_TABS_NAV["elements"][0])
+        self.tab_nav_str.set(self.app.definitions.MAINFRAME_TABS_NAV["elements"][0])
 
         self.pack(fill="both", expand=True)
 
@@ -77,8 +79,8 @@ class MainFrame(tb.Frame):
         tab_nav = ButtonPanel(
             parent=self,
             ttk_string_var=self.tab_nav_str,
-            labels=MAINFRAME_TABS_NAV["elements"],
-            styling=MAINFRAME_TABS_NAV,
+            labels=self.app.definitions.MAINFRAME_TABS_NAV["elements"],
+            styling=self.app.definitions.MAINFRAME_TABS_NAV,
         )
         tab_nav.grid(row=0, column=2, sticky="ew")
         tab_nav.buttons[0].select_handler()
