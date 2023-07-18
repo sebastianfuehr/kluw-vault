@@ -1,6 +1,7 @@
 import ttkbootstrap as tb
 from ttkbootstrap.tableview import Tableview
 from datetime import datetime
+
 # Custom libraries
 from src.components.forms import TimeEntryForm
 from src.components.timer import Timer
@@ -15,7 +16,7 @@ class TimeEntriesList(tb.Frame):
         self.app = app
 
         self.new_entry = tb.BooleanVar(self, False)
-        self.new_entry.trace('w', self.__handle_new_entry_panel)
+        self.new_entry.trace("w", self.__handle_new_entry_panel)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -24,20 +25,20 @@ class TimeEntriesList(tb.Frame):
     def build_components(self):
         # Table
         self.columns = [
-            'db_id',
-            'Date',
-            'Day',
-            'Start',
-            'Stop',
-            'Pause',
-            'Duration',
-            'Project ID',
-            'Project Name',
-            'Activity ID',
-            'Activity Name',
-            'Alone',
-            'Tags',
-            'Comment'
+            "db_id",
+            "Date",
+            "Day",
+            "Start",
+            "Stop",
+            "Pause",
+            "Duration",
+            "Project ID",
+            "Project Name",
+            "Activity ID",
+            "Activity Name",
+            "Alone",
+            "Tags",
+            "Comment",
         ]
         hidden_columns_idx = [0, 7, 9]
         columns_idx_align_right = [3, 4, 5, 6]
@@ -45,58 +46,58 @@ class TimeEntriesList(tb.Frame):
         entries = TimeEntryService.get_all(self.app.session).all()
         row_data = [entry.to_list() for entry in entries]
 
-        self.table = Tableview(self,
-                               coldata=self.columns,
-                               rowdata=row_data,
-                               paginated=True,
-                               autofit=True,
-                               autoalign=True,
-                               pagesize=50)
+        self.table = Tableview(
+            self,
+            coldata=self.columns,
+            rowdata=row_data,
+            paginated=True,
+            autofit=True,
+            autoalign=True,
+            pagesize=50,
+        )
         for col_idx in hidden_columns_idx:
             self.table.hide_selected_column(cid=col_idx)
         for col_idx in columns_idx_align_right:
             self.table.align_column_right(cid=col_idx)
         self.table.sort_column_data(cid=1, sort=1)
-        self.table.view.bind('<<TreeviewSelect>>', self.on_tb_tableview_select)
-        self.table.grid(row=0, column=0, sticky='nsew', rowspan=3)
+        self.table.view.bind("<<TreeviewSelect>>", self.on_tb_tableview_select)
+        self.table.grid(row=0, column=0, sticky="nsew", rowspan=3)
 
         self.frm_new_entry = tb.Frame(self)
         self.frm_new_entry.grid_columnconfigure(0, weight=1)
         self.frm_new_entry.grid_rowconfigure((0, 3), weight=1)
         lbl_new_entry = tb.Label(
-            self.frm_new_entry,
-            text='New Time Entry',
-            font=(None, 18)
+            self.frm_new_entry, text="New Time Entry", font=(None, 18)
         )
         lbl_new_entry.grid(row=1, column=0)
         lbl_new_entry_description = tb.Label(
             self.frm_new_entry,
-            text='You are currently creating a new time entry or the timer is running.',
-            foreground='#a8a8a8'
+            text="You are currently creating a new time entry or the timer is running.",
+            foreground="#a8a8a8",
         )
         lbl_new_entry_description.grid(row=2, column=0, pady=(10, 0))
 
-        sep_vertical = tb.Separator(self, orient='vertical')
-        sep_vertical.grid(row=0, column=1, sticky='ns', rowspan=3)
+        sep_vertical = tb.Separator(self, orient="vertical")
+        sep_vertical.grid(row=0, column=1, sticky="ns", rowspan=3)
 
         # Right sidebar form
         self.te_form = TimeEntryForm(self, self.app, self.new_entry)
-        self.te_form.grid(row=0, column=2, sticky='nsew')
+        self.te_form.grid(row=0, column=2, sticky="nsew")
 
         separator = tb.Separator(self)
-        separator.grid(row=1, column=2, sticky='ew')
+        separator.grid(row=1, column=2, sticky="ew")
 
         self.timer = Timer(self, self.app, self.new_entry)
-        self.timer.grid(row=2, column=2, sticky='s', pady=30)       
+        self.timer.grid(row=2, column=2, sticky="s", pady=30)
 
     def on_tb_tableview_select(self, _):
         try:
             self.selected_iid = self.table.view.selection()[0]
-            values = self.table.view.item(self.selected_iid, 'values')
+            values = self.table.view.item(self.selected_iid, "values")
             selected_te = TimeEntry.from_list(values)
             self.te_form.set_time_entry(selected_te)
         except IndexError:
-            print('Index not found.')
+            print("Index not found.")
 
     def __handle_new_entry_panel(self, *args):
         """Overlay the time entry tabel with an information panel,
@@ -105,14 +106,14 @@ class TimeEntriesList(tb.Frame):
         """
         if self.new_entry.get():
             self.table.grid_forget()
-            self.frm_new_entry.grid(row=0, column=0, sticky='nsew', rowspan=3)
+            self.frm_new_entry.grid(row=0, column=0, sticky="nsew", rowspan=3)
         else:
             self.frm_new_entry.grid_forget()
-            self.table.grid(row=0, column=0, sticky='nsew', rowspan=3)
+            self.table.grid(row=0, column=0, sticky="nsew", rowspan=3)
 
     def add_entry(self, te: TimeEntry):
-        #self.table.insert_row(0, te.to_list())
-        #self.table.load_table_data()
+        # self.table.insert_row(0, te.to_list())
+        # self.table.load_table_data()
         self.rebuild_table()
         self.app.stats_sidebar.update_goal_progress()
 
@@ -135,11 +136,11 @@ class TimeEntriesList(tb.Frame):
     def resume_entry(self, curr_pause_duration):
         self.te_form.te_pause.delete(0, tb.END)
         self.te_form.te_pause.insert(
-            0, str(curr_pause_duration).split('.', 2)[0]
+            0, str(curr_pause_duration).split(".", 2)[0]
         )
 
     def stop_entry(self, curr_duration):
         self.te_form.te_end.delete(0, tb.END)
-        self.te_form.te_end.insert(0, datetime.now().strftime('%H:%M:%S'))
+        self.te_form.te_end.insert(0, datetime.now().strftime("%H:%M:%S"))
 
-        self.te_form.te_duration['text'] = str(curr_duration).split('.', 2)[0]
+        self.te_form.te_duration["text"] = str(curr_duration).split(".", 2)[0]

@@ -2,7 +2,7 @@ from sqlalchemy import select, delete
 from ..model.project_category import ProjectCategory
 
 
-class ProjectCategoryService():
+class ProjectCategoryService:
     @staticmethod
     def get_all(db_session):
         stmt = select(ProjectCategory)
@@ -23,8 +23,7 @@ class ProjectCategoryService():
 
     @staticmethod
     def merge(db_session, project_category: ProjectCategory):
-        """Insert or update a record.
-        """
+        """Insert or update a record."""
         db_session.merge(project_category)
         db_session.commit()
 

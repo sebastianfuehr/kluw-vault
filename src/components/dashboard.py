@@ -10,7 +10,7 @@ from config.definitions import *
 from src.components.navigation import ButtonPanel
 from ..model.time_entry import TimeEntry
 from ..controller.time_entry_service import TimeEntryService
-from .. controller.time_controller import TimeController
+from ..controller.time_controller import TimeController
 
 
 class StatsDashboard(tb.Frame):
@@ -20,8 +20,8 @@ class StatsDashboard(tb.Frame):
         self.app = app
 
         self.has_content = False
-        self.time_string = tb.StringVar(value=FILTER_PERIODS['elements'][4])
-        self.time_string.trace('w', self.build_gui_components)
+        self.time_string = tb.StringVar(value=FILTER_PERIODS["elements"][4])
+        self.time_string.trace("w", self.build_gui_components)
 
         self.update_data()
 
@@ -31,12 +31,12 @@ class StatsDashboard(tb.Frame):
         filter_panel = ButtonPanel(
             parent=self,
             ttk_string_var=self.time_string,
-            labels=FILTER_PERIODS['elements'],
-            styling=FILTER_PERIODS
+            labels=FILTER_PERIODS["elements"],
+            styling=FILTER_PERIODS,
         )
-        filter_panel.grid(row=0, column=0, columnspan=4, sticky='ew')
-        #filter_panel = FilterPanel(self, self.time_string)
-        #filter_panel.grid(row=0, column=0, columnspan=4, sticky='ew')
+        filter_panel.grid(row=0, column=0, columnspan=4, sticky="ew")
+        # filter_panel = FilterPanel(self, self.time_string)
+        # filter_panel.grid(row=0, column=0, columnspan=4, sticky='ew')
 
         """
         self.data = pd.read_sql(
@@ -48,20 +48,32 @@ class StatsDashboard(tb.Frame):
     def update_data(self):
         entries = TimeEntryService.get_all(self.app.session).all()
         row_data = [entry.to_list() for entry in entries]
-        self.data_max = pd.DataFrame(row_data, columns=TimeEntry.get_column_names())
+        self.data_max = pd.DataFrame(
+            row_data, columns=TimeEntry.get_column_names()
+        )
         if len(self.data_max) == 0:
             return
-        self.data_max['Date'] = pd.to_datetime(self.data_max['Date'], errors='coerce')
+        self.data_max["Date"] = pd.to_datetime(
+            self.data_max["Date"], errors="coerce"
+        )
 
         # self.data_max[self.data_max['Date'] > '2023-07-04']
         ago_one_year = str((datetime.today() - timedelta(days=365)).date())
         ago_six_months = str((datetime.today() - timedelta(days=182)).date())
         ago_one_month = str((datetime.today() - timedelta(days=31)).date())
         ago_one_week = str((datetime.today() - timedelta(days=7)).date())
-        self.data_one_year = self.data_max[self.data_max['Date'] > ago_one_year]
-        self.data_six_months = self.data_max[self.data_max['Date'] > ago_six_months]
-        self.data_one_month = self.data_max[self.data_max['Date'] > ago_one_month]
-        self.data_one_week = self.data_max[self.data_max['Date'] > ago_one_week]
+        self.data_one_year = self.data_max[
+            self.data_max["Date"] > ago_one_year
+        ]
+        self.data_six_months = self.data_max[
+            self.data_max["Date"] > ago_six_months
+        ]
+        self.data_one_month = self.data_max[
+            self.data_max["Date"] > ago_one_month
+        ]
+        self.data_one_week = self.data_max[
+            self.data_max["Date"] > ago_one_week
+        ]
 
     def build_gui_components(self, *args):
         if len(self.data_max) == 0:
@@ -70,17 +82,24 @@ class StatsDashboard(tb.Frame):
             self.graph_time_per_day.grid_forget()
 
         match self.time_string.get():
-            case 'Max': data = self.data_max
-            case '1 Year': data = self.data_one_year
-            case '6 Months': data = self.data_six_months
-            case 'Month': data = self.data_one_month
-            case 'Week': data = self.data_one_week
+            case "Max":
+                data = self.data_max
+            case "1 Year":
+                data = self.data_one_year
+            case "6 Months":
+                data = self.data_six_months
+            case "Month":
+                data = self.data_one_month
+            case "Week":
+                data = self.data_one_week
 
         self.graph_time_per_day = GraphTimePerDay(self, self.app, data)
-        self.graph_time_per_day.grid(row=2, column=0, columnspan=2, sticky='nsew')
+        self.graph_time_per_day.grid(
+            row=2, column=0, columnspan=2, sticky="nsew"
+        )
 
         self.overview_panel = OverviewPanel(self, self.app, data)
-        self.overview_panel.grid(row=1, column=0, columnspan=2, sticky='nsew')
+        self.overview_panel.grid(row=1, column=0, columnspan=2, sticky="nsew")
 
         self.has_content = True
 
@@ -95,11 +114,11 @@ class OverviewPanel(tb.Frame):
 
         lbl_heading = tb.Label(
             self,
-            text='Overview',
-            font=(None, DASHBOARD_HEADING_SIZE, 'bold'),
-            anchor='center'
+            text="Overview",
+            font=(None, DASHBOARD_HEADING_SIZE, "bold"),
+            anchor="center",
         )
-        lbl_heading.grid(row=0, column=0, columnspan=4, sticky='ew', pady=10)
+        lbl_heading.grid(row=0, column=0, columnspan=4, sticky="ew", pady=10)
 
         self.calculate_values()
         self.build_gui_components()
@@ -115,13 +134,19 @@ class OverviewPanel(tb.Frame):
         goal_str = TimeController.seconds_to_string(total_goal_minutes * 60)
         self.goal_today_str = tb.StringVar(self, goal_str)
         curr_ratio = self.app.sc.total_time_today() / 60 / total_goal_minutes
-        self.progress_today = tb.StringVar(self, f'{round(curr_ratio*100, 1)}%')
+        self.progress_today = tb.StringVar(
+            self, f"{round(curr_ratio*100, 1)}%"
+        )
 
     def build_gui_components(self):
-        self.block_goal_today = OverviewPanelBlock(self, self.app, 'GOAL TODAY', self.goal_today_str)
-        self.block_goal_today.grid(row=1, column=0, sticky='nsew', padx=10)
-        self.block_progress_today = OverviewPanelBlock(self, self.app, 'PROGRESS', self.progress_today)
-        self.block_progress_today.grid(row=2, column=0, sticky='nsew', padx=10)
+        self.block_goal_today = OverviewPanelBlock(
+            self, self.app, "GOAL TODAY", self.goal_today_str
+        )
+        self.block_goal_today.grid(row=1, column=0, sticky="nsew", padx=10)
+        self.block_progress_today = OverviewPanelBlock(
+            self, self.app, "PROGRESS", self.progress_today
+        )
+        self.block_progress_today.grid(row=2, column=0, sticky="nsew", padx=10)
 
 
 class OverviewPanelBlock(tb.Frame):
@@ -130,23 +155,20 @@ class OverviewPanelBlock(tb.Frame):
         self.app = app
         self.value_str = value_str
 
-        self.configure(borderwidth=1, relief='solid')
+        self.configure(borderwidth=1, relief="solid")
 
         lbl_heading = tb.Label(
-            self,
-            text=heading,
-            font=(None, 14, 'bold'),
-            anchor='center'
+            self, text=heading, font=(None, 14, "bold"), anchor="center"
         )
-        lbl_heading.pack(side='top', fill='x', pady=(20, 0))
+        lbl_heading.pack(side="top", fill="x", pady=(20, 0))
 
         lbl_value = tb.Label(
             self,
             text=value_str.get(),
-            font=(None, 32, 'bold'),
-            anchor='center'
+            font=(None, 32, "bold"),
+            anchor="center",
         )
-        lbl_value.pack(side='top', fill='x', pady=20)
+        lbl_value.pack(side="top", fill="x", pady=20)
 
 
 class GraphTimePerDay(tb.Frame):
@@ -157,11 +179,11 @@ class GraphTimePerDay(tb.Frame):
 
         lbl_heading = tb.Label(
             self,
-            text='Time per Day',
-            font=(None, DASHBOARD_HEADING_SIZE, 'bold'),
-            anchor='center'
+            text="Time per Day",
+            font=(None, DASHBOARD_HEADING_SIZE, "bold"),
+            anchor="center",
         )
-        lbl_heading.pack(side='top', fill='x', pady=10)
+        lbl_heading.pack(side="top", fill="x", pady=10)
 
         # Figure
         figure = plt.Figure()
@@ -171,38 +193,50 @@ class GraphTimePerDay(tb.Frame):
 
         # Graph
         tmp_data = self.data
-        data_by_date = tmp_data.groupby(pd.Grouper(key='Date', freq='D'))['Duration'].sum()
+        data_by_date = tmp_data.groupby(pd.Grouper(key="Date", freq="D"))[
+            "Duration"
+        ].sum()
         data_by_date = data_by_date.reset_index()
-        data_by_date['Minutes'] = data_by_date['Duration'].dt.total_seconds() / 60 / 60
-        data_by_date['Average'] = data_by_date['Minutes'].mean()
+        data_by_date["Minutes"] = (
+            data_by_date["Duration"].dt.total_seconds() / 60 / 60
+        )
+        data_by_date["Average"] = data_by_date["Minutes"].mean()
         axis = figure.add_subplot(111)
-        line = axis.plot(data_by_date['Date'], data_by_date['Minutes'])[0]
-        line_avg = axis.plot(data_by_date['Date'], data_by_date['Average'], linestyle='dashed', label='Average per Day')[0]
-        axis.legend(loc='upper right')
-        line.set_color(COLORS['highlight'])
+        line = axis.plot(data_by_date["Date"], data_by_date["Minutes"])[0]
+        line_avg = axis.plot(
+            data_by_date["Date"],
+            data_by_date["Average"],
+            linestyle="dashed",
+            label="Average per Day",
+        )[0]
+        axis.legend(loc="upper right")
+        line.set_color(COLORS["highlight"])
 
-        axis.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+        axis.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
         axis.set_ylim(ymin=0)
         axis.set_facecolor(self.app.style.colors.bg)
-        for side in ['left', 'bottom']:
-            axis.spines[side].set_color('white')
-        for side in ['right', 'top']:
+        for side in ["left", "bottom"]:
+            axis.spines[side].set_color("white")
+        for side in ["right", "top"]:
             axis.spines[side].set_color(self.app.style.colors.bg)
 
         # Ticks
-        axis.tick_params(axis='x', colors='white')
-        axis.tick_params(axis='y', colors='white')
+        axis.tick_params(axis="x", colors="white")
+        axis.tick_params(axis="y", colors="white")
 
         # Widget
         fig_widget = FigureCanvasTkAgg(figure, master=self)
-        fig_widget.get_tk_widget().pack(side='top', fill='both')
+        fig_widget.get_tk_widget().pack(side="top", fill="both")
 
 
 class FilterPanel(tb.Frame):
     def __init__(self, parent, time_string):
         super().__init__(master=parent)
-        self.buttons = [FilterTextButton(self, text, time_string) for text in FILTER_PERIODS['elements']]
-        time_string.trace('w', self.__unselect_filter_buttons)
+        self.buttons = [
+            FilterTextButton(self, text, time_string)
+            for text in FILTER_PERIODS["elements"]
+        ]
+        time_string.trace("w", self.__unselect_filter_buttons)
 
     def __unselect_filter_buttons(self, *args):
         [button.unselect() for button in self.buttons]
@@ -210,9 +244,9 @@ class FilterPanel(tb.Frame):
 
 class FilterTextButton(tb.Label):
     def __init__(self, parent, text, time_string):
-        super().__init__(master=parent, text=text, foreground=COLORS['text'])
-        self.pack(side='right', padx=10, pady=10)
-        self.bind('<Button-1>', self.__select_handler)
+        super().__init__(master=parent, text=text, foreground=COLORS["text"])
+        self.pack(side="right", padx=10, pady=10)
+        self.bind("<Button-1>", self.__select_handler)
 
         self.text = text
         self.time_string = time_string
@@ -222,7 +256,7 @@ class FilterTextButton(tb.Label):
 
     def __select_handler(self, event=None):
         self.time_string.set(self.text)
-        self.configure(foreground=COLORS['highlight'])
+        self.configure(foreground=COLORS["highlight"])
 
     def unselect(self):
-        self.configure(foreground=COLORS['text'])
+        self.configure(foreground=COLORS["text"])

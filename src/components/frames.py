@@ -3,7 +3,7 @@ from ttkbootstrap.scrolled import ScrolledFrame
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
 from config.definitions import *
-from .. components.notifications import Notifications
+from ..components.notifications import Notifications
 from src.components.navigation import ButtonPanel, ContextMenu
 
 
@@ -11,26 +11,23 @@ class AutoLayoutFrame(tb.Frame):
     """Provides a frame class which supports automatic grid
     configuration and placement of labels.
     """
+
     def __init__(self, master, config, labels):
         super().__init__(master=master)
-        for idx, weight in config['rowconfigure'].items():
+        for idx, weight in config["rowconfigure"].items():
             self.grid_rowconfigure(idx, weight=weight)
-        for idx, weight in config['columnconfigure'].items():
+        for idx, weight in config["columnconfigure"].items():
             self.grid_columnconfigure(idx, weight=weight)
 
         for label in labels:
-            tb.Label(
-                self,
-                text=label['text'],
-                font=label['font']
-            ).grid(
-                row=label['row'],
-                column=label['col'],
-                rowspan=label['rowspan'],
-                columnspan=label['columnspan'],
-                padx=label['padx'],
-                pady=label['pady'],
-                sticky=label['sticky']
+            tb.Label(self, text=label["text"], font=label["font"]).grid(
+                row=label["row"],
+                column=label["col"],
+                rowspan=label["rowspan"],
+                columnspan=label["columnspan"],
+                padx=label["padx"],
+                pady=label["pady"],
+                sticky=label["sticky"],
             )
 
 
@@ -71,16 +68,17 @@ class ListFrame(tb.Frame, RefreshMixin):
     detail_view : cards.DetailView
         A frame for displaying the selected item in great detail.
     """
+
     def __init__(
-            self,
-            master,
-            app,
-            db_service,
-            db_session,
-            form_edit,
-            detail_view,
-            db_delete_item
-        ):
+        self,
+        master,
+        app,
+        db_service,
+        db_session,
+        form_edit,
+        detail_view,
+        db_delete_item,
+    ):
         super().__init__(master=master)
         self.app = app
         self.db_service = db_service
@@ -95,7 +93,7 @@ class ListFrame(tb.Frame, RefreshMixin):
         self.objects = None
         self.item_key_var = tb.IntVar()
         self.item_str_var = tb.StringVar()
-        self.item_str_var.trace('w', self.select_handler)
+        self.item_str_var.trace("w", self.select_handler)
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(2, weight=7)
@@ -104,22 +102,18 @@ class ListFrame(tb.Frame, RefreshMixin):
         self.build_gui_components()
 
     def build_gui_components(self):
-        """Create the GUI elements for this component.
-        """
-        for separator in TAB_FRAME_LIST['separators']:
-            sep_new = tb.Separator(self, orient=separator['orient'])
+        """Create the GUI elements for this component."""
+        for separator in TAB_FRAME_LIST["separators"]:
+            sep_new = tb.Separator(self, orient=separator["orient"])
             sep_new.grid(
-                row=separator['row'],
-                column=separator['col'],
-                rowspan=separator['rowspan'],
-                sticky=separator['sticky']
+                row=separator["row"],
+                column=separator["col"],
+                rowspan=separator["rowspan"],
+                sticky=separator["sticky"],
             )
 
         btn_new_item = tb.Button(
-            self,
-            text='New',
-            bootstyle='success',
-            command=self.open_form
+            self, text="New", bootstyle="success", command=self.open_form
         )
         btn_new_item.grid(row=2, column=0, pady=25)
 
@@ -131,26 +125,23 @@ class ListFrame(tb.Frame, RefreshMixin):
             self.item_detail_view.grid_forget()
         item = self.objects[self.item_key_var.get()]
         self.item_detail_view = self.detail_view(self, self.app, item)
-        self.item_detail_view.grid(row=0, rowspan=3, column=2, sticky='nsew')
+        self.item_detail_view.grid(row=0, rowspan=3, column=2, sticky="nsew")
 
     def refresh(self):
         if self.scrolled_frame:
             self.scrolled_frame.grid_remove()
 
-        list_layout = TAB_FRAME_LIST['sidebar']
-        self.scrolled_frame = ScrolledFrame(
-            master=self,
-            autohide=True
-        )
+        list_layout = TAB_FRAME_LIST["sidebar"]
+        self.scrolled_frame = ScrolledFrame(master=self, autohide=True)
         self.scrolled_frame.grid(
-            row=list_layout['row'],
-            column=list_layout['col'],
-            sticky=list_layout['sticky']
+            row=list_layout["row"],
+            column=list_layout["col"],
+            sticky=list_layout["sticky"],
         )
 
         # Context menu
         context_menu = ContextMenu(self.app)
-        context_menu.add_command(label='Delete', command=self.delete_entry)
+        context_menu.add_command(label="Delete", command=self.delete_entry)
 
         # Item list
         items = self.db_service.get_all(self.db_session).all()
@@ -165,32 +156,28 @@ class ListFrame(tb.Frame, RefreshMixin):
             labels=item_dict,
             styling=LIST_ITEM,
             ttk_key_var=self.item_key_var,
-            context_menu=context_menu
+            context_menu=context_menu,
         )
-        frm_item_list.pack(expand=True, fill='both')
+        frm_item_list.pack(expand=True, fill="both")
 
     def open_form(self):
-        """Create a new form instance and put it on the grid layout.
-        """
-        form = self.form_edit(
-            self,
-            self.app,
-            self.db_service,
-            self.db_session
-        )
-        form.grid(row=0, rowspan=3, column=2, sticky='nsew')
+        """Create a new form instance and put it on the grid layout."""
+        form = self.form_edit(self, self.app, self.db_service, self.db_session)
+        form.grid(row=0, rowspan=3, column=2, sticky="nsew")
 
     def delete_entry(self, *_args):
         usr_answ = Messagebox.okcancel(
-            message='Are you sure you want to delete that entry?',
-            title='Attention!'
+            message="Are you sure you want to delete that entry?",
+            title="Attention!",
         )
-        if usr_answ == 'OK':
-            status = self.db_service.delete(self.db_session, self.item_key_var.get())
+        if usr_answ == "OK":
+            status = self.db_service.delete(
+                self.db_session, self.item_key_var.get()
+            )
             self.refresh()
             if status == 1:
                 Notifications.show_info(
-                    message='The entry has been deleted from the database.'
+                    message="The entry has been deleted from the database."
                 )
             elif status == 0:
                 Notifications.show_error(
@@ -198,5 +185,5 @@ class ListFrame(tb.Frame, RefreshMixin):
                 )
             else:
                 Notifications.show_error(
-                    message='There has been an unknown error!'
+                    message="There has been an unknown error!"
                 )

@@ -1,35 +1,45 @@
-from sqlalchemy import Column, Integer, DateTime, ForeignKey, Boolean, Text, String
+from sqlalchemy import (
+    Column,
+    Integer,
+    DateTime,
+    ForeignKey,
+    Boolean,
+    Text,
+    String,
+)
 from sqlalchemy.orm import relationship
 from datetime import datetime, timedelta
 from .orm_base import Base
 
 
 class TimeEntry(Base):
-    __tablename__ = 'time_entries'
+    __tablename__ = "time_entries"
     id = Column(Integer, primary_key=True)
     start = Column(DateTime)
     stop = Column(DateTime)
     pause = Column(Integer)
-    project_id = Column(Integer, ForeignKey('projects.id'))
-    project = relationship('Project')
-    activity_id = Column(Integer, ForeignKey('activities.id'))
-    activity = relationship('Activity')
+    project_id = Column(Integer, ForeignKey("projects.id"))
+    project = relationship("Project")
+    activity_id = Column(Integer, ForeignKey("activities.id"))
+    activity = relationship("Activity")
     tags = Column(String)
     alone = Column(Boolean)
     comment = Column(Text)
 
-    def __init__(self,
-                 id=None,
-                 start=None,
-                 stop=None,
-                 pause=0,
-                 project_id=None,
-                 project_name=None,
-                 activity_id=None,
-                 activity_name=None,
-                 alone=True,
-                 tags=None,
-                 comment=None):
+    def __init__(
+        self,
+        id=None,
+        start=None,
+        stop=None,
+        pause=0,
+        project_id=None,
+        project_name=None,
+        activity_id=None,
+        activity_name=None,
+        alone=True,
+        tags=None,
+        comment=None,
+    ):
         """
         Parameters
         ----------
@@ -66,7 +76,7 @@ class TimeEntry(Base):
         if self.start is None:
             return None
         else:
-            return self.start.strftime('%a')
+            return self.start.strftime("%a")
 
     def get_start_time(self):
         if self.start is None:
@@ -109,7 +119,7 @@ class TimeEntry(Base):
     def get_activity_name(self):
         if self.activity is not None:
             return self.activity.name
-        elif hasattr(self, 'activity_name') and self.activity_name is not None:
+        elif hasattr(self, "activity_name") and self.activity_name is not None:
             return self.activity_name
         else:
             return None
@@ -118,20 +128,20 @@ class TimeEntry(Base):
 
     def get_column_names():
         return [
-            'db_id',
-            'Date',
-            'Day',
-            'Start',
-            'Stop',
-            'Pause',
-            'Duration',
-            'Project ID',
-            'Project Name',
-            'Activity ID',
-            'Activity Name',
-            'Alone',
-            'Tags',
-            'Comment'
+            "db_id",
+            "Date",
+            "Day",
+            "Start",
+            "Stop",
+            "Pause",
+            "Duration",
+            "Project ID",
+            "Project Name",
+            "Activity ID",
+            "Activity Name",
+            "Alone",
+            "Tags",
+            "Comment",
         ]
 
     def to_list(self):
@@ -149,23 +159,25 @@ class TimeEntry(Base):
             self.get_activity_name(),
             self.alone,
             self.tags,
-            self.comment
+            self.comment,
         ]
 
     def from_list(time_entry_list):
         start = datetime.strptime(
-            f'{time_entry_list[1]} {time_entry_list[3]}',
-            '%Y-%m-%d %H:%M:%S')
+            f"{time_entry_list[1]} {time_entry_list[3]}", "%Y-%m-%d %H:%M:%S"
+        )
         stop = None
-        if time_entry_list[3] != 'None':
+        if time_entry_list[3] != "None":
             stop = datetime.strptime(
-                f'{time_entry_list[1]} {time_entry_list[4]}',
-                '%Y-%m-%d %H:%M:%S'
+                f"{time_entry_list[1]} {time_entry_list[4]}",
+                "%Y-%m-%d %H:%M:%S",
             )
-        pause_datetime = datetime.strptime(time_entry_list[5], '%H:%M:%S')
-        pause_duration = timedelta(hours=pause_datetime.hour,
-                                   minutes=pause_datetime.minute,
-                                   seconds=pause_datetime.second)
+        pause_datetime = datetime.strptime(time_entry_list[5], "%H:%M:%S")
+        pause_duration = timedelta(
+            hours=pause_datetime.hour,
+            minutes=pause_datetime.minute,
+            seconds=pause_datetime.second,
+        )
         new_entry = TimeEntry(
             id=time_entry_list[0],
             start=start,
@@ -177,6 +189,6 @@ class TimeEntry(Base):
             activity_name=time_entry_list[10],
             alone=time_entry_list[11],
             tags=time_entry_list[12],
-            comment=time_entry_list[13]
+            comment=time_entry_list[13],
         )
         return new_entry

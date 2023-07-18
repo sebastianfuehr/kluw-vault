@@ -3,7 +3,7 @@ from .orm_base import Base
 
 
 class TrackingSession(Base):
-    __tablename__ = 'tracking_sessions'
+    __tablename__ = "tracking_sessions"
     id = Column(Integer, primary_key=True)
     start = Column(DateTime)
     end = Column(DateTime)

@@ -3,7 +3,7 @@ from .orm_base import Base
 
 
 class ProjectCategory(Base):
-    __tablename__ = 'project_categories'
+    __tablename__ = "project_categories"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     description = Column(String)

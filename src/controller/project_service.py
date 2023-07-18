@@ -2,7 +2,7 @@ from sqlalchemy import select, delete
 from ..model.project import Project
 
 
-class ProjectService():
+class ProjectService:
     @staticmethod
     def get_all(db_session):
         stmt = select(Project)
@@ -26,11 +26,10 @@ class ProjectService():
         stmt = select(Project).filter_by(id=project_id)
         result = db_session.execute(stmt).fetchone()[0]
         return result
-    
+
     @staticmethod
     def merge(db_session, project: Project):
-        """Insert or update a record.
-        """
+        """Insert or update a record."""
         db_session.merge(project)
         db_session.commit()
 
@@ -38,6 +37,6 @@ class ProjectService():
         """Deletes the entry with the specified ID. Returns the number
         of entries affected by the operation. Should be 1.
         """
-        stmt = delete(Project).where(Project.id==project_id)
+        stmt = delete(Project).where(Project.id == project_id)
         result = db_session.execute(stmt)
         return result.rowcount

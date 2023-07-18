@@ -1,9 +1,8 @@
-from sqlalchemy import select, delete # pylint: disable=import-error
+from sqlalchemy import select, delete  # pylint: disable=import-error
 from ..model.activity import Activity
 
 
-class ActivityService():
-
+class ActivityService:
     @staticmethod
     def get_all(db_session):
         stmt = select(Activity)
@@ -33,8 +32,7 @@ class ActivityService():
 
     @staticmethod
     def get_by_project_id(db_session, project_id):
-        """Returns all activities which belong to a specific project.
-        """
+        """Returns all activities which belong to a specific project."""
         stmt = select(Activity).filter_by(project_id=project_id)
         result = db_session.execute(stmt)
         return result.scalars()
@@ -49,6 +47,6 @@ class ActivityService():
         """Returns the number of entries affected by the operation.
         Should be 1.
         """
-        stmt = delete(Activity).where(Activity.id==activity_id)
+        stmt = delete(Activity).where(Activity.id == activity_id)
         result = db_session.execute(stmt)
         return result.rowcount

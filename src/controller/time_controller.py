@@ -1,4 +1,4 @@
-class TimeController():
+class TimeController:
     @staticmethod
     def convert_seconds(seconds):
         hours = seconds // 3600
@@ -18,22 +18,22 @@ class TimeController():
     def seconds_to_string(seconds):
         hours, minutes, seconds = TimeController.convert_seconds(seconds)
         if hours == 0:
-            return f'{minutes}m {seconds}s'
+            return f"{minutes}m {seconds}s"
         elif hours > 0 and minutes == 0 and seconds == 0:
-            return f'{hours}h'
+            return f"{hours}h"
         elif hours > 0 and minutes > 0 and seconds == 0:
-            return f'{hours}h {minutes}m'
+            return f"{hours}h {minutes}m"
         else:
-            return f'{hours}h {minutes}m {seconds}s'
+            return f"{hours}h {minutes}m {seconds}s"
 
     @staticmethod
     def timedelta_to_string(duration):
         hours, minutes, seconds = TimeController.convert_timedelta(duration)
         if hours == 0:
-            return f'{minutes}m {seconds}s'
+            return f"{minutes}m {seconds}s"
         elif hours > 0 and minutes == 0 and seconds == 0:
-            return f'{hours}h'
+            return f"{hours}h"
         elif hours > 0 and minutes > 0 and seconds == 0:
-            return f'{hours}h {minutes}m'
+            return f"{hours}h {minutes}m"
         else:
-            return f'{hours}h {minutes}m {seconds}s'
+            return f"{hours}h {minutes}m {seconds}s"

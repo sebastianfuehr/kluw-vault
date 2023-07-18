@@ -1,15 +1,25 @@
+"""
+    Example
+"""
+
 import ttkbootstrap as tb
 from ttkbootstrap.scrolled import ScrolledFrame
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
 from config.definitions import *
-from .. components.notifications import Notifications
-from .. components.frames import AutoLayoutFrame
-from .. components.navigation import ButtonPanel, ContextMenu
-from .. components.forms import ProjectForm, ActivityForm, ProjectCategoryGoalForm
+from ..components.notifications import Notifications
+from ..components.frames import AutoLayoutFrame
+from ..components.navigation import ButtonPanel, ContextMenu
+from ..components.forms import (
+    ProjectForm,
+    ActivityForm,
+    ProjectCategoryGoalForm,
+)
 from ..controller.activity_service import ActivityService
-from .. controller.project_service import ProjectService
-from .. controller.project_category_goal_service import ProjectCategoryGoalService
+from ..controller.project_service import ProjectService
+from ..controller.project_category_goal_service import (
+    ProjectCategoryGoalService,
+)
 
 
 class DetailView(AutoLayoutFrame):
@@ -24,36 +34,29 @@ class DetailView(AutoLayoutFrame):
         - columnconfigure : dict(col_idx, weight)
         - labels : dict
     """
+
     def __init__(self, master, layout):
         super().__init__(
             master=master,
-            config=layout['grid-config'],
-            labels=layout['labels']
+            config=layout["grid-config"],
+            labels=layout["labels"],
         )
 
         btn = VIEW_BTN_EDIT
-        btn_edit = tb.Button(
-            self,
-            text=btn['text'])
-        btn_edit.bind('<Button-1>', self.open_edit_form)
+        btn_edit = tb.Button(self, text=btn["text"])
+        btn_edit.bind("<Button-1>", self.open_edit_form)
         btn_edit.place(
-            relx=btn['relx'],
-            rely=btn['rely'],
-            anchor=btn['anchor']
+            relx=btn["relx"], rely=btn["rely"], anchor=btn["anchor"]
         )
 
     def open_edit_form(self, *_args):
-        """Open a form for editing the selected entity.
-        """
-        print('Open edit form')
+        """Open a form for editing the selected entity."""
+        print("Open edit form")
 
 
 class ProjectDetailView(DetailView):
     def __init__(self, master, app, project):
-        super().__init__(
-            master=master,
-            layout=VIEW_PROJECT_DETAIL
-        )
+        super().__init__(master=master, layout=VIEW_PROJECT_DETAIL)
         self.app = app
         self.project = project
 
@@ -66,34 +69,36 @@ class ProjectDetailView(DetailView):
         CustomLabel(
             self,
             text=self.project.name,
-            layout=VIEW_PROJECT_DETAIL['lbl_name']
+            layout=VIEW_PROJECT_DETAIL["lbl_name"],
         )
 
         # Category
-        category_name = '-'
+        category_name = "-"
         if self.project.project_category is not None:
             category_name = self.project.project_category.name
         CustomLabel(
             self,
             text=category_name,
-            layout=VIEW_PROJECT_DETAIL['lbl_category']
+            layout=VIEW_PROJECT_DETAIL["lbl_category"],
         )
 
         # Description
         description = self.project.description
         if description is None:
-            description = '-'
+            description = "-"
         CustomLabel(
             self,
             text=description,
-            layout=VIEW_PROJECT_DETAIL['lbl_description'],
-            wraplength=600
+            layout=VIEW_PROJECT_DETAIL["lbl_description"],
+            wraplength=600,
         )
         self.refresh()
 
     def refresh(self):
         # Activities
-        items = ActivityService.get_by_project_id(self.app.session, self.project.id)
+        items = ActivityService.get_by_project_id(
+            self.app.session, self.project.id
+        )
         item_dict = {}
         for item in items:
             item_dict[item.id] = item.name
@@ -108,31 +113,33 @@ class ProjectDetailView(DetailView):
             cmd_add_item=self.open_activity_creation_form,
             cmd_edit_item=self.open_activity_edit_form,
             cmd_delete_item=self.delete_activity,
-            layout=VIEW_PROJECT_DETAIL['lst_activities']
+            layout=VIEW_PROJECT_DETAIL["lst_activities"],
         )
 
     def open_activity_creation_form(self, *_args):
-        frm_dict = VIEW_PROJECT_DETAIL['frm_edit_activity']
+        frm_dict = VIEW_PROJECT_DETAIL["frm_edit_activity"]
         form = ActivityForm(
             master=self,
             app=self.app,
             db_service=ActivityService,
             db_session=self.app.session,
-            project_id=self.project.id
+            project_id=self.project.id,
         )
         form.grid(
-            row=frm_dict['row'],
-            column=frm_dict['col'],
-            rowspan=frm_dict['rowspan'],
-            columnspan=frm_dict['columnspan'],
-            sticky=frm_dict['sticky'],
-            padx=frm_dict['padx'],
-            pady=frm_dict['pady']
+            row=frm_dict["row"],
+            column=frm_dict["col"],
+            rowspan=frm_dict["rowspan"],
+            columnspan=frm_dict["columnspan"],
+            sticky=frm_dict["sticky"],
+            padx=frm_dict["padx"],
+            pady=frm_dict["pady"],
         )
 
     def open_activity_edit_form(self, *_args):
-        frm_dict = VIEW_PROJECT_DETAIL['frm_edit_activity']
-        activity = ActivityService.get_by_id(self.app.session, self.activity_id_var.get())
+        frm_dict = VIEW_PROJECT_DETAIL["frm_edit_activity"]
+        activity = ActivityService.get_by_id(
+            self.app.session, self.activity_id_var.get()
+        )
 
         form = ActivityForm(
             master=self,
@@ -140,35 +147,31 @@ class ProjectDetailView(DetailView):
             db_service=ActivityService,
             db_session=self.app.session,
             project_id=self.project.id,
-            activity=activity
+            activity=activity,
         )
         form.grid(
-            row=frm_dict['row'],
-            column=frm_dict['col'],
-            rowspan=frm_dict['rowspan'],
-            columnspan=frm_dict['columnspan'],
-            sticky=frm_dict['sticky'],
-            padx=frm_dict['padx'],
-            pady=frm_dict['pady']
+            row=frm_dict["row"],
+            column=frm_dict["col"],
+            rowspan=frm_dict["rowspan"],
+            columnspan=frm_dict["columnspan"],
+            sticky=frm_dict["sticky"],
+            padx=frm_dict["padx"],
+            pady=frm_dict["pady"],
         )
 
     def delete_activity(self, *_args):
         msg = f'Are you sure you want to delete the activity "{self.activity_name_var.get()}" in the "{self.project.name}" project?'
-        usr_answ = Messagebox.okcancel(
-            message=msg,
-            title='Attention!'
-        )
-        if usr_answ == 'OK':
-            ActivityService.delete(self.app.session, self.activity_id_var.get())
+        usr_answ = Messagebox.okcancel(message=msg, title="Attention!")
+        if usr_answ == "OK":
+            ActivityService.delete(
+                self.app.session, self.activity_id_var.get()
+            )
         self.refresh()
 
 
 class CategoryDetailView(DetailView):
     def __init__(self, master, app, project_category):
-        super().__init__(
-            master=master,
-            layout=VIEW_PROJECT_CATEGORY_DETAIL
-        )
+        super().__init__(master=master, layout=VIEW_PROJECT_CATEGORY_DETAIL)
         self.app = app
         self.project_category = project_category
 
@@ -182,24 +185,26 @@ class CategoryDetailView(DetailView):
         CustomLabel(
             self,
             text=self.project_category.name,
-            layout=VIEW_PROJECT_CATEGORY_DETAIL['lbl_name']
+            layout=VIEW_PROJECT_CATEGORY_DETAIL["lbl_name"],
         )
 
         # Description
         description = self.project_category.description
         if description is None:
-            description = '-'
+            description = "-"
         CustomLabel(
             self,
             text=description,
-            layout=VIEW_PROJECT_CATEGORY_DETAIL['lbl_description'],
-            wraplength=600
+            layout=VIEW_PROJECT_CATEGORY_DETAIL["lbl_description"],
+            wraplength=600,
         )
         self.refresh()
 
     def refresh(self):
         # Projects
-        items = ProjectService.get_by_category_id(self.app.session, self.project_category.id)
+        items = ProjectService.get_by_category_id(
+            self.app.session, self.project_category.id
+        )
         item_dict = {}
         for item in items:
             item_dict[item.id] = item.name
@@ -214,10 +219,12 @@ class CategoryDetailView(DetailView):
             cmd_add_item=None,
             cmd_edit_item=None,
             cmd_delete_item=None,
-            layout=VIEW_PROJECT_CATEGORY_DETAIL['lst_projects']
+            layout=VIEW_PROJECT_CATEGORY_DETAIL["lst_projects"],
         )
 
-        goals = ProjectCategoryGoalService.get_by_category_id(self.app.session, self.project_category.id)
+        goals = ProjectCategoryGoalService.get_by_category_id(
+            self.app.session, self.project_category.id
+        )
         goal_dict = {}
         for goal in goals:
             goal_dict[goal.id] = goal
@@ -226,14 +233,16 @@ class CategoryDetailView(DetailView):
             item_key_var=self.category_goal_id_var,
             item_dict=goal_dict,
             cmd_edit_item=self.open_goal_edit_form,
-            layout=VIEW_PROJECT_CATEGORY_DETAIL['lst_goals']
+            layout=VIEW_PROJECT_CATEGORY_DETAIL["lst_goals"],
         )
 
     def open_goal_edit_form(self, *_args):
-        frm_dict = VIEW_PROJECT_CATEGORY_DETAIL['frm_edit_activity']
+        frm_dict = VIEW_PROJECT_CATEGORY_DETAIL["frm_edit_activity"]
         goal = None
         try:
-            goal = ProjectCategoryGoalService.get_by_id(self.app.session, self.category_goal_id_var.get())
+            goal = ProjectCategoryGoalService.get_by_id(
+                self.app.session, self.category_goal_id_var.get()
+            )
         except TypeError:
             pass
         form = ProjectCategoryGoalForm(
@@ -242,40 +251,42 @@ class CategoryDetailView(DetailView):
             db_service=ProjectCategoryGoalService,
             db_session=self.app.session,
             category_id=self.project_category.id,
-            goal=goal
+            goal=goal,
         )
         form.grid(
-            row=frm_dict['row'],
-            column=frm_dict['col'],
-            rowspan=frm_dict['rowspan'],
-            columnspan=frm_dict['columnspan'],
-            sticky=frm_dict['sticky'],
-            padx=frm_dict['padx'],
-            pady=frm_dict['pady']
+            row=frm_dict["row"],
+            column=frm_dict["col"],
+            rowspan=frm_dict["rowspan"],
+            columnspan=frm_dict["columnspan"],
+            sticky=frm_dict["sticky"],
+            padx=frm_dict["padx"],
+            pady=frm_dict["pady"],
         )
 
     def open_activity_creation_form(self, *_args):
-        frm_dict = VIEW_PROJECT_DETAIL['frm_edit_activity']
+        frm_dict = VIEW_PROJECT_DETAIL["frm_edit_activity"]
         form = ActivityForm(
             master=self,
             app=self.app,
             db_service=ActivityService,
             db_session=self.app.session,
-            project_id=self.project_category.id
+            project_id=self.project_category.id,
         )
         form.grid(
-            row=frm_dict['row'],
-            column=frm_dict['col'],
-            rowspan=frm_dict['rowspan'],
-            columnspan=frm_dict['columnspan'],
-            sticky=frm_dict['sticky'],
-            padx=frm_dict['padx'],
-            pady=frm_dict['pady']
+            row=frm_dict["row"],
+            column=frm_dict["col"],
+            rowspan=frm_dict["rowspan"],
+            columnspan=frm_dict["columnspan"],
+            sticky=frm_dict["sticky"],
+            padx=frm_dict["padx"],
+            pady=frm_dict["pady"],
         )
 
     def open_activity_edit_form(self, *_args):
-        frm_dict = VIEW_PROJECT_DETAIL['frm_edit_activity']
-        activity = ActivityService.get_by_id(self.app.session, self.project_id_var.get())
+        frm_dict = VIEW_PROJECT_DETAIL["frm_edit_activity"]
+        activity = ActivityService.get_by_id(
+            self.app.session, self.project_id_var.get()
+        )
 
         form = ActivityForm(
             master=self,
@@ -283,25 +294,22 @@ class CategoryDetailView(DetailView):
             db_service=ActivityService,
             db_session=self.app.session,
             project_id=self.project_category.id,
-            activity=activity
+            activity=activity,
         )
         form.grid(
-            row=frm_dict['row'],
-            column=frm_dict['col'],
-            rowspan=frm_dict['rowspan'],
-            columnspan=frm_dict['columnspan'],
-            sticky=frm_dict['sticky'],
-            padx=frm_dict['padx'],
-            pady=frm_dict['pady']
+            row=frm_dict["row"],
+            column=frm_dict["col"],
+            rowspan=frm_dict["rowspan"],
+            columnspan=frm_dict["columnspan"],
+            sticky=frm_dict["sticky"],
+            padx=frm_dict["padx"],
+            pady=frm_dict["pady"],
         )
 
     def delete_activity(self, *_args):
         msg = f'Are you sure you want to delete the activity "{self.project_name_var.get()}" in the "{self.project_category.name}" project?'
-        usr_answ = Messagebox.okcancel(
-            message=msg,
-            title='Attention!'
-        )
-        if usr_answ == 'OK':
+        usr_answ = Messagebox.okcancel(message=msg, title="Attention!")
+        if usr_answ == "OK":
             ActivityService.delete(self.app.session, self.project_id_var.get())
         self.refresh()
 
@@ -312,19 +320,16 @@ class CategoryDetailView(DetailView):
 class CustomLabel(tb.Label):
     def __init__(self, master, text, layout, **kwargs):
         super().__init__(
-            master=master,
-            text=text,
-            font=layout['font'],
-            **kwargs
+            master=master, text=text, font=layout["font"], **kwargs
         )
         self.grid(
-            row=layout['row'],
-            column=layout['col'],
-            rowspan=layout['rowspan'],
-            columnspan=layout['columnspan'],
-            sticky=layout['sticky'],
-            padx=layout['padx'],
-            pady=layout['pady']
+            row=layout["row"],
+            column=layout["col"],
+            rowspan=layout["rowspan"],
+            columnspan=layout["columnspan"],
+            sticky=layout["sticky"],
+            padx=layout["padx"],
+            pady=layout["pady"],
         )
 
 
@@ -342,29 +347,30 @@ class CustomEntityItemList(tb.Frame):
         Information for how to place the the form for new and existing
         entities with regards to the **master** component.
     """
+
     def __init__(
-            self,
-            master,
-            app,
-            entity,
-            item_key_var,
-            item_name_var,
-            item_dict,
-            cmd_add_item,
-            cmd_edit_item,
-            cmd_delete_item,
-            layout,
-            **kwargs
-        ):
+        self,
+        master,
+        app,
+        entity,
+        item_key_var,
+        item_name_var,
+        item_dict,
+        cmd_add_item,
+        cmd_edit_item,
+        cmd_delete_item,
+        layout,
+        **kwargs,
+    ):
         super().__init__(master=master, **kwargs)
         self.grid(
-            row=layout['row'],
-            column=layout['col'],
-            rowspan=layout['rowspan'],
-            columnspan=layout['columnspan'],
-            sticky=layout['sticky'],
-            padx=layout['padx'],
-            pady=layout['pady']
+            row=layout["row"],
+            column=layout["col"],
+            rowspan=layout["rowspan"],
+            columnspan=layout["columnspan"],
+            sticky=layout["sticky"],
+            padx=layout["padx"],
+            pady=layout["pady"],
         )
         self.app = app
         self.entity = entity
@@ -379,46 +385,36 @@ class CustomEntityItemList(tb.Frame):
         self.scrolled_frame = None
         self.item_list = None
 
-        for separator in CUSTOM_ENTITIY_ITEM_LIST['separators']:
-            sep_new = tb.Separator(self, orient=separator['orient'])
+        for separator in CUSTOM_ENTITIY_ITEM_LIST["separators"]:
+            sep_new = tb.Separator(self, orient=separator["orient"])
             sep_new.grid(
-                row=separator['row'],
-                column=separator['col'],
-                rowspan=separator['rowspan'],
-                sticky=separator['sticky']
+                row=separator["row"],
+                column=separator["col"],
+                rowspan=separator["rowspan"],
+                sticky=separator["sticky"],
             )
 
-        btn_pady = (10,0 )
-        tb.Button(
-            self,
-            text='+',
-            width=2,
-            command=cmd_add_item
-        ).grid(row=3, column=0, sticky='e', padx=10, pady=btn_pady)
+        btn_pady = (10, 0)
+        tb.Button(self, text="+", width=2, command=cmd_add_item).grid(
+            row=3, column=0, sticky="e", padx=10, pady=btn_pady
+        )
 
         self.refresh(item_dict)
 
     def refresh(self, item_dict):
-        """Populate the list with items.
-        """
+        """Populate the list with items."""
         if self.scrolled_frame:
             self.scrolled_frame.grid_remove()
-        
-        list_layout = VIEW_PROJECT_DETAIL['lst_activities']
+
+        list_layout = VIEW_PROJECT_DETAIL["lst_activities"]
         self.scrolled_frame = ScrolledFrame(
-            master=self,
-            autohide=True,
-            height=180
+            master=self, autohide=True, height=180
         )
-        self.scrolled_frame.grid(
-            row=1,
-            column=0,
-            sticky='nsew'
-        )
+        self.scrolled_frame.grid(row=1, column=0, sticky="nsew")
 
         context_menu = ContextMenu(self.app)
-        context_menu.add_command(label='Edit', command=self.cmd_edit_item)
-        context_menu.add_command(label='Delete', command=self.cmd_delete_item)
+        context_menu.add_command(label="Edit", command=self.cmd_edit_item)
+        context_menu.add_command(label="Delete", command=self.cmd_delete_item)
 
         self.item_list = ButtonPanel(
             parent=self.scrolled_frame,
@@ -426,118 +422,111 @@ class CustomEntityItemList(tb.Frame):
             labels=item_dict,
             styling=LIST_ITEM,
             ttk_key_var=self.item_key_var,
-            context_menu=context_menu
+            context_menu=context_menu,
         )
-        self.item_list.pack(expand=True, fill='both')
+        self.item_list.pack(expand=True, fill="both")
 
     def add_item(self, *_args):
-        """Create a new form instance and put it on the grid layout.
-        """
+        """Create a new form instance and put it on the grid layout."""
         form = self.form_edit(
             self.master,
             self.app,
             self.db_service,
             self.db_session,
-            project_id=self.item_key_var.get()
+            project_id=self.item_key_var.get(),
         )
         form.grid(
-            row=self.form_layout['row'],
-            column=self.form_layout['col'],
-            rowspan=self.form_layout['rowspan'],
-            columnspan=self.form_layout['columnspan'],
-            sticky=self.form_layout['sticky'],
-            padx=self.form_layout['padx'],
-            pady=self.form_layout['pady']
+            row=self.form_layout["row"],
+            column=self.form_layout["col"],
+            rowspan=self.form_layout["rowspan"],
+            columnspan=self.form_layout["columnspan"],
+            sticky=self.form_layout["sticky"],
+            padx=self.form_layout["padx"],
+            pady=self.form_layout["pady"],
         )
 
 
 class ProjectCategoryGoalList(AutoLayoutFrame):
     def __init__(
-            self,
-            master,
-            item_key_var,
-            item_dict,
-            cmd_edit_item,
-            layout,
-            **kwargs
-        ):
+        self, master, item_key_var, item_dict, cmd_edit_item, layout, **kwargs
+    ):
         config = VIEW_PROJECT_CATEGORY_GOAL_DETAIL
         super().__init__(
             master=master,
-            config=config['grid_config'],
-            labels=config['labels']
+            config=config["grid_config"],
+            labels=config["labels"],
         )
         self.item_key_var = item_key_var
         self.cmd_edit_item = cmd_edit_item
 
         self.grid(
-            row=layout['row'],
-            column=layout['col'],
-            rowspan=layout['rowspan'],
-            columnspan=layout['columnspan'],
-            sticky=layout['sticky'],
-            padx=layout['padx'],
-            pady=layout['pady']
+            row=layout["row"],
+            column=layout["col"],
+            rowspan=layout["rowspan"],
+            columnspan=layout["columnspan"],
+            sticky=layout["sticky"],
+            padx=layout["padx"],
+            pady=layout["pady"],
         )
 
-        for separator in config['separators']:
-            sep_new = tb.Separator(self, orient=separator['orient'])
+        for separator in config["separators"]:
+            sep_new = tb.Separator(self, orient=separator["orient"])
             sep_new.grid(
-                row=separator['row'],
-                column=separator['col'],
-                rowspan=separator['rowspan'],
-                columnspan=separator['columnspan'],
-                sticky=separator['sticky']
+                row=separator["row"],
+                column=separator["col"],
+                rowspan=separator["rowspan"],
+                columnspan=separator["columnspan"],
+                sticky=separator["sticky"],
             )
 
-        btn_config = config['btn_edit']
-        row_config = config['row_min_label']
-        curr_row = row_config['row']
+        btn_config = config["btn_edit"]
+        row_config = config["row_min_label"]
+        curr_row = row_config["row"]
         for goal_id, goal in item_dict.items():
             btn = tb.Button(
                 self,
-                text='Edit',
-                width=btn_config['width'],
-                command=lambda: self.open_edit_form(goal_id)
+                text="Edit",
+                width=btn_config["width"],
+                command=lambda: self.open_edit_form(goal_id),
             ).grid(
                 row=curr_row,
-                column=btn_config['col'],
-                sticky=btn_config['sticky'],
-                padx=btn_config['padx'],
-                pady=btn_config['pady']
+                column=btn_config["col"],
+                sticky=btn_config["sticky"],
+                padx=btn_config["padx"],
+                pady=btn_config["pady"],
             )
 
             goal_values = goal.get_goal_list()
             goal_value_idx = 0
-            for curr_col in range(row_config['col'], row_config['col']+7):
+            for curr_col in range(row_config["col"], row_config["col"] + 7):
                 lbl = tb.Label(
                     self,
                     text=goal_values[goal_value_idx],
-                    width=row_config['width'],
-                    font=row_config['font']
+                    width=row_config["width"],
+                    font=row_config["font"],
                 ).grid(
                     row=curr_row,
                     column=curr_col,
-                    sticky=row_config['sticky'],
-                    padx=row_config['padx'],
-                    pady=row_config['pady']
+                    sticky=row_config["sticky"],
+                    padx=row_config["padx"],
+                    pady=row_config["pady"],
                 )
                 goal_value_idx += 1
-        
+
         if len(item_dict.keys()) == 0:
             btn = tb.Button(
                 self,
-                text='New',
-                width=btn_config['width'],
-                command=lambda: self.cmd_edit_item()
+                text="New",
+                width=btn_config["width"],
+                command=lambda: self.cmd_edit_item(),
             ).grid(
                 row=0,
-                column=btn_config['col'],
-                sticky=btn_config['sticky'],
-                padx=btn_config['padx'],
-                pady=btn_config['pady']
+                column=btn_config["col"],
+                sticky=btn_config["sticky"],
+                padx=btn_config["padx"],
+                pady=btn_config["pady"],
             )
-    
+
     def open_edit_form(self, item_id):
         self.item_key_var.set(item_id)
         self.cmd_edit_item()
