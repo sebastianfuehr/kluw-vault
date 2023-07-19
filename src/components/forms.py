@@ -688,7 +688,10 @@ class ProjectCategoryGoalForm(Form):
         """Read the values from the form fields, create a new Python
         object, and save it into the database.
         """
-        new_goal = ProjectCategoryGoal(id=None)
+        if self.goal is not None:
+            new_goal = self.goal
+        else:
+            new_goal = ProjectCategoryGoal(id=None)
         new_goal.project_category_id = self.category_id
         new_goal.project_category = ProjectCategoryService.get_by_id(
             self.db_session, self.category_id
