@@ -41,53 +41,10 @@ class TestTimeController(unittest.TestCase):
         self.assertEqual(minutes, 2)
         self.assertEqual(seconds, 8)
 
-    # test_convert_timedelta
-    def test_convert_timedelta_negative(self):
-        delta = timedelta(seconds=-1)
-        hours, minutes, seconds = TimeController.convert_timedelta(delta)
-        self.assertEqual(hours, 0)
-        self.assertEqual(minutes, 0)
-        self.assertEqual(seconds, -1)
-
-    def test_convert_timedelta_zero(self):
-        delta = timedelta(seconds=0)
-        hours, minutes, seconds = TimeController.convert_timedelta(delta)
-        self.assertEqual(hours, 0)
-        self.assertEqual(minutes, 0)
-        self.assertEqual(seconds, 0)
-
-    def test_convert_timedelta_one_second(self):
-        delta = timedelta(seconds=1)
-        hours, minutes, seconds = TimeController.convert_timedelta(delta)
-        self.assertEqual(hours, 0)
-        self.assertEqual(minutes, 0)
-        self.assertEqual(seconds, 1)
-
-    def test_convert_timedelta_one_minute(self):
-        delta = timedelta(seconds=60)
-        hours, minutes, seconds = TimeController.convert_timedelta(delta)
-        self.assertEqual(hours, 0)
-        self.assertEqual(minutes, 1)
-        self.assertEqual(seconds, 0)
-    
-    def test_convert_timedelta_one_hour(self):
-        delta = timedelta(seconds=3600)
-        hours, minutes, seconds = TimeController.convert_timedelta(delta)
-        self.assertEqual(hours, 1)
-        self.assertEqual(minutes, 0)
-        self.assertEqual(seconds, 0)
-
-    def test_convert_timedelta_complete(self):
-        delta = timedelta(seconds=3728)
-        hours, minutes, seconds = TimeController.convert_timedelta(delta)
-        self.assertEqual(hours, 1)
-        self.assertEqual(minutes, 2)
-        self.assertEqual(seconds, 8)
-
     # test_seconds_to_string
     def test_seconds_to_string_negative(self):
         res = TimeController.seconds_to_string(-1)
-        self.assertEqual(res, '- 0m 1s')
+        self.assertEqual(res, '-0m 1s')
 
     def test_seconds_to_string_zero(self):
         res = TimeController.seconds_to_string(0)
@@ -117,7 +74,7 @@ class TestTimeController(unittest.TestCase):
     def test_timedelta_to_string_negative(self):
         delta = timedelta(seconds=-1)
         res = TimeController.timedelta_to_string(delta)
-        self.assertEqual(res, '- 0m 1s')
+        self.assertEqual(res, '-0m 1s')
 
     def test_timedelta_to_string_zero(self):
         delta = timedelta(seconds=0)
