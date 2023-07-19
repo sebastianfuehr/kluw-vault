@@ -45,6 +45,18 @@ class TestTimeController(unittest.TestCase):
     def test_seconds_to_string_negative(self):
         res = TimeController.seconds_to_string(-1)
         self.assertEqual(res, '-0m 1s')
+    
+    def test_seconds_to_string_negative_full_hour(self):
+        res = TimeController.seconds_to_string(-3600)
+        self.assertEqual(res, '-1h')
+
+    def test_seconds_to_string_negative_full_minutes(self):
+        res = TimeController.seconds_to_string(-3720)
+        self.assertEqual(res, '-1h 2m')
+
+    def test_seconds_to_string_negative_complete(self):
+        res = TimeController.seconds_to_string(-3728)
+        self.assertEqual(res, '-1h 2m 8s')
 
     def test_seconds_to_string_zero(self):
         res = TimeController.seconds_to_string(0)

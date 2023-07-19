@@ -31,9 +31,9 @@ class TimeController:
             negative_str = '-'
         if hours == 0:
             return f"{negative_str}{minutes}m {seconds}s"
-        elif hours > 0 and minutes == 0 and seconds == 0:
+        elif hours != 0 and minutes == 0 and seconds == 0:
             return f"{negative_str}{hours}h"
-        elif hours > 0 and minutes > 0 and seconds == 0:
+        elif hours != 0 and minutes != 0 and seconds == 0:
             return f"{negative_str}{hours}h {minutes}m"
         else:
             return f"{negative_str}{hours}h {minutes}m {seconds}s"
