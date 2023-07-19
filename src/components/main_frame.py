@@ -44,7 +44,7 @@ class MainFrame(tb.Frame):
     def __build_gui_components(self):
         """Construct the GUI elements of this component."""
         sb_left = LeftSidebar(self, self.parent)
-        sb_left.grid(row=0, rowspan=3, column=0, sticky="ns")
+        sb_left.grid(row=0, rowspan=3, column=0, sticky="nsew")
         self.parent.stats_sidebar = sb_left
 
         sidebar_sep = tb.Separator(self, orient="vertical")

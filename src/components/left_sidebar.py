@@ -1,5 +1,6 @@
 import ttkbootstrap as tb
 from ttkbootstrap.tooltip import ToolTip
+from ttkbootstrap.scrolled import ScrolledFrame
 from tkinter import filedialog
 from datetime import datetime, timedelta
 from PIL import Image, ImageTk
@@ -71,7 +72,7 @@ class LeftSidebar(tb.Frame):
         txt = f"You worked for more than {tc.seconds_to_string(self.app.definitions.MEDAL_TH_GOLD)}!"
         ToolTip(self.lbl_medal_gold, text=txt)
 
-        # Project category goals
+        # Project category goals title
         goals_section_heading = tb.Label(
             self,
             text=datetime.today().strftime("%A"),
@@ -80,6 +81,11 @@ class LeftSidebar(tb.Frame):
         )
         goals_section_heading.pack(padx=10, pady=0, fill="x")
 
+        # Scrolled frame
+        scrolled_frame = ScrolledFrame(self, autohide=True)
+        scrolled_frame.pack(expand=True, fill='both')
+
+        # Project category goals
         goals = self.parent.parent.pcgsc.get_active_goals()
         self.goal_dict = {}
 
@@ -87,7 +93,7 @@ class LeftSidebar(tb.Frame):
         for goal in goals:
             if goal.get_weekday_minute_goal(weekday) > 0:
                 progress_card = ProjectCategoryProgressCard(
-                    self, self.app, goal
+                    scrolled_frame, self.app, goal
                 )
                 progress_card.pack(fill="x", padx=10, pady=10)
                 self.goal_dict[goal.project_category_id] = {
