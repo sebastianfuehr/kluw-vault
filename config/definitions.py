@@ -5,11 +5,11 @@ entrypoint of the application app.py.
 
 import os
 
-class Definitions:
-    # Medal thresholds in seconds (h*m*s)
-    MEDAL_TH_BRONZE = 2*60*60
-    MEDAL_TH_SILVER = 4*60*60
-    MEDAL_TH_GOLD = 6*60*60
+from src.controller.settings_controller import SettingsController
+from config.constants import CONFIG_FILE_VERSION
+
+
+class Definitions():
 
     # DIRECTORIES
     APP_ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
@@ -258,3 +258,27 @@ class Definitions:
         'inp_sunday': {'row': 2, 'col': 7, 'sticky': inp_sticky, 'padx': inp_padx, 'pady': inp_pady, 'width': inp_width, 'font': FONTS['form']['entry']},
         'btn_save': {'row': 3, 'col': 4, 'sticky': '', 'padx': 0, 'pady': (25, 0), 'width': 8}
     }
+
+    def load_config(self):
+        config = SettingsController.load_or_create_config_file(self.APP_ROOT_DIR, CONFIG_FILE_VERSION)
+        self.generate_config_based_settings(config)
+        return config
+
+    def generate_config_based_settings(self, config):
+        # Medal thresholds in seconds (h*m*s)
+        medal_ths = config["gamification.rewards"]
+        self.MEDAL_TH_BRONZE = (
+            medal_ths.getint("medal_bronze_unit_amount")
+            * medal_ths.getint("medal_bronze_unit_length")
+            * 60
+        )
+        self.MEDAL_TH_SILVER = (
+            medal_ths.getint("medal_silver_unit_amount")
+            * medal_ths.getint("medal_silver_unit_length")
+            * 60
+        )
+        self.MEDAL_TH_GOLD = (
+            medal_ths.getint("medal_gold_unit_amount")
+            * medal_ths.getint("medal_gold_unit_length")
+            * 60
+        )
