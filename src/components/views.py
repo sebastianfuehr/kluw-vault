@@ -1,6 +1,7 @@
 import ttkbootstrap as tb
 from ttkbootstrap.scrolled import ScrolledFrame
 from ttkbootstrap.dialogs.dialogs import Messagebox
+import pandas as pd
 
 from ..components.notifications import Notifications
 from ..components.frames import AutoLayoutFrame
@@ -10,6 +11,7 @@ from ..components.forms import (
     ActivityForm,
     ProjectCategoryGoalForm,
 )
+from .. components.visuals import GraphTimePerDay
 from ..controller.activity_service import ActivityService
 from ..controller.project_service import ProjectService
 from ..controller.project_category_goal_service import (
@@ -109,6 +111,31 @@ class ProjectDetailView(DetailView):
             cmd_edit_item=self.open_activity_edit_form,
             cmd_delete_item=self.delete_activity,
             layout=self.app.definitions.VIEW_PROJECT_DETAIL["lst_activities"],
+        )
+
+        # Time per day
+        time_entries = self.app.dc.time_entry_df
+        time_entries = time_entries[time_entries["Project Name"] == self.project.name]
+
+        # Group data
+        duration_per_day = time_entries.groupby(pd.Grouper(key="Date", freq="D"))[
+            "Duration"
+        ].sum()
+        duration_per_day = duration_per_day.reset_index()
+        duration_per_day["Hours"] = (
+            duration_per_day["Duration"].dt.total_seconds() / 60 / 60
+        )
+        graph_layout = self.app.definitions.VIEW_PROJECT_DETAIL["graph_time_per_day"]
+        GraphTimePerDay(
+            self, self.app, duration_per_day, value_column_name="Hours"
+        ).grid(
+            row=graph_layout["row"],
+            column=graph_layout["col"],
+            rowspan=graph_layout["rowspan"],
+            columnspan=graph_layout["columnspan"],
+            sticky=graph_layout["sticky"],
+            padx=graph_layout["padx"],
+            pady=graph_layout["pady"]
         )
 
     def open_activity_creation_form(self, *_args):

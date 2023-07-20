@@ -141,12 +141,14 @@ class Definitions():
             {'text': 'Category', 'row': 2, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['section']},
             {'text': 'Description', 'row': 4, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['section']},
             {'text': 'Activities', 'row': 2, 'rowspan': 1, 'col': 2, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['section']},
-            {'text': 'Statistics', 'row': 6, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 10), 'font': FONTS['view']['subtitle']}
+            {'text': 'Statistics', 'row': 6, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 10), 'font': FONTS['view']['subtitle']},
+            {'text': '🗓️ Time per Day', 'row': 7, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['section']}
         ],
         'lbl_name': {'row': 0, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'w', 'padx': 0, 'pady': (35, 20), 'font': FONTS['view']['title']},
         'lbl_category': {'row': 3, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
         'lbl_description': {'row': 5, 'rowspan': 1, 'col': 0, 'columnspan': 2, 'sticky': 'w', 'height': 5, 'width': 36, 'padx': 0, 'pady': lbl_pady, 'font': FONTS['view']['label']},
         'lst_activities': {'row': 3, 'rowspan': 3, 'col': 2, 'columnspan': 2, 'sticky': 'nsew', 'padx': 0, 'pady': lbl_pady, 'font': LIST_ITEM},
+        'graph_time_per_day': {'row': 8, 'rowspan': 1, 'col': 0, 'columnspan': 4, 'sticky': 'nsew', 'padx': 0, 'pady': lbl_pady},
         # This refers to the grid method of the master component of this view!
         'frm_edit_activity': {'row': 0, 'rowspan': 8, 'col': 0, 'columnspan': 4, 'sticky': 'nsew', 'padx': 0, 'pady': 0},
     }
