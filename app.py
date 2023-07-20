@@ -20,6 +20,7 @@ from src.model.project_category_goal import ProjectCategoryGoal
 
 # Controller
 from src.controller.settings_controller import SettingsController
+from src.controller.data_controller import DataController
 from src.controller.statistics_controller import StatisticsController
 from src.controller.project_category_goal_stats_controller import (
     ProjectCategoryGoalStatsController,
@@ -49,6 +50,7 @@ class App(tb.Window):
         self.db_engine = db_engine
 
         self.sc = StatisticsController(self.session)
+        self.dc = DataController(self.session)
         self.pcgsc = ProjectCategoryGoalStatsController(self.session)
         self.file_controller = FileController(self)
 

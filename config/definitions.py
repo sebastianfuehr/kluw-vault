@@ -24,6 +24,9 @@ class Definitions():
     COMBO_BOX_FONT = (None, 16)
     FONTS = {
         'default': (None, 16),
+        'dashboard': {
+            'heading': (None, 24, 'bold')
+        },
         'form': {
             'label': (None, 16),
             'entry': (None, 16),
@@ -99,6 +102,26 @@ class Definitions():
     }
 
     # CARDS
+    heading_padx = 0
+    heading_pady = 0
+    graph_padx = 0
+    graph_pady = 0
+    VIEW_DASHBOARD = {
+        'grid-config': {
+            'rowconfigure': {},
+            'columnconfigure': {(0, 1): 1}
+        },
+        'labels': [
+            {'text': 'Overview', 'row': 0, 'rowspan': 1, 'col': 0, 'columnspan': 1, 'sticky': 'w', 'padx': heading_padx, 'pady': heading_pady, 'font': FONTS['dashboard']['heading']},
+            {'text': 'Time per Day', 'row': 0, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'w', 'padx': heading_padx, 'pady': heading_pady, 'font': FONTS['dashboard']['heading']},
+            {'text': 'Time per Day per Project', 'row': 4, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'w', 'padx': heading_padx, 'pady': heading_pady, 'font': FONTS['dashboard']['heading']},
+            {'text': 'Medal Score', 'row': 2, 'rowspan': 1, 'col': 0, 'columnspan': 1, 'sticky': 'w', 'padx': heading_padx, 'pady': heading_pady, 'font': FONTS['dashboard']['heading']}
+        ],
+        'medal_score': {'row': 3, 'rowspan': 1, 'col': 0, 'columnspan': 1, 'sticky': 'nsew', 'padx': graph_padx, 'pady': graph_pady},
+        'graph_time_per_day': {'row': 1, 'rowspan': 3, 'col': 1, 'columnspan': 1, 'sticky': 'nsew', 'padx': graph_padx, 'pady': graph_pady},
+        'graph_time_per_project_per_day': {'row': 5, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'nsew', 'padx': graph_padx, 'pady': graph_pady}
+    }
+
     VIEW_BTN_EDIT = {
         'text': 'Edit',
         'relx': 0.98,
