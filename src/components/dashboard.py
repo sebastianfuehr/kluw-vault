@@ -7,6 +7,7 @@ import matplotlib.dates as mdates
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from datetime import datetime, timedelta
 from sqlalchemy import select
+from PIL import Image, ImageTk
 
 from src.components.navigation import ButtonPanel
 from ..model.time_entry import TimeEntry
@@ -104,6 +105,7 @@ class StatsDashboard(tb.Frame):
         project_times = tmp_data.groupby(["Project Name", "Date"])["Duration"].sum()
         project_times = project_times.unstack("Project Name").fillna(pd.Timedelta(0))
 
+        # Graph - Total time per project per day
         GraphTimesPerDay(
             parent=self.content_frame,
             app=self.app,
@@ -122,6 +124,18 @@ class StatsDashboard(tb.Frame):
         # Table - Overview panel
         self.overview_panel = OverviewPanel(self.content_frame, self.app, data)
         self.overview_panel.grid(row=1, column=0, sticky="nsew")
+
+        # Medal score
+        self.medal_score = MedalScore(self.content_frame, self.app, self.data_max)
+        self.medal_score.grid(
+            row=layout['medal_score']['row'],
+            column=layout['medal_score']['col'],
+            rowspan=layout['medal_score']['rowspan'],
+            columnspan=layout['medal_score']['columnspan'],
+            sticky=layout['medal_score']['sticky'],
+            padx=layout['medal_score']['padx'],
+            pady=layout['medal_score']['pady']
+        )
 
         # Graph - Total time per day
         self.graph_time_per_day = GraphTimePerDay(
@@ -166,7 +180,7 @@ class OverviewPanel(tb.Frame):
         self.goal_today_str = tb.StringVar(self, goal_str)
         curr_ratio = self.app.sc.total_time_today() / 60 / total_goal_minutes
         self.progress_today = tb.StringVar(
-            self, f"{round(curr_ratio*100, 1)}%"
+            self, f"{round(curr_ratio*6, 1)}%"
         )
 
     def build_gui_components(self):
@@ -200,3 +214,135 @@ class OverviewPanelBlock(tb.Frame):
             anchor="center",
         )
         lbl_value.pack(side="top", fill="x", pady=20)
+
+
+class MedalScore(tb.Frame):
+    def __init__(self, parent, app, data_max):
+        super().__init__(master=parent)
+        self.app = app
+        self.data_max = data_max
+        self.outline_color = 'white'
+
+        width = 550
+        height = 300
+        self.canvas = tb.Canvas(self, width=width, height=height)
+        self.canvas.pack(side='top')
+        
+        total_bronze, total_silver, total_gold = self.calculate_values()
+        self.draw_image(width, height, total_bronze, total_silver, total_gold)
+    
+    def draw_image(self, width, height, total_bronze, total_silver, total_gold):
+        pedestal_width = width*0.7/3
+        center_bronze = width/6
+        center_gold = width/6*3
+        center_silver = width/6*5
+        height_bronze = height*0.35
+        height_gold = height*0.55
+        height_silver = height*0.45
+
+        self.canvas.create_line(
+            (0, height),
+            (width, height),
+            width=2,
+            fill=self.outline_color
+        )
+
+        # Draw pedestal
+        self.canvas.create_rectangle(
+            center_bronze - pedestal_width/2,
+            height - height_bronze,
+            center_bronze + pedestal_width/2,
+            height,
+            fill=self.outline_color
+        )
+        self.canvas.create_rectangle(
+            center_gold - pedestal_width/2,
+            height - height_gold,
+            center_gold + pedestal_width/2,
+            height,
+            fill=self.outline_color
+        )
+        self.canvas.create_rectangle(
+            center_silver - pedestal_width/2,
+            height - height_silver,
+            center_silver + pedestal_width/2,
+            height,
+            fill=self.outline_color
+        )
+
+        # Medal icons
+        icon_size = 160
+
+        img_bronze = ImageTk.PhotoImage(Image.open(
+            f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-bronze.png"
+        ).resize((icon_size, icon_size)))
+        self.img_bronze = img_bronze
+        self.canvas.create_image(
+            center_bronze, 
+            height - height_bronze - icon_size/3,
+            anchor=tb.CENTER,
+            image=img_bronze
+        )
+
+        img_gold = ImageTk.PhotoImage(Image.open(
+            f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-gold.png"
+        ).resize((icon_size, icon_size)))
+        self.img_gold = img_gold
+        self.canvas.create_image(
+            center_gold, 
+            height - height_gold - icon_size/3,
+            anchor=tb.CENTER,
+            image=img_gold
+        )
+
+        img_silver = ImageTk.PhotoImage(Image.open(
+            f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-silver.png"
+        ).resize((icon_size, icon_size)))
+        self.img_silver = img_silver
+        self.canvas.create_image(
+            center_silver, 
+            height - height_silver - icon_size/3,
+            anchor=tb.CENTER,
+            image=img_silver
+        )
+
+        # Draw text values
+        self.canvas.create_text(
+            center_bronze,
+            height - height_bronze/2+10,
+            anchor=tb.CENTER,
+            font=(None, 24, 'bold'),
+            text=total_bronze
+        )
+        self.canvas.create_text(
+            center_gold,
+            height - height_gold/2,
+            anchor=tb.CENTER,
+            font=(None, 34, 'bold'),
+            text=total_gold
+        )
+        self.canvas.create_text(
+            center_silver,
+            height - height_silver/2+5,
+            anchor=tb.CENTER,
+            font=(None, 28, 'bold'),
+            text=total_silver
+        )
+
+    def calculate_values(self):
+        # Group data
+        tmp_data = self.data_max
+        duration_per_day = tmp_data.groupby(pd.Grouper(key="Date", freq="D"))[
+            "Duration"
+        ].sum()
+        duration_per_day = duration_per_day.reset_index()
+        duration_per_day["Minutes"] = (
+            duration_per_day["Duration"].dt.total_seconds() / 60
+        )
+
+        # Calculate number of medals
+        column = duration_per_day["Minutes"]
+        total_bronze = column[column > self.app.definitions.MEDAL_TH_BRONZE/60].count()
+        total_silver = column[column > self.app.definitions.MEDAL_TH_SILVER/60].count()
+        total_gold = column[column > self.app.definitions.MEDAL_TH_GOLD/60].count()
+        return total_bronze, total_silver, total_gold

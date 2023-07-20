@@ -104,7 +104,7 @@ class Definitions():
     # CARDS
     heading_padx = 0
     heading_pady = (0, 5)
-    graph_padx = 0
+    graph_padx = 9
     graph_pady = 0
     VIEW_DASHBOARD = {
         'grid-config': {
@@ -117,7 +117,7 @@ class Definitions():
             {'text': '📈 Time per Day per Project', 'row': 4, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'w', 'padx': heading_padx, 'pady': heading_pady, 'font': FONTS['dashboard']['heading']},
             {'text': '🏅Medal Score', 'row': 2, 'rowspan': 1, 'col': 0, 'columnspan': 1, 'sticky': 'w', 'padx': heading_padx, 'pady': heading_pady, 'font': FONTS['dashboard']['heading']}
         ],
-        'medal_score': {'row': 3, 'rowspan': 1, 'col': 0, 'columnspan': 1, 'sticky': 'nsew', 'padx': graph_padx, 'pady': graph_pady},
+        'medal_score': {'row': 3, 'rowspan': 3, 'col': 0, 'columnspan': 1, 'sticky': 'nsew', 'padx': graph_padx, 'pady': graph_pady},
         'graph_time_per_day': {'row': 1, 'rowspan': 3, 'col': 1, 'columnspan': 1, 'sticky': 'nsew', 'padx': graph_padx, 'pady': graph_pady},
         'graph_time_per_project_per_day': {'row': 5, 'rowspan': 1, 'col': 1, 'columnspan': 1, 'sticky': 'nsew', 'padx': graph_padx, 'pady': graph_pady}
     }

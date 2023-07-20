@@ -124,7 +124,7 @@ class ListFrame(tb.Frame, RefreshMixin):
             self.item_detail_view.grid_forget()
         item = self.objects[self.item_key_var.get()]
         self.item_detail_view = self.detail_view(self, self.app, item)
-        self.item_detail_view.grid(row=0, rowspan=3, column=2, sticky="nsew")
+        self.item_detail_view.grid(row=0, rowspan=3, column=2, sticky="nsew", padx=25)
 
     def refresh(self):
         if self.scrolled_frame:
