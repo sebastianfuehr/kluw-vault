@@ -178,6 +178,10 @@ class TimeEntry(Base):
             minutes=pause_datetime.minute,
             seconds=pause_datetime.second,
         )
+        if time_entry_list[13] == "":
+            comment = None
+        else:
+            comment = time_entry_list[13]
         new_entry = TimeEntry(
             id=time_entry_list[0],
             start=start,
@@ -189,6 +193,19 @@ class TimeEntry(Base):
             activity_name=time_entry_list[10],
             alone=time_entry_list[11],
             tags=time_entry_list[12],
-            comment=time_entry_list[13],
+            comment=comment
         )
         return new_entry
+
+    def __eq__(self, other):
+        return (
+            self.id == other.id
+            and self.start == other.start
+            and self.stop == other.stop
+            and self.pause == other.pause
+            and self.project == other.project
+            and self.activity == other.activity
+            and self.alone == other.alone
+            and self.tags == other.tags
+            and self.comment == other.comment
+        )
