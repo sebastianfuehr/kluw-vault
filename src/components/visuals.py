@@ -105,7 +105,7 @@ class GraphTimesPerDay(tb.Frame):
                 data,
                 label=col
             )
-        axis.legend(loc="upper right")
+        axis.legend(loc="upper left")
 
         axis.xaxis.set_major_formatter(mdates.DateFormatter("%Y-%m-%d"))
         axis.set_ylim(ymin=0)
