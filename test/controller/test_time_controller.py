@@ -1,120 +1,71 @@
-import unittest
+"""Test
+"""
+
 from datetime import timedelta
+import pytest
 from src.controller.time_controller import TimeController
 
+@pytest.mark.parametrize("seconds, expected_result", [
+    (-1, (0, 0, -1)),
+    (0, (0, 0, 0)),
+    (1, (0, 0, 1)),
+    (60, (0, 1, 0)),
+    (3600, (1, 0, 0)),
+    (3728, (1, 2, 8))
+])
+def test_convert_seconds(seconds, expected_result):
+    """
+    Parameters
+    ----------
+    seconds : int
+        Numer of seconds to be converted into hours, minutes, and
+        seconds.
+    expected_result : (int, int, int)
+        The expected result of the calculations as a tuple consisting
+        of (hours, minutes, seconds).
+    """
+    assert expected_result == TimeController.convert_seconds(seconds)
 
-class TestTimeController(unittest.TestCase):
-    # test_convert_seconds
-    def test_convert_seconds_negative(self):
-        hours, minutes, seconds = TimeController.convert_seconds(-1)
-        self.assertEqual(hours, 0)
-        self.assertEqual(minutes, 0)
-        self.assertEqual(seconds, -1)
+@pytest.mark.parametrize("seconds, expected_result", [
+    (-1, "-0m 1s"),
+    (-3600, "-1h"),
+    (-3720, "-1h 2m"),
+    (-3728, "-1h 2m 8s"),
+    (0, "0m 0s"),
+    (1, "0m 1s"),
+    (60, "1m 0s"),
+    (3600, "1h"),
+    (3720, "1h 2m"),
+    (3728, "1h 2m 8s")
+])
+def test_seconds_to_string(seconds, expected_result):
+    """
+    Parameters
+    ----------
+    seconds : int
+        Numer of seconds to be converted into a string.
+    expected_result : str
+        The expected string output.
+    """
+    assert expected_result == TimeController.seconds_to_string(seconds)
 
-    def test_convert_seconds_zero(self):
-        hours, minutes, seconds = TimeController.convert_seconds(0)
-        self.assertEqual(hours, 0)
-        self.assertEqual(minutes, 0)
-        self.assertEqual(seconds, 0)
-    
-    def test_convert_seconds_one_second(self):
-        hours, minutes, seconds = TimeController.convert_seconds(1)
-        self.assertEqual(hours, 0)
-        self.assertEqual(minutes, 0)
-        self.assertEqual(seconds, 1)
-
-    def test_convert_seconds_one_minute(self):
-        hours, minutes, seconds = TimeController.convert_seconds(60)
-        self.assertEqual(hours, 0)
-        self.assertEqual(minutes, 1)
-        self.assertEqual(seconds, 0)
-    
-    def test_convert_seconds_one_hour(self):
-        hours, minutes, seconds = TimeController.convert_seconds(3600)
-        self.assertEqual(hours, 1)
-        self.assertEqual(minutes, 0)
-        self.assertEqual(seconds, 0)
-    
-    def test_convert_seconds_complete(self):
-        hours, minutes, seconds = TimeController.convert_seconds(3728)
-        self.assertEqual(hours, 1)
-        self.assertEqual(minutes, 2)
-        self.assertEqual(seconds, 8)
-
-    # test_seconds_to_string
-    def test_seconds_to_string_negative(self):
-        res = TimeController.seconds_to_string(-1)
-        self.assertEqual(res, '-0m 1s')
-    
-    def test_seconds_to_string_negative_full_hour(self):
-        res = TimeController.seconds_to_string(-3600)
-        self.assertEqual(res, '-1h')
-
-    def test_seconds_to_string_negative_full_minutes(self):
-        res = TimeController.seconds_to_string(-3720)
-        self.assertEqual(res, '-1h 2m')
-
-    def test_seconds_to_string_negative_complete(self):
-        res = TimeController.seconds_to_string(-3728)
-        self.assertEqual(res, '-1h 2m 8s')
-
-    def test_seconds_to_string_zero(self):
-        res = TimeController.seconds_to_string(0)
-        self.assertEqual(res, '0m 0s')
-
-    def test_seconds_to_string_one_second(self):
-        res = TimeController.seconds_to_string(1)
-        self.assertEqual(res, '0m 1s')
-    
-    def test_seconds_to_string_one_minute(self):
-        res = TimeController.seconds_to_string(60)
-        self.assertEqual(res, '1m 0s')
-
-    def test_seconds_to_string_one_hour(self):
-        res = TimeController.seconds_to_string(3600)
-        self.assertEqual(res, '1h')
-
-    def test_seconds_to_string_even_seconds(self):
-        res = TimeController.seconds_to_string(3720)
-        self.assertEqual(res, '1h 2m')
-
-    def test_seconds_to_string_complete(self):
-        res = TimeController.seconds_to_string(3728)
-        self.assertEqual(res, '1h 2m 8s')
-
-    # test_timedelta_to_string
-    def test_timedelta_to_string_negative(self):
-        delta = timedelta(seconds=-1)
-        res = TimeController.timedelta_to_string(delta)
-        self.assertEqual(res, '-0m 1s')
-
-    def test_timedelta_to_string_zero(self):
-        delta = timedelta(seconds=0)
-        res = TimeController.timedelta_to_string(delta)
-        self.assertEqual(res, '0m 0s')
-
-    def test_timedelta_to_string_one_second(self):
-        delta = timedelta(seconds=1)
-        res = TimeController.timedelta_to_string(delta)
-        self.assertEqual(res, '0m 1s')
-    
-    def test_timedelta_to_string_one_minute(self):
-        delta = timedelta(seconds=60)
-        res = TimeController.timedelta_to_string(delta)
-        self.assertEqual(res, '1m 0s')
-
-    def test_timedelta_to_string_one_hour(self):
-        delta = timedelta(seconds=3600)
-        res = TimeController.timedelta_to_string(delta)
-        self.assertEqual(res, '1h')
-
-    def test_timedelta_to_string_even_seconds(self):
-        delta = timedelta(seconds=3720)
-        res = TimeController.timedelta_to_string(delta)
-        self.assertEqual(res, '1h 2m')
-
-    def test_timedelta_to_string_complete(self):
-        delta = timedelta(seconds=3728)
-        res = TimeController.timedelta_to_string(delta)
-        self.assertEqual(res, '1h 2m 8s')
-
+@pytest.mark.parametrize("seconds, expected_result", [
+    (-1, "-0m 1s"),
+    (0, "0m 0s"),
+    (1, "0m 1s"),
+    (60, "1m 0s"),
+    (3600, "1h"),
+    (3720, "1h 2m"),
+    (3728, "1h 2m 8s")
+])
+def test_timedelta_to_string(seconds, expected_result):
+    """
+    Parameters
+    ----------
+    seconds : int
+        Numer of seconds to be converted into a string.
+    expected_result : str
+        The expected string output.
+    """
+    delta = timedelta(seconds=seconds)
+    assert expected_result == TimeController.timedelta_to_string(delta)
