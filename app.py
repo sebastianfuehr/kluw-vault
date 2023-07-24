@@ -7,7 +7,7 @@ from tkinter.font import nametofont
 from datetime import datetime
 
 # Custom libraries
-from src.model.orm_base import Session, db_engine, Base
+from src.model.orm_base import DBConnection, Base # Session, db_engine, Base
 from src.model.tracking_session import TrackingSession
 from src.components.main_frame import MainFrame
 
@@ -30,7 +30,7 @@ from config.definitions import Definitions
 
 
 class App(tb.Window):
-    def __init__(self):
+    def __init__(self, db_connection):
         # Load config data
         self.definitions = Definitions()
         self.settings = self.definitions.load_config()
@@ -45,9 +45,10 @@ class App(tb.Window):
         self.option_add("*TCombobox*Listbox*Font", (None, 16))
 
         # Open a new database connection
-        Base.metadata.create_all(db_engine)
-        self.session = Session()
-        self.db_engine = db_engine
+        #self.db_conn = DBConnection("/time-journal.db")
+        Base.metadata.create_all(db_connection.db_engine)
+        self.session = db_connection.Session()
+        self.db_engine = db_connection.db_engine
 
         self.sc = StatisticsController(self.session)
         self.dc = DataController(self.session)
@@ -55,18 +56,24 @@ class App(tb.Window):
         self.file_controller = FileController(self)
 
         # GUI structure
-        MainFrame(self)
+        self.main_frame = MainFrame(self)
 
-        session_start = datetime.now()
+    def start(self):
+        self.session_start = datetime.now()
         self.mainloop()
 
-        # Close the database connection and save tracking session data
+    def stop(self):
+        """Save the session data into the database and close the database connection.
+        """
         session_end = datetime.now()
-        session_data = TrackingSession(start=session_start, end=session_end)
+        session_data = TrackingSession(start=self.session_start, end=session_end)
         self.session.add(session_data)
         self.session.commit()
         self.session.close()
 
 
 if __name__ == "__main__":
-    app = App()
+    db_connection = DBConnection("/time-journal.db")
+    app = App(db_connection)
+    app.start()
+    app.stop()
