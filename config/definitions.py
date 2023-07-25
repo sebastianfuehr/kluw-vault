@@ -4,15 +4,20 @@ entrypoint of the application app.py.
 """
 
 import os
+import sys
 
 from src.controller.settings_controller import SettingsController
 from config.constants import CONFIG_FILE_VERSION
 
 
 class Definitions():
+    """A class that loads and provides user settings and dynamically
+    created properties.
+    """
 
     # DIRECTORIES
-    APP_ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
+    #APP_ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
+    APP_ROOT_DIR = os.path.dirname(os.path.realpath(sys.argv[0]))
 
     #######################################################################
     # STYLING & LAYOUT
