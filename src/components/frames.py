@@ -1,8 +1,12 @@
+"""A collection tkinter frame children, customized for the
+application's needs.
+"""
+
 import ttkbootstrap as tb
 from ttkbootstrap.scrolled import ScrolledFrame
 from ttkbootstrap.dialogs.dialogs import Messagebox
 
-from ..components.notifications import Notifications
+from src.components.notifications import Notifications
 from src.components.navigation import ButtonPanel, ContextMenu
 
 
@@ -76,7 +80,7 @@ class ListFrame(tb.Frame, RefreshMixin):
         db_session,
         form_edit,
         detail_view,
-        db_delete_item,
+        db_delete_item
     ):
         super().__init__(master=master)
         self.app = app
@@ -112,7 +116,10 @@ class ListFrame(tb.Frame, RefreshMixin):
             )
 
         btn_new_item = tb.Button(
-            self, text="New", bootstyle="success", command=self.open_form
+            self,
+            text="New",
+            bootstyle="success",
+            command=self.open_form
         )
         btn_new_item.grid(row=2, column=0, pady=25)
 

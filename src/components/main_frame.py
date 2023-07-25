@@ -1,8 +1,6 @@
-import ttkbootstrap as tb
-import logging
+"""A collection ov frames for displaying database entities."""
 
-# Custom modules
-from config.definitions import *
+import ttkbootstrap as tb
 
 # GUI Components
 from src.components.left_sidebar import LeftSidebar
@@ -10,11 +8,11 @@ from src.components.navigation import ButtonPanel
 from src.components.frames import ListFrame
 from src.components.TimeEntriesList import TimeEntriesList
 from src.components.dashboard import StatsDashboard
-from ..components.forms import ProjectForm, ProjectCategoryForm
-from ..components.views import ProjectDetailView, CategoryDetailView
+from src.components.forms import ProjectForm, ProjectCategoryForm
+from src.components.views import ProjectDetailView, CategoryDetailView
 
 # DB Services
-from ..controller.project_service import ProjectService
+from src.controller.project_service import ProjectService
 from src.controller.project_category_service import ProjectCategoryService
 
 
@@ -63,7 +61,7 @@ class MainFrame(tb.Frame):
             db_session=self.parent.session,
             form_edit=ProjectForm,
             detail_view=ProjectDetailView,
-            db_delete_item=ProjectService.delete,
+            db_delete_item=ProjectService.delete
         )
         self.tab_categories = ListFrame(
             master=self,
@@ -72,7 +70,7 @@ class MainFrame(tb.Frame):
             db_session=self.parent.session,
             form_edit=ProjectCategoryForm,
             detail_view=CategoryDetailView,
-            db_delete_item=ProjectCategoryService.delete,
+            db_delete_item=ProjectCategoryService.delete
         )
 
         # Main navigation tabs

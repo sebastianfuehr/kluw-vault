@@ -1,3 +1,7 @@
+"""Module which provides elements for navigating through the
+application's components.
+"""
+
 import ttkbootstrap as tb
 
 
@@ -13,7 +17,8 @@ class ButtonPanel(tb.Frame):  # pylint: disable=too-many-ancestors
         A list of strings which are to appear on the buttons. If a
         dictionary with key-value pairs is given, also expect a
         ttk_key_var which will be linked to the selected entry text.
-    styling : {padx: int, pady: int, font: (str, int), colors: {text: str, highlight: str}}
+    styling : {padx: int, pady: int, font: (str, int), colors:
+              {text: str, highlight: str}}
     ttk_key_var : ttkbootstrap.IntVar
         The variable to be set when an entry from the labels dictionary
         is selected.
@@ -88,6 +93,7 @@ class TextButton(tb.Label):  # pylint: disable=too-many-ancestors
             text=text,
             foreground=self.colors["text"],
             font=styling["font"],
+            name=text.lower()
         )
         self.button_group = button_group
         self.key = key
@@ -143,7 +149,7 @@ class ContextMenu(tb.Frame):
         lbl.bind("<Leave>", self.hover_out)
         self.buttons.append(lbl)
 
-    def open_popup(self, event):
+    def open_popup(self, *_args):
         curr_x = self.app.winfo_pointerx() - self.app.winfo_x()
         curr_y = self.app.winfo_pointery() - self.app.winfo_y()
         self.place(x=curr_x + 1, y=curr_y + 1)

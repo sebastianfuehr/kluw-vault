@@ -1,5 +1,4 @@
-"""Test
-"""
+"""Tests for the TimeController component."""
 
 from datetime import timedelta
 import pytest

@@ -418,7 +418,8 @@ class CustomEntityItemList(tb.Frame):
             )
 
         btn_pady = (10, 0)
-        tb.Button(self, text="+", width=2, command=cmd_add_item).grid(
+        btn_add = tb.Button(self, text="+", width=2, command=cmd_add_item)
+        btn_add.grid(
             row=3, column=0, sticky="e", padx=10, pady=btn_pady
         )
 
