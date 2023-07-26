@@ -31,7 +31,7 @@ class SettingsController:
                 os.makedirs(app_usr_data_dir, exist_ok=True)
                 copyfile(app_usr_data_file_default, app_usr_data_file)
             except PermissionError:
-                print("PermissionError - Loading default ini file without copy.")
+                print("PermissionError - Loading default ini file without copying.")
                 app_usr_data_file = app_usr_data_file_default
 
         settings.read(app_usr_data_file)

@@ -1,4 +1,5 @@
 import logging
+from gettext import gettext
 import ttkbootstrap as tb
 from ttkbootstrap.scrolled import ScrolledFrame
 import pandas as pd
@@ -185,11 +186,11 @@ class OverviewPanel(tb.Frame):
 
     def build_gui_components(self):
         self.block_goal_today = OverviewPanelBlock(
-            self, self.app, "GOAL TODAY", self.goal_today_str
+            self, self.app, _("GOAL TODAY"), self.goal_today_str
         )
         self.block_goal_today.grid(row=0, column=0, sticky="nsew", padx=10)
         self.block_progress_today = OverviewPanelBlock(
-            self, self.app, "PROGRESS", self.progress_today
+            self, self.app, _("PROGRESS"), self.progress_today
         )
         self.block_progress_today.grid(row=0, column=1, sticky="nsew", padx=10)
 
