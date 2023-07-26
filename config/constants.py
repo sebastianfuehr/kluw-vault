@@ -11,3 +11,5 @@ SUPPORTED_LANGUAGES = {
     "en": "English (default)",
     "de": "German"
 }
+
+SUPPORTED_THEMES = ["darkly"]

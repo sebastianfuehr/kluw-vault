@@ -3,11 +3,12 @@
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-07-26 13:30+0300\n"
+"POT-Creation-Date: 2023-07-26 15:30+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,11 +17,134 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.12.1\n"
 
-#: src/components/dashboard.py:190
+#: config/definitions.py:139
+msgid "Time Entries"
+msgstr ""
+
+#: config/definitions.py:140 config/definitions.py:212
+msgid "Projects"
+msgstr ""
+
+#: config/definitions.py:141
+msgid "Categories"
+msgstr ""
+
+#: config/definitions.py:162
+msgid "Overview"
+msgstr ""
+
+#: config/definitions.py:163 config/definitions.py:192
+msgid "Time per Day"
+msgstr ""
+
+#: config/definitions.py:164
+msgid "Time per Day per Project"
+msgstr ""
+
+#: config/definitions.py:165
+msgid "Medal Score"
+msgstr ""
+
+#: config/definitions.py:173
+msgid "Edit"
+msgstr ""
+
+#: config/definitions.py:187 config/definitions.py:209
+msgid "Total time:"
+msgstr ""
+
+#: config/definitions.py:188
+msgid "Category"
+msgstr ""
+
+#: config/definitions.py:189 config/definitions.py:210
+#: config/definitions.py:269 config/definitions.py:285
+#: config/definitions.py:299
+msgid "Description"
+msgstr ""
+
+#: config/definitions.py:190
+msgid "Activities"
+msgstr ""
+
+#: config/definitions.py:191 config/definitions.py:213
+msgid "Statistics"
+msgstr ""
+
+#: config/definitions.py:211
+msgid "Goals"
+msgstr ""
+
+#: config/definitions.py:239
+msgid "Mon"
+msgstr ""
+
+#: config/definitions.py:240
+msgid "Tue"
+msgstr ""
+
+#: config/definitions.py:241
+msgid "Wed"
+msgstr ""
+
+#: config/definitions.py:242
+msgid "Thu"
+msgstr ""
+
+#: config/definitions.py:243
+msgid "Fri"
+msgstr ""
+
+#: config/definitions.py:244
+msgid "Sat"
+msgstr ""
+
+#: config/definitions.py:245
+msgid "Sun"
+msgstr ""
+
+#: config/definitions.py:268 config/definitions.py:284
+#: config/definitions.py:298
+msgid "Name"
+msgstr ""
+
+#: config/definitions.py:270
+msgid "Project Category"
+msgstr ""
+
+#: config/definitions.py:316
+msgid "Monday"
+msgstr ""
+
+#: config/definitions.py:317
+msgid "Tuesday"
+msgstr ""
+
+#: config/definitions.py:318
+msgid "Wednesday"
+msgstr ""
+
+#: config/definitions.py:319
+msgid "Thursday"
+msgstr ""
+
+#: config/definitions.py:320
+msgid "Friday"
+msgstr ""
+
+#: config/definitions.py:321
+msgid "Saturday"
+msgstr ""
+
+#: config/definitions.py:322
+msgid "Sunday"
+msgstr ""
+
+#: src/components/dashboard.py:189
 msgid "GOAL TODAY"
 msgstr ""
 
-#: src/components/dashboard.py:194
+#: src/components/dashboard.py:193
 msgid "PROGRESS"
 msgstr ""
 

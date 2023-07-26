@@ -5,8 +5,6 @@ import os
 import ttkbootstrap as tb
 from tkinter.font import nametofont
 from datetime import datetime
-import gettext
-#_ = gettext.gettext
 
 # Custom libraries
 from src.model.orm_base import DBConnection, Base # Session, db_engine, Base
@@ -40,12 +38,6 @@ class App(tb.Window):
         super().__init__(
             title="Time Journal", themename=theme, minsize=(1080, 800)
         )
-
-        # Set language
-        print(f"Loading language {self.settings['DEFAULT']['language']} from user settings")
-        locale = gettext.translation('messages', localedir="locales", languages=[self.settings["DEFAULT"]["language"]])
-        locale.install()
-        _ = locale.gettext
 
         # Options
         default_font = nametofont("TkDefaultFont")
