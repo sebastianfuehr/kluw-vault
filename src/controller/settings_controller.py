@@ -27,8 +27,12 @@ class SettingsController:
             print(
                 f"Config file not found. Copying {app_usr_data_file_default}..."
             )
-            os.makedirs(app_usr_data_dir, exist_ok=True)
-            copyfile(app_usr_data_file_default, app_usr_data_file)
+            try:
+                os.makedirs(app_usr_data_dir, exist_ok=True)
+                copyfile(app_usr_data_file_default, app_usr_data_file)
+            except PermissionError:
+                print("PermissionError - Loading default ini file without copy.")
+                app_usr_data_file = app_usr_data_file_default
 
         settings.read(app_usr_data_file)
         SettingsController.compare_config_file_versions(
