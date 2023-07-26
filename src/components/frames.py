@@ -150,6 +150,7 @@ class ListFrame(tb.Frame, RefreshMixin):
 
         # Context menu
         context_menu = ContextMenu(self.app)
+        context_menu.add_command(label="Edit", command=self.edit_entry)
         context_menu.add_command(label="Delete", command=self.delete_entry)
 
         # Item list
@@ -174,7 +175,23 @@ class ListFrame(tb.Frame, RefreshMixin):
         form = self.form_edit(self, self.app, self.db_service, self.db_session)
         form.grid(row=0, rowspan=3, column=2, sticky="nsew")
 
+    def edit_entry(self, *_args):
+        """Opens a form corresponding to the selected object to allow
+        editing the entity.
+        """
+        item = self.objects[self.item_key_var.get()]
+        form = self.form_edit(
+            master=self,
+            app=self.app,
+            db_service=self.db_service,
+            db_session=self.db_session,
+            selected_item=item)
+        form.grid(row=0, rowspan=3, column=2, sticky="nsew")
+
     def delete_entry(self, *_args):
+        """Allows to delete the selected entity. Will warn the user via
+        a popup beforehand.
+        """
         usr_answ = Messagebox.okcancel(
             message="Are you sure you want to delete that entry?",
             title="Attention!",

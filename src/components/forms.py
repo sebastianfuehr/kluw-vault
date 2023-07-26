@@ -381,7 +381,7 @@ class Form(AutoLayoutFrame):
 class ProjectForm(Form):
     """A form to create or edit a project entity."""
 
-    def __init__(self, master, app, db_service, db_session):
+    def __init__(self, master, app, db_service, db_session, selected_item=None):
         super().__init__(
             master=master,
             app=app,
@@ -391,12 +391,15 @@ class ProjectForm(Form):
         )
         self.app = app
         self.db_session = db_session
+        self.project = selected_item
 
         self.name_var = tb.StringVar()
         self.category_id_var = tb.IntVar()
         self.category_name_var = tb.StringVar()
 
         self.build_form_components()
+        if self.project is not None:
+            self.prefill_input_fields()
 
     def build_form_components(self):
         """Create the GUI elements for this component."""
@@ -430,10 +433,18 @@ class ProjectForm(Form):
             layout=self.app.definitions.FORM_PROJECT_EDIT["btn_save"],
         )
 
+    def prefill_input_fields(self):
+        self.name_var.set(self.project.name)
+        self.inp_description.set_text(self.project.description)
+        self.inp_category.set(self.project.project_category.name)
+
     def save_entry(self, *_args):
         """Read the values from the form fields, create a new Python
         object, and save it into the database.
         """
+        project_id = None
+        if self.project is not None:
+            project_id = self.project.id
         if self.name_var.get() == "":
             Messagebox.show_error(
                 message="You can't create a project without giving it a name!",
@@ -443,7 +454,7 @@ class ProjectForm(Form):
                 ),
             )
             return
-        new_project = Project(id=None, name=self.name_var.get())
+        new_project = Project(id=project_id, name=self.name_var.get())
 
         # Project description
         description = self.inp_description.get_text()
@@ -539,7 +550,7 @@ class ActivityForm(Form):
 class ProjectCategoryForm(Form):
     """A form to create or edit a project entity."""
 
-    def __init__(self, master, app, db_service, db_session):
+    def __init__(self, master, app, db_service, db_session, selected_item=None):
         super().__init__(
             master=master,
             app=app,
@@ -549,10 +560,13 @@ class ProjectCategoryForm(Form):
         )
         self.app = app
         self.db_session = db_session
+        self.category = selected_item
 
         self.name_var = tb.StringVar()
 
         self.build_form_components()
+        if self.category is not None:
+            self.prefill_input_fields()
 
     def build_form_components(self):
         """Create the GUI elements for this component."""
@@ -574,10 +588,17 @@ class ProjectCategoryForm(Form):
             layout=self.app.definitions.FORM_PROJECT_CATEGORY_EDIT["btn_save"],
         )
 
+    def prefill_input_fields(self):
+        self.name_var.set(self.category.name)
+        self.inp_description.set_text(self.category.description)
+
     def save_entry(self, *_args):
         """Read the values from the form fields, create a new Python
         object, and save it into the database.
         """
+        category_id = None
+        if self.category is not None:
+            category_id = self.category.id
         if self.name_var.get() == "":
             Messagebox.show_error(
                 message="You can't create a project category without giving it a name!",
@@ -588,7 +609,7 @@ class ProjectCategoryForm(Form):
             )
             return
         new_project_category = ProjectCategory(
-            id=None, name=self.name_var.get()
+            id=category_id, name=self.name_var.get()
         )
 
         # Project description
@@ -800,7 +821,10 @@ class CustomScrolledText(ScrolledText):
 
 
 class CustomCombobox(tb.Combobox):
-    """Same as CustomButton.
+    """Extends the tkinter combobox to support key-value pairs. Use the
+    set and get method for the combobox to also set the corresponding
+    variable values. Setting the connected tkinter variables manually
+    will raise an AttributeError.
 
     Parameters
     ----------

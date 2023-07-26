@@ -36,4 +36,8 @@ class Project(Base):
         ]
 
     def to_string(self):
-        return f"id: {self.id}, name: {self.name}"
+        return f"{self.name} ({self.project_category}): {self.description}"
+
+    def __repr__(self):
+        class_name = type(self).__name__
+        return f"{class_name}(id={self.id}, name={self.name}, category={self.project_category}, description={self.description})"
