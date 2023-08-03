@@ -1,6 +1,8 @@
 import unittest
 from datetime import datetime, timedelta
+
 from freezegun import freeze_time
+
 from src.controller.timer_controller import TimerController
 
 
@@ -27,7 +29,9 @@ class TestTimerController(unittest.TestCase):
             controller.pause()
             frozen_datetime.tick(delta=timedelta(seconds=70))
             self.assertEqual(controller.get_current_duration(), self.td_session)
-            self.assertEqual(controller.get_current_pause_duration(), timedelta(seconds=70))
+            self.assertEqual(
+                controller.get_current_pause_duration(), timedelta(seconds=70)
+            )
 
     def test_get_current_duration_stopped(self):
         with freeze_time(self.dt_start) as frozen_datetime:

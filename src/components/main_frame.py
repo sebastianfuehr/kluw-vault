@@ -1,20 +1,22 @@
 """A collection ov frames for displaying database entities."""
 
-import ttkbootstrap as tb
 from gettext import gettext
+
+import ttkbootstrap as tb
+
+from src.components.dashboard import StatsDashboard
+from src.components.forms import ProjectCategoryForm, ProjectForm
+from src.components.frames import ListFrame
 
 # GUI Components
 from src.components.left_sidebar import LeftSidebar
 from src.components.navigation import ButtonPanel
-from src.components.frames import ListFrame
 from src.components.TimeEntriesList import TimeEntriesList
-from src.components.dashboard import StatsDashboard
-from src.components.forms import ProjectForm, ProjectCategoryForm
-from src.components.views import ProjectDetailView, CategoryDetailView
+from src.components.views import CategoryDetailView, ProjectDetailView
+from src.controller.project_category_service import ProjectCategoryService
 
 # DB Services
 from src.controller.project_service import ProjectService
-from src.controller.project_category_service import ProjectCategoryService
 
 
 class MainFrame(tb.Frame):
@@ -29,7 +31,7 @@ class MainFrame(tb.Frame):
         self.config = parent.config
 
         self.tab_nav_str = tb.StringVar()
-        self.tab_nav_key = tb.StringVar() # The currently selected tab
+        self.tab_nav_key = tb.StringVar()  # The currently selected tab
         self.tab_nav_key.trace("w", self.build_tab_frame)
         self.central_frame = None
 
@@ -37,7 +39,9 @@ class MainFrame(tb.Frame):
         self.grid_columnconfigure(2, weight=1)
 
         self.__build_gui_components()
-        self.tab_nav_key.set(list(self.app.definitions.MAINFRAME_TABS_NAV["elements"].keys())[0])
+        self.tab_nav_key.set(
+            list(self.app.definitions.MAINFRAME_TABS_NAV["elements"].keys())[0]
+        )
 
         self.pack(fill="both", expand=True)
 
@@ -63,7 +67,7 @@ class MainFrame(tb.Frame):
             db_session=self.parent.session,
             form_edit=ProjectForm,
             detail_view=ProjectDetailView,
-            db_delete_item=ProjectService.delete
+            db_delete_item=ProjectService.delete,
         )
         self.tab_categories = ListFrame(
             master=self,
@@ -72,7 +76,7 @@ class MainFrame(tb.Frame):
             db_session=self.parent.session,
             form_edit=ProjectCategoryForm,
             detail_view=CategoryDetailView,
-            db_delete_item=ProjectCategoryService.delete
+            db_delete_item=ProjectCategoryService.delete,
         )
 
         # Main navigation tabs
@@ -81,7 +85,7 @@ class MainFrame(tb.Frame):
             ttk_string_var=self.tab_nav_str,
             labels=self.app.definitions.MAINFRAME_TABS_NAV["elements"],
             styling=self.app.definitions.MAINFRAME_TABS_NAV,
-            ttk_key_var=self.tab_nav_key
+            ttk_key_var=self.tab_nav_key,
         )
         tab_nav.grid(row=0, column=2, sticky="ew")
         tab_nav.buttons[0].select_handler()

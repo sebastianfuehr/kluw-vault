@@ -1,20 +1,27 @@
 """Tests for the MainFrame component."""
 
 from test.util import find_widget_by_name
+
 import pytest
+
 from app import App
 from src.model.orm_base import DBConnection
+
 
 @pytest.fixture(scope="module")
 def app():
     db_connection = DBConnection("/test.db")
     return App(db_connection)
 
-@pytest.mark.parametrize("widget_name, variable_value", [
-    ("time entries", "Time Entries"),
-    ("projects", "Projects"),
-    ("categories", "Categories")
-])
+
+@pytest.mark.parametrize(
+    "widget_name, variable_value",
+    [
+        ("time entries", "Time Entries"),
+        ("projects", "Projects"),
+        ("categories", "Categories"),
+    ],
+)
 def test_main_frame_tab_navigation(app, widget_name, variable_value):
     """
     Parameters
@@ -30,10 +37,14 @@ def test_main_frame_tab_navigation(app, widget_name, variable_value):
     app.update()
     assert app.main_frame.tab_nav_str.get() == variable_value
 
-@pytest.mark.parametrize("widget_names, expected_result", [
-    (("projects", "test project"), "Test Project"),
-    (("categories", "test category"), "Test Category")
-])
+
+@pytest.mark.parametrize(
+    "widget_names, expected_result",
+    [
+        (("projects", "test project"), "Test Project"),
+        (("categories", "test category"), "Test Category"),
+    ],
+)
 def test_list_frame_navigation(app, widget_names, expected_result):
     """
     Parameters

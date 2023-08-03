@@ -1,10 +1,12 @@
 import pandas as pd
-from .. model.time_entry import TimeEntry
-from .. controller.time_entry_service import TimeEntryService
+
+from ..controller.time_entry_service import TimeEntryService
+from ..model.time_entry import TimeEntry
 
 
 class DataController:
     """A central entity that manages the data of the application."""
+
     def __init__(self, db_session):
         self.db_session = db_session
 
@@ -19,7 +21,7 @@ class DataController:
 
     def refresh_time_entry_df(self):
         time_entry_objects = TimeEntryService.get_all(self.db_session).all()
-        time_entries= [entry.to_list() for entry in time_entry_objects]
+        time_entries = [entry.to_list() for entry in time_entry_objects]
         self.time_entry_df = pd.DataFrame(
             time_entries, columns=TimeEntry.get_column_names()
         )

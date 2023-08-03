@@ -1,4 +1,5 @@
-from sqlalchemy import select, delete
+from sqlalchemy import delete, select
+
 from ..model.project_category_goal import ProjectCategoryGoal
 
 
@@ -11,9 +12,7 @@ class ProjectCategoryGoalService:
 
     @staticmethod
     def get_by_category_id(db_session, category_id):
-        stmt = select(ProjectCategoryGoal).filter_by(
-            project_category_id=category_id
-        )
+        stmt = select(ProjectCategoryGoal).filter_by(project_category_id=category_id)
         result = db_session.execute(stmt)
         return result.scalars()
 

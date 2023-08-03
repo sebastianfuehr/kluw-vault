@@ -1,23 +1,22 @@
-import ttkbootstrap as tb
-from ttkbootstrap.tooltip import ToolTip
-from ttkbootstrap.scrolled import ScrolledText, ScrolledFrame
-from ttkbootstrap.dialogs.dialogs import Messagebox
 from datetime import datetime, timedelta
+
+import ttkbootstrap as tb
+from ttkbootstrap.dialogs.dialogs import Messagebox
+from ttkbootstrap.scrolled import ScrolledFrame, ScrolledText
+from ttkbootstrap.tooltip import ToolTip
 
 # Custom modules
 from ..components.frames import AutoLayoutFrame
-from ..model.time_entry import TimeEntry
+from ..controller.activity_service import ActivityService
+from ..controller.project_category_goal_service import ProjectCategoryGoalService
+from ..controller.project_category_service import ProjectCategoryService
+from ..controller.project_service import ProjectService
+from ..controller.time_entry_service import TimeEntryService
+from ..model.activity import Activity
 from ..model.project import Project
 from ..model.project_category import ProjectCategory
 from ..model.project_category_goal import ProjectCategoryGoal
-from ..model.activity import Activity
-from ..controller.time_entry_service import TimeEntryService
-from ..controller.project_service import ProjectService
-from ..controller.project_category_service import ProjectCategoryService
-from ..controller.activity_service import ActivityService
-from ..controller.project_category_goal_service import (
-    ProjectCategoryGoalService,
-)
+from ..model.time_entry import TimeEntry
 
 
 class TimeEntryForm(tb.Frame):
@@ -71,9 +70,7 @@ class TimeEntryForm(tb.Frame):
         lbl_te_weekday = tb.Label(scr_frame, text="Day:")
         lbl_te_weekday.grid(column=0, row=2, sticky="w", padx=lbl_pax, pady=5)
         self.te_weekday = tb.Label(scr_frame, width=inp_width, anchor="center")
-        self.te_weekday.grid(
-            column=1, row=2, sticky="e", padx=field_padx, pady=5
-        )
+        self.te_weekday.grid(column=1, row=2, sticky="e", padx=field_padx, pady=5)
         self.te_weekday["text"] = datetime.today().strftime("%a")
 
         lbl_te_start = tb.Label(scr_frame, text="Start:")
@@ -81,9 +78,7 @@ class TimeEntryForm(tb.Frame):
         self.te_start = tb.Entry(
             scr_frame, font=self.entry_font, width=inp_width, justify="center"
         )
-        self.te_start.grid(
-            column=1, row=3, sticky="e", padx=field_padx, pady=5
-        )
+        self.te_start.grid(column=1, row=3, sticky="e", padx=field_padx, pady=5)
 
         lbl_te_end = tb.Label(scr_frame, text="End:")
         lbl_te_end.grid(column=0, row=4, sticky="w", padx=lbl_pax, pady=5)
@@ -97,18 +92,12 @@ class TimeEntryForm(tb.Frame):
         self.te_pause = tb.Entry(
             scr_frame, font=self.entry_font, width=inp_width, justify="center"
         )
-        self.te_pause.grid(
-            column=1, row=5, sticky="e", padx=field_padx, pady=5
-        )
+        self.te_pause.grid(column=1, row=5, sticky="e", padx=field_padx, pady=5)
 
         lbl_te_duration = tb.Label(scr_frame, text="Duration:")
         lbl_te_duration.grid(column=0, row=6, sticky="w", padx=lbl_pax, pady=5)
-        self.te_duration = tb.Label(
-            scr_frame, width=inp_width, anchor="center"
-        )
-        self.te_duration.grid(
-            column=1, row=6, sticky="e", padx=field_padx, pady=5
-        )
+        self.te_duration = tb.Label(scr_frame, width=inp_width, anchor="center")
+        self.te_duration.grid(column=1, row=6, sticky="e", padx=field_padx, pady=5)
         self.te_duration["text"] = "00:00:00"
 
         # Project combobox
@@ -130,9 +119,7 @@ class TimeEntryForm(tb.Frame):
             width=12,
             justify="right",
         )
-        self.te_project.grid(
-            column=1, row=7, sticky="e", padx=field_padx, pady=5
-        )
+        self.te_project.grid(column=1, row=7, sticky="e", padx=field_padx, pady=5)
         self.te_project["values"] = project_names
 
         # Activity combobox
@@ -146,9 +133,7 @@ class TimeEntryForm(tb.Frame):
             width=12,
             justify="right",
         )
-        self.te_activity.grid(
-            column=1, row=8, sticky="e", padx=field_padx, pady=5
-        )
+        self.te_activity.grid(column=1, row=8, sticky="e", padx=field_padx, pady=5)
         self.__populate_activities_list()
 
         self.te_alone_var = tb.IntVar(value=1)
@@ -168,9 +153,7 @@ class TimeEntryForm(tb.Frame):
             height=3,
             autohide=True,
         )
-        self.te_tags.grid(
-            column=1, row=10, sticky="e", padx=field_padx, pady=5
-        )
+        self.te_tags.grid(column=1, row=10, sticky="e", padx=field_padx, pady=5)
         ToolTip(self.te_tags, text="One tag per line.")
 
         lbl_te_comment = tb.Label(scr_frame, text="Comment:")
@@ -192,9 +175,7 @@ class TimeEntryForm(tb.Frame):
         self.btn_save_entry = tb.Button(
             scr_frame, text="Save", command=self.save_entry, width=14
         )
-        self.btn_save_entry.grid(
-            column=0, row=13, columnspan=2, padx=10, pady=20
-        )
+        self.btn_save_entry.grid(column=0, row=13, columnspan=2, padx=10, pady=20)
 
     def __populate_activities_list(self, *args):
         self.selected_activity.set("")
@@ -202,9 +183,7 @@ class TimeEntryForm(tb.Frame):
         if project_name == "":
             self.te_activity["values"] = []
         else:
-            project = ProjectService.get_project_by_name(
-                self.app.session, project_name
-            )
+            project = ProjectService.get_project_by_name(self.app.session, project_name)
             activity_names = [activity.name for activity in project.activities]
             self.te_activity["values"] = activity_names
             if len(activity_names) > 0:
@@ -319,9 +298,7 @@ class TimeEntryForm(tb.Frame):
         new_entry.activity_id = ActivityService.get_activity_id(
             self.app.session, activity_name, new_entry.project_id
         ).id
-        new_entry.activity = Activity(
-            id=new_entry.activity_id, name=activity_name
-        )
+        new_entry.activity = Activity(id=new_entry.activity_id, name=activity_name)
 
         alone_int = self.te_alone_var.get()
         if alone_int is not None:
@@ -361,9 +338,7 @@ class Form(AutoLayoutFrame):
         btn = self.app.definitions.FORM_BTN_CLOSE
         btn_close_form = tb.Label(self, text=btn["text"], font=btn["font"])
         btn_close_form.bind("<Button-1>", self.close_form)
-        btn_close_form.place(
-            relx=btn["relx"], rely=btn["rely"], anchor=btn["anchor"]
-        )
+        btn_close_form.place(relx=btn["relx"], rely=btn["rely"], anchor=btn["anchor"])
 
     def close_form(self, *_args):
         """Close the currently opened form."""
@@ -410,7 +385,8 @@ class ProjectForm(Form):
             layout=self.app.definitions.FORM_PROJECT_EDIT["inp_name"],
         )
         self.inp_description = CustomScrolledText(
-            master=self, layout=self.app.definitions.FORM_PROJECT_EDIT["inp_description"]
+            master=self,
+            layout=self.app.definitions.FORM_PROJECT_EDIT["inp_description"],
         )
 
         # Project categories
@@ -475,9 +451,7 @@ class ProjectForm(Form):
 class ActivityForm(Form):
     """A form to create or edit a project activity entity."""
 
-    def __init__(
-        self, master, app, db_service, db_session, project_id, activity=None
-    ):
+    def __init__(self, master, app, db_service, db_session, project_id, activity=None):
         super().__init__(
             master=master,
             app=app,
@@ -503,7 +477,8 @@ class ActivityForm(Form):
             layout=self.app.definitions.FORM_ACTIVITY_EDIT["inp_name"],
         )
         self.inp_description = CustomScrolledText(
-            master=self, layout=self.app.definitions.FORM_ACTIVITY_EDIT["inp_description"]
+            master=self,
+            layout=self.app.definitions.FORM_ACTIVITY_EDIT["inp_description"],
         )
 
         # Fill form
@@ -577,7 +552,8 @@ class ProjectCategoryForm(Form):
             layout=self.app.definitions.FORM_PROJECT_CATEGORY_EDIT["inp_name"],
         )
         self.inp_description = CustomScrolledText(
-            master=self, layout=self.app.definitions.FORM_PROJECT_CATEGORY_EDIT["inp_description"]
+            master=self,
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_EDIT["inp_description"],
         )
 
         # Submit form
@@ -608,9 +584,7 @@ class ProjectCategoryForm(Form):
                 ),
             )
             return
-        new_project_category = ProjectCategory(
-            id=category_id, name=self.name_var.get()
-        )
+        new_project_category = ProjectCategory(id=category_id, name=self.name_var.get())
 
         # Project description
         description = self.inp_description.get_text()
@@ -623,9 +597,7 @@ class ProjectCategoryForm(Form):
 class ProjectCategoryGoalForm(Form):
     """A form to create or edit a project activity entity."""
 
-    def __init__(
-        self, master, app, db_service, db_session, category_id, goal=None
-    ):
+    def __init__(self, master, app, db_service, db_session, category_id, goal=None):
         super().__init__(
             master=master,
             app=app,
@@ -664,7 +636,9 @@ class ProjectCategoryGoalForm(Form):
         CustomEntry(
             master=self,
             tk_variable=self.min_wednesday_var,
-            layout=self.app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT["inp_wednesday"],
+            layout=self.app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT[
+                "inp_wednesday"
+            ],
         )
         CustomEntry(
             master=self,
@@ -840,9 +814,7 @@ class CustomCombobox(tb.Combobox):
         will be updated upon selection.
     """
 
-    def __init__(
-        self, master, tk_key_var, tk_value_var, layout, elements=None
-    ):
+    def __init__(self, master, tk_key_var, tk_value_var, layout, elements=None):
         super().__init__(
             master=master,
             textvariable=tk_value_var,

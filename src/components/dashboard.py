@@ -1,21 +1,23 @@
 import logging
-from gettext import gettext
-import ttkbootstrap as tb
-from ttkbootstrap.scrolled import ScrolledFrame
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from datetime import datetime, timedelta
-from sqlalchemy import select
+from gettext import gettext
+
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+import pandas as pd
+import ttkbootstrap as tb
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from PIL import Image, ImageTk
+from sqlalchemy import select
+from ttkbootstrap.scrolled import ScrolledFrame
 
 from src.components.navigation import ButtonPanel
-from ..model.time_entry import TimeEntry
-from ..controller.time_entry_service import TimeEntryService
+
+from ..components.frames import AutoLayoutFrame
+from ..components.visuals import GraphTimePerDay, GraphTimesPerDay
 from ..controller.time_controller import TimeController
-from .. components.frames import AutoLayoutFrame
-from .. components.visuals import GraphTimePerDay, GraphTimesPerDay
+from ..controller.time_entry_service import TimeEntryService
+from ..model.time_entry import TimeEntry
 
 
 class StatsDashboard(tb.Frame):
@@ -25,7 +27,9 @@ class StatsDashboard(tb.Frame):
         self.app = app
 
         self.has_content = False
-        self.time_string = tb.StringVar(value=self.app.definitions.FILTER_PERIODS["elements"][4])
+        self.time_string = tb.StringVar(
+            value=self.app.definitions.FILTER_PERIODS["elements"][4]
+        )
         self.time_string.trace("w", self.select_handler)
 
         self.preprocess_data()
@@ -35,8 +39,12 @@ class StatsDashboard(tb.Frame):
 
         scrolled_frame = ScrolledFrame(self, autohide=True)
         scrolled_frame.grid(row=1, column=0, sticky="nsew")
-        self.content_frame = AutoLayoutFrame(scrolled_frame, self.app.definitions.VIEW_DASHBOARD['grid-config'], self.app.definitions.VIEW_DASHBOARD['labels'])
-        self.content_frame.pack(expand=True, fill='both', padx=25)
+        self.content_frame = AutoLayoutFrame(
+            scrolled_frame,
+            self.app.definitions.VIEW_DASHBOARD["grid-config"],
+            self.app.definitions.VIEW_DASHBOARD["labels"],
+        )
+        self.content_frame.pack(expand=True, fill="both", padx=25)
         self.content_frame.grid_columnconfigure((0, 1), weight=1)
 
         filter_panel = ButtonPanel(
@@ -57,18 +65,10 @@ class StatsDashboard(tb.Frame):
         ago_six_months = str((datetime.today() - timedelta(days=182)).date())
         ago_one_month = str((datetime.today() - timedelta(days=31)).date())
         ago_one_week = str((datetime.today() - timedelta(days=7)).date())
-        self.data_one_year = self.data_max[
-            self.data_max["Date"] > ago_one_year
-        ]
-        self.data_six_months = self.data_max[
-            self.data_max["Date"] > ago_six_months
-        ]
-        self.data_one_month = self.data_max[
-            self.data_max["Date"] > ago_one_month
-        ]
-        self.data_one_week = self.data_max[
-            self.data_max["Date"] > ago_one_week
-        ]
+        self.data_one_year = self.data_max[self.data_max["Date"] > ago_one_year]
+        self.data_six_months = self.data_max[self.data_max["Date"] > ago_six_months]
+        self.data_one_month = self.data_max[self.data_max["Date"] > ago_one_month]
+        self.data_one_week = self.data_max[self.data_max["Date"] > ago_one_week]
 
     def select_handler(self, *_args):
         # Select the right data set
@@ -111,15 +111,15 @@ class StatsDashboard(tb.Frame):
             parent=self.content_frame,
             app=self.app,
             data=project_times,
-            value_column_name=None
+            value_column_name=None,
         ).grid(
-            row=layout['graph_time_per_project_per_day']['row'],
-            column=layout['graph_time_per_project_per_day']['col'],
-            rowspan=layout['graph_time_per_project_per_day']['rowspan'],
-            columnspan=layout['graph_time_per_project_per_day']['columnspan'],
-            sticky=layout['graph_time_per_project_per_day']['sticky'],
-            padx=layout['graph_time_per_project_per_day']['padx'],
-            pady=layout['graph_time_per_project_per_day']['pady']
+            row=layout["graph_time_per_project_per_day"]["row"],
+            column=layout["graph_time_per_project_per_day"]["col"],
+            rowspan=layout["graph_time_per_project_per_day"]["rowspan"],
+            columnspan=layout["graph_time_per_project_per_day"]["columnspan"],
+            sticky=layout["graph_time_per_project_per_day"]["sticky"],
+            padx=layout["graph_time_per_project_per_day"]["padx"],
+            pady=layout["graph_time_per_project_per_day"]["pady"],
         )
 
         # Table - Overview panel
@@ -129,13 +129,13 @@ class StatsDashboard(tb.Frame):
         # Medal score
         self.medal_score = MedalScore(self.content_frame, self.app, self.data_max)
         self.medal_score.grid(
-            row=layout['medal_score']['row'],
-            column=layout['medal_score']['col'],
-            rowspan=layout['medal_score']['rowspan'],
-            columnspan=layout['medal_score']['columnspan'],
-            sticky=layout['medal_score']['sticky'],
-            padx=layout['medal_score']['padx'],
-            pady=layout['medal_score']['pady']
+            row=layout["medal_score"]["row"],
+            column=layout["medal_score"]["col"],
+            rowspan=layout["medal_score"]["rowspan"],
+            columnspan=layout["medal_score"]["columnspan"],
+            sticky=layout["medal_score"]["sticky"],
+            padx=layout["medal_score"]["padx"],
+            pady=layout["medal_score"]["pady"],
         )
 
         # Graph - Total time per day
@@ -143,16 +143,16 @@ class StatsDashboard(tb.Frame):
             parent=self.content_frame,
             app=self.app,
             data=duration_per_day,
-            value_column_name="Minutes"
+            value_column_name="Minutes",
         )
         self.graph_time_per_day.grid(
-            row=layout['graph_time_per_day']['row'],
-            column=layout['graph_time_per_day']['col'],
-            rowspan=layout['graph_time_per_day']['rowspan'],
-            columnspan=layout['graph_time_per_day']['columnspan'],
-            sticky=layout['graph_time_per_day']['sticky'],
-            padx=layout['graph_time_per_day']['padx'],
-            pady=layout['graph_time_per_day']['pady']
+            row=layout["graph_time_per_day"]["row"],
+            column=layout["graph_time_per_day"]["col"],
+            rowspan=layout["graph_time_per_day"]["rowspan"],
+            columnspan=layout["graph_time_per_day"]["columnspan"],
+            sticky=layout["graph_time_per_day"]["sticky"],
+            padx=layout["graph_time_per_day"]["padx"],
+            pady=layout["graph_time_per_day"]["pady"],
         )
 
         self.has_content = True
@@ -180,9 +180,7 @@ class OverviewPanel(tb.Frame):
         goal_str = TimeController.seconds_to_string(total_goal_minutes * 60)
         self.goal_today_str = tb.StringVar(self, goal_str)
         curr_ratio = self.app.sc.total_time_today() / 60 / total_goal_minutes
-        self.progress_today = tb.StringVar(
-            self, f"{round(curr_ratio*6, 1)}%"
-        )
+        self.progress_today = tb.StringVar(self, f"{round(curr_ratio*6, 1)}%")
 
     def build_gui_components(self):
         self.block_goal_today = OverviewPanelBlock(
@@ -222,112 +220,115 @@ class MedalScore(tb.Frame):
         super().__init__(master=parent)
         self.app = app
         self.data_max = data_max
-        self.outline_color = 'white'
+        self.outline_color = "white"
 
         width = 550
         height = 300
         self.canvas = tb.Canvas(self, width=width, height=height)
-        self.canvas.pack(side='top')
-        
+        self.canvas.pack(side="top")
+
         total_bronze, total_silver, total_gold = self.calculate_values()
         self.draw_image(width, height, total_bronze, total_silver, total_gold)
-    
+
     def draw_image(self, width, height, total_bronze, total_silver, total_gold):
-        pedestal_width = width*0.7/3
-        center_bronze = width/6
-        center_gold = width/6*3
-        center_silver = width/6*5
-        height_bronze = height*0.35
-        height_gold = height*0.55
-        height_silver = height*0.45
+        pedestal_width = width * 0.7 / 3
+        center_bronze = width / 6
+        center_gold = width / 6 * 3
+        center_silver = width / 6 * 5
+        height_bronze = height * 0.35
+        height_gold = height * 0.55
+        height_silver = height * 0.45
 
         self.canvas.create_line(
-            (0, height),
-            (width, height),
-            width=2,
-            fill=self.outline_color
+            (0, height), (width, height), width=2, fill=self.outline_color
         )
 
         # Draw pedestal
         self.canvas.create_rectangle(
-            center_bronze - pedestal_width/2,
+            center_bronze - pedestal_width / 2,
             height - height_bronze,
-            center_bronze + pedestal_width/2,
+            center_bronze + pedestal_width / 2,
             height,
-            fill=self.outline_color
+            fill=self.outline_color,
         )
         self.canvas.create_rectangle(
-            center_gold - pedestal_width/2,
+            center_gold - pedestal_width / 2,
             height - height_gold,
-            center_gold + pedestal_width/2,
+            center_gold + pedestal_width / 2,
             height,
-            fill=self.outline_color
+            fill=self.outline_color,
         )
         self.canvas.create_rectangle(
-            center_silver - pedestal_width/2,
+            center_silver - pedestal_width / 2,
             height - height_silver,
-            center_silver + pedestal_width/2,
+            center_silver + pedestal_width / 2,
             height,
-            fill=self.outline_color
+            fill=self.outline_color,
         )
 
         # Medal icons
         icon_size = 160
 
-        img_bronze = ImageTk.PhotoImage(Image.open(
-            f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-bronze.png"
-        ).resize((icon_size, icon_size)))
+        img_bronze = ImageTk.PhotoImage(
+            Image.open(
+                f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-bronze.png"
+            ).resize((icon_size, icon_size))
+        )
         self.img_bronze = img_bronze
         self.canvas.create_image(
-            center_bronze, 
-            height - height_bronze - icon_size/3,
+            center_bronze,
+            height - height_bronze - icon_size / 3,
             anchor=tb.CENTER,
-            image=img_bronze
+            image=img_bronze,
         )
 
-        img_gold = ImageTk.PhotoImage(Image.open(
-            f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-gold.png"
-        ).resize((icon_size, icon_size)))
+        img_gold = ImageTk.PhotoImage(
+            Image.open(
+                f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-gold.png"
+            ).resize((icon_size, icon_size))
+        )
         self.img_gold = img_gold
         self.canvas.create_image(
-            center_gold, 
-            height - height_gold - icon_size/3,
+            center_gold,
+            height - height_gold - icon_size / 3,
             anchor=tb.CENTER,
-            image=img_gold
+            image=img_gold,
         )
 
-        img_silver = ImageTk.PhotoImage(Image.open(
-            f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-silver.png"
-        ).resize((icon_size, icon_size)))
+        img_silver = ImageTk.PhotoImage(
+            Image.open(
+                f"{self.app.definitions.APP_ROOT_DIR}/assets/icons/medal-silver.png"
+            ).resize((icon_size, icon_size))
+        )
         self.img_silver = img_silver
         self.canvas.create_image(
-            center_silver, 
-            height - height_silver - icon_size/3,
+            center_silver,
+            height - height_silver - icon_size / 3,
             anchor=tb.CENTER,
-            image=img_silver
+            image=img_silver,
         )
 
         # Draw text values
         self.canvas.create_text(
             center_bronze,
-            height - height_bronze/2+10,
+            height - height_bronze / 2 + 10,
             anchor=tb.CENTER,
-            font=(None, 24, 'bold'),
-            text=total_bronze
+            font=(None, 24, "bold"),
+            text=total_bronze,
         )
         self.canvas.create_text(
             center_gold,
-            height - height_gold/2,
+            height - height_gold / 2,
             anchor=tb.CENTER,
-            font=(None, 34, 'bold'),
-            text=total_gold
+            font=(None, 34, "bold"),
+            text=total_gold,
         )
         self.canvas.create_text(
             center_silver,
-            height - height_silver/2+5,
+            height - height_silver / 2 + 5,
             anchor=tb.CENTER,
-            font=(None, 28, 'bold'),
-            text=total_silver
+            font=(None, 28, "bold"),
+            text=total_silver,
         )
 
     def calculate_values(self):
@@ -343,7 +344,11 @@ class MedalScore(tb.Frame):
 
         # Calculate number of medals
         column = duration_per_day["Minutes"]
-        total_bronze = column[column > self.app.definitions.MEDAL_TH_BRONZE/60].count()
-        total_silver = column[column > self.app.definitions.MEDAL_TH_SILVER/60].count()
-        total_gold = column[column > self.app.definitions.MEDAL_TH_GOLD/60].count()
+        total_bronze = column[
+            column > self.app.definitions.MEDAL_TH_BRONZE / 60
+        ].count()
+        total_silver = column[
+            column > self.app.definitions.MEDAL_TH_SILVER / 60
+        ].count()
+        total_gold = column[column > self.app.definitions.MEDAL_TH_GOLD / 60].count()
         return total_bronze, total_silver, total_gold

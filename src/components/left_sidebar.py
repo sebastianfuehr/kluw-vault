@@ -1,14 +1,16 @@
-import ttkbootstrap as tb
-from ttkbootstrap.tooltip import ToolTip
-from ttkbootstrap.scrolled import ScrolledFrame
-from tkinter import filedialog
 from datetime import datetime, timedelta
-from PIL import Image, ImageTk
+from tkinter import filedialog
 
-from ..controller.time_entry_service import TimeEntryService
-from ..controller.time_controller import TimeController as tc
-from ..model.time_entry import TimeEntry
+import ttkbootstrap as tb
+from PIL import Image, ImageTk
+from ttkbootstrap.scrolled import ScrolledFrame
+from ttkbootstrap.tooltip import ToolTip
+
 from config.constants import APP_VERSION
+
+from ..controller.time_controller import TimeController as tc
+from ..controller.time_entry_service import TimeEntryService
+from ..model.time_entry import TimeEntry
 
 
 class LeftSidebar(tb.Frame):
@@ -83,7 +85,7 @@ class LeftSidebar(tb.Frame):
 
         # Scrolled frame
         scrolled_frame = ScrolledFrame(self, autohide=True)
-        scrolled_frame.pack(expand=True, fill='both')
+        scrolled_frame.pack(expand=True, fill="both")
 
         # Project category goals
         goals = self.parent.parent.pcgsc.get_active_goals()
@@ -125,16 +127,13 @@ class LeftSidebar(tb.Frame):
 
     def update_total_time(self, added_duration):
         self.total_time = (
-            timedelta(seconds=self.parent.parent.sc.total_time_today())
-            + added_duration
+            timedelta(seconds=self.parent.parent.sc.total_time_today()) + added_duration
         )
         self.lbl_progress["text"] = tc.timedelta_to_string(self.total_time)
 
     def update_achievements(self):
         if self.seconds_today >= (120 * 60):
-            self.lbl_header_achievements.pack(
-                side="top", padx=10, pady=0, fill="x"
-            )
+            self.lbl_header_achievements.pack(side="top", padx=10, pady=0, fill="x")
             self.frm_medals.pack()
             self.lbl_medal_bronze.pack(side="left")
         if self.seconds_today >= (240 * 60):
@@ -205,9 +204,7 @@ class ProjectCategoryProgressCard(tb.Frame):
         self.__build_gui_components()
 
     def __build_gui_components(self):
-        lbl_goal = tb.Label(
-            self, text=self.goal.project_category.name, justify="left"
-        )
+        lbl_goal = tb.Label(self, text=self.goal.project_category.name, justify="left")
         lbl_goal.grid(row=0, column=0, sticky="w")
         self.lbl_goal_progress = tb.Label(
             self,

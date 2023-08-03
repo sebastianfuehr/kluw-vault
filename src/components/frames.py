@@ -3,11 +3,11 @@ application's needs.
 """
 
 import ttkbootstrap as tb
-from ttkbootstrap.scrolled import ScrolledFrame
 from ttkbootstrap.dialogs.dialogs import Messagebox
+from ttkbootstrap.scrolled import ScrolledFrame
 
-from src.components.notifications import Notifications
 from src.components.navigation import ButtonPanel, ContextMenu
+from src.components.notifications import Notifications
 
 
 class AutoLayoutFrame(tb.Frame):
@@ -80,7 +80,7 @@ class ListFrame(tb.Frame, RefreshMixin):
         db_session,
         form_edit,
         detail_view,
-        db_delete_item
+        db_delete_item,
     ):
         super().__init__(master=master)
         self.app = app
@@ -116,10 +116,7 @@ class ListFrame(tb.Frame, RefreshMixin):
             )
 
         btn_new_item = tb.Button(
-            self,
-            text="New",
-            bootstyle="success",
-            command=self.open_form
+            self, text="New", bootstyle="success", command=self.open_form
         )
         btn_new_item.grid(row=2, column=0, pady=25)
 
@@ -134,7 +131,7 @@ class ListFrame(tb.Frame, RefreshMixin):
         detail_scroll = ScrolledFrame(self)
         detail_scroll.grid(row=0, rowspan=3, column=2, sticky="nsew")
         self.item_detail_view = self.detail_view(detail_scroll, self.app, item)
-        self.item_detail_view.pack(expand=True, fill='both', padx=25)
+        self.item_detail_view.pack(expand=True, fill="both", padx=25)
 
     def refresh(self):
         if self.scrolled_frame:
@@ -185,7 +182,8 @@ class ListFrame(tb.Frame, RefreshMixin):
             app=self.app,
             db_service=self.db_service,
             db_session=self.db_session,
-            selected_item=item)
+            selected_item=item,
+        )
         form.grid(row=0, rowspan=3, column=2, sticky="nsew")
 
     def delete_entry(self, *_args):
@@ -197,19 +195,13 @@ class ListFrame(tb.Frame, RefreshMixin):
             title="Attention!",
         )
         if usr_answ == "OK":
-            status = self.db_service.delete(
-                self.db_session, self.item_key_var.get()
-            )
+            status = self.db_service.delete(self.db_session, self.item_key_var.get())
             self.refresh()
             if status == 1:
                 Notifications.show_info(
                     message="The entry has been deleted from the database."
                 )
             elif status == 0:
-                Notifications.show_error(
-                    message="The entry couldn't be deleted."
-                )
+                Notifications.show_error(message="The entry couldn't be deleted.")
             else:
-                Notifications.show_error(
-                    message="There has been an unknown error!"
-                )
+                Notifications.show_error(message="There has been an unknown error!")

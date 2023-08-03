@@ -1,14 +1,8 @@
-from sqlalchemy import (
-    Column,
-    Integer,
-    DateTime,
-    ForeignKey,
-    Boolean,
-    Text,
-    String,
-)
-from sqlalchemy.orm import relationship
 from datetime import datetime, timedelta
+
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import relationship
+
 from .orm_base import Base
 
 
@@ -193,7 +187,7 @@ class TimeEntry(Base):
             activity_name=time_entry_list[10],
             alone=time_entry_list[11],
             tags=time_entry_list[12],
-            comment=comment
+            comment=comment,
         )
         return new_entry
 

@@ -1,4 +1,5 @@
-from sqlalchemy import select, delete
+from sqlalchemy import delete, select
+
 from ..model.project_category import ProjectCategory
 
 

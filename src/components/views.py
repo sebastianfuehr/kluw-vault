@@ -1,22 +1,16 @@
-import ttkbootstrap as tb
-from ttkbootstrap.scrolled import ScrolledFrame
-from ttkbootstrap.dialogs.dialogs import Messagebox
 import pandas as pd
+import ttkbootstrap as tb
+from ttkbootstrap.dialogs.dialogs import Messagebox
+from ttkbootstrap.scrolled import ScrolledFrame
 
-from ..components.notifications import Notifications
+from ..components.forms import ActivityForm, ProjectCategoryGoalForm, ProjectForm
 from ..components.frames import AutoLayoutFrame
 from ..components.navigation import ButtonPanel, ContextMenu
-from ..components.forms import (
-    ProjectForm,
-    ActivityForm,
-    ProjectCategoryGoalForm,
-)
-from .. components.visuals import GraphTimePerDay
+from ..components.notifications import Notifications
+from ..components.visuals import GraphTimePerDay
 from ..controller.activity_service import ActivityService
+from ..controller.project_category_goal_service import ProjectCategoryGoalService
 from ..controller.project_service import ProjectService
-from ..controller.project_category_goal_service import (
-    ProjectCategoryGoalService,
-)
 
 
 class DetailView(AutoLayoutFrame):
@@ -42,9 +36,7 @@ class DetailView(AutoLayoutFrame):
         btn = app.definitions.VIEW_BTN_EDIT
         btn_edit = tb.Button(self, text=btn["text"])
         btn_edit.bind("<Button-1>", self.open_edit_form)
-        btn_edit.place(
-            relx=btn["relx"], rely=btn["rely"], anchor=btn["anchor"]
-        )
+        btn_edit.place(relx=btn["relx"], rely=btn["rely"], anchor=btn["anchor"])
 
     def open_edit_form(self, *_args):
         """Open a form for editing the selected entity."""
@@ -53,7 +45,9 @@ class DetailView(AutoLayoutFrame):
 
 class ProjectDetailView(DetailView):
     def __init__(self, master, app, project):
-        super().__init__(master=master, app=app, layout=app.definitions.VIEW_PROJECT_DETAIL)
+        super().__init__(
+            master=master, app=app, layout=app.definitions.VIEW_PROJECT_DETAIL
+        )
         self.app = app
         self.project = project
 
@@ -93,9 +87,7 @@ class ProjectDetailView(DetailView):
 
     def refresh(self):
         # Activities
-        items = ActivityService.get_by_project_id(
-            self.app.session, self.project.id
-        )
+        items = ActivityService.get_by_project_id(self.app.session, self.project.id)
         item_dict = {}
         for item in items:
             item_dict[item.id] = item.name
@@ -135,7 +127,7 @@ class ProjectDetailView(DetailView):
             columnspan=graph_layout["columnspan"],
             sticky=graph_layout["sticky"],
             padx=graph_layout["padx"],
-            pady=graph_layout["pady"]
+            pady=graph_layout["pady"],
         )
 
     def open_activity_creation_form(self, *_args):
@@ -185,15 +177,15 @@ class ProjectDetailView(DetailView):
         msg = f'Are you sure you want to delete the activity "{self.activity_name_var.get()}" in the "{self.project.name}" project?'
         usr_answ = Messagebox.okcancel(message=msg, title="Attention!")
         if usr_answ == "OK":
-            ActivityService.delete(
-                self.app.session, self.activity_id_var.get()
-            )
+            ActivityService.delete(self.app.session, self.activity_id_var.get())
         self.refresh()
 
 
 class CategoryDetailView(DetailView):
     def __init__(self, master, app, project_category):
-        super().__init__(master=master, app=app, layout=app.definitions.VIEW_PROJECT_CATEGORY_DETAIL)
+        super().__init__(
+            master=master, app=app, layout=app.definitions.VIEW_PROJECT_CATEGORY_DETAIL
+        )
         self.app = app
         self.project_category = project_category
 
@@ -260,7 +252,9 @@ class CategoryDetailView(DetailView):
         )
 
     def open_goal_edit_form(self, *_args):
-        frm_dict = self.app.definitions.VIEW_PROJECT_CATEGORY_DETAIL["frm_edit_activity"]
+        frm_dict = self.app.definitions.VIEW_PROJECT_CATEGORY_DETAIL[
+            "frm_edit_activity"
+        ]
         goal = None
         try:
             goal = ProjectCategoryGoalService.get_by_id(
@@ -342,9 +336,7 @@ class CategoryDetailView(DetailView):
 #######################################################################
 class CustomLabel(tb.Label):
     def __init__(self, master, text, layout, **kwargs):
-        super().__init__(
-            master=master, text=text, font=layout["font"], **kwargs
-        )
+        super().__init__(master=master, text=text, font=layout["font"], **kwargs)
         self.grid(
             row=layout["row"],
             column=layout["col"],
@@ -419,9 +411,7 @@ class CustomEntityItemList(tb.Frame):
 
         btn_pady = (10, 0)
         btn_add = tb.Button(self, text="+", width=2, command=cmd_add_item)
-        btn_add.grid(
-            row=3, column=0, sticky="e", padx=10, pady=btn_pady
-        )
+        btn_add.grid(row=3, column=0, sticky="e", padx=10, pady=btn_pady)
 
         self.refresh(item_dict)
 
@@ -431,9 +421,7 @@ class CustomEntityItemList(tb.Frame):
             self.scrolled_frame.grid_remove()
 
         list_layout = self.app.definitions.VIEW_PROJECT_DETAIL["lst_activities"]
-        self.scrolled_frame = ScrolledFrame(
-            master=self, autohide=True, height=180
-        )
+        self.scrolled_frame = ScrolledFrame(master=self, autohide=True, height=180)
         self.scrolled_frame.grid(row=1, column=0, sticky="nsew")
 
         context_menu = ContextMenu(self.app)

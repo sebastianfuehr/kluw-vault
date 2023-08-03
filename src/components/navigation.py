@@ -93,7 +93,7 @@ class TextButton(tb.Label):  # pylint: disable=too-many-ancestors
             text=text,
             foreground=self.colors["text"],
             font=styling["font"],
-            name=text.lower()
+            name=text.lower(),
         )
         self.button_group = button_group
         self.key = key

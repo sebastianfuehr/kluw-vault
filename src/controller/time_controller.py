@@ -9,6 +9,7 @@ class TimeController:
     This allows for negative values to return a negative time
     difference as opposed to returning 0 for negative values.
     """
+
     @staticmethod
     def convert_seconds(seconds):
         """Takes a number of seconds and returns the corresponding
@@ -48,12 +49,12 @@ class TimeController:
         '1h 2m 8s'
         """
         hours, minutes, seconds = TimeController.convert_seconds(seconds)
-        negative_str = ''
+        negative_str = ""
         if hours < 0 or minutes < 0 or seconds < 0:
             hours = abs(hours)
             minutes = abs(minutes)
             seconds = abs(seconds)
-            negative_str = '-'
+            negative_str = "-"
         if hours == 0:
             return f"{negative_str}{minutes}m {seconds}s"
         elif hours != 0 and minutes == 0 and seconds == 0:

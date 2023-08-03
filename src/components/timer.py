@@ -2,8 +2,8 @@
 
 import ttkbootstrap as tb
 
-from ..controller.timer_controller import TimerController
 from ..controller.time_controller import TimeController as tc
+from ..controller.timer_controller import TimerController
 
 
 class Timer(tb.Frame):
@@ -47,9 +47,7 @@ class Timer(tb.Frame):
             command=self.start_handler,
             bootstyle="success",
         )
-        self.btn_start_pause_resume.grid(
-            row=2, column=0, sticky="ew", padx=10, pady=10
-        )
+        self.btn_start_pause_resume.grid(row=2, column=0, sticky="ew", padx=10, pady=10)
 
         self.btn_stop = tb.Button(
             master=self,
@@ -108,19 +106,13 @@ class Timer(tb.Frame):
                 text="Start", state="normal", bootstyle="success"
             )
             self.btn_stop.configure(state="disabled")
-            self.btn_reset.configure(
-                state="disabled", bootstyle="secondary-link"
-            )
+            self.btn_reset.configure(state="disabled", bootstyle="secondary-link")
         elif self.state == "on":
-            self.btn_start_pause_resume.configure(
-                text="Pause", bootstyle="info"
-            )
+            self.btn_start_pause_resume.configure(text="Pause", bootstyle="info")
             self.btn_stop.configure(state="normal")
             self.btn_reset.configure(state="normal")
         elif self.state == "pause":
-            self.btn_start_pause_resume.configure(
-                text="Resume", bootstyle="success"
-            )
+            self.btn_start_pause_resume.configure(text="Resume", bootstyle="success")
         elif self.state == "stopped":
             self.btn_start_pause_resume.configure(state="disabled")
             self.btn_stop.configure(state="disabled")
@@ -134,7 +126,5 @@ class Timer(tb.Frame):
             self.app.stats_sidebar.update_total_time(elapsed)
         elif self.state == "pause":
             elapsed = self.timer_controller.get_current_pause_duration()
-            self.lbl_paused_time_display["text"] = tc.timedelta_to_string(
-                elapsed
-            )
+            self.lbl_paused_time_display["text"] = tc.timedelta_to_string(elapsed)
             self.after(100, self.update_display)

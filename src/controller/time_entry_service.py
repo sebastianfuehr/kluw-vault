@@ -1,5 +1,6 @@
-from sqlalchemy import select, func
 from datetime import date
+
+from sqlalchemy import func, select
 
 from ..model.time_entry import TimeEntry
 
@@ -11,9 +12,7 @@ class TimeEntryService:
         return results.scalars()
 
     def get_all_today(db_session):
-        stmt = select(TimeEntry).filter(
-            func.DATE(TimeEntry.start) == date.today()
-        )
+        stmt = select(TimeEntry).filter(func.DATE(TimeEntry.start) == date.today())
         results = db_session.execute(stmt)
         return results.scalars().all()
 

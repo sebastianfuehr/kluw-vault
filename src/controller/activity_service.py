@@ -1,4 +1,5 @@
-from sqlalchemy import select, delete  # pylint: disable=import-error
+from sqlalchemy import delete, select  # pylint: disable=import-error
+
 from ..model.activity import Activity
 
 

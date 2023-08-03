@@ -30,6 +30,7 @@ def _widgets_by_name(parent, name, widgets):
         for child in parent.winfo_children():
             _widgets_by_name(child, name, widgets)
 
+
 def find_widget_by_name(parent, name):
     """Searches for tkinter widgets by their respective name. Does not
     search for named frames!

@@ -1,10 +1,12 @@
+from datetime import datetime
+
 import ttkbootstrap as tb
 from ttkbootstrap.tableview import Tableview
-from datetime import datetime
 
 # Custom libraries
 from src.components.forms import TimeEntryForm
 from src.components.timer import Timer
+
 from ..controller.time_entry_service import TimeEntryService
 from ..model.time_entry import TimeEntry
 
@@ -135,9 +137,7 @@ class TimeEntriesList(tb.Frame):
 
     def resume_entry(self, curr_pause_duration):
         self.te_form.te_pause.delete(0, tb.END)
-        self.te_form.te_pause.insert(
-            0, str(curr_pause_duration).split(".", 2)[0]
-        )
+        self.te_form.te_pause.insert(0, str(curr_pause_duration).split(".", 2)[0])
 
     def stop_entry(self, curr_duration):
         self.te_form.te_end.delete(0, tb.END)
