@@ -1,4 +1,4 @@
-from sqlalchemy import delete, select
+from sqlalchemy import select
 
 from ..model.project_category_goal import ProjectCategoryGoal
 

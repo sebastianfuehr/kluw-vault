@@ -9,8 +9,6 @@ from ttkbootstrap.tooltip import ToolTip
 from config.constants import APP_VERSION
 
 from ..controller.time_controller import TimeController as tc
-from ..controller.time_entry_service import TimeEntryService
-from ..model.time_entry import TimeEntry
 
 
 class LeftSidebar(tb.Frame):
@@ -53,7 +51,10 @@ class LeftSidebar(tb.Frame):
         bronze_img_tk = ImageTk.PhotoImage(bronze_img_orig)
         self.lbl_medal_bronze = tb.Label(self.frm_medals, image=bronze_img_tk)
         self.lbl_medal_bronze.photo = bronze_img_tk
-        txt = f"You worked for more than {tc.seconds_to_string(self.app.definitions.MEDAL_TH_BRONZE)}!"
+        txt = (
+            "You worked for more than"
+            f" {tc.seconds_to_string(self.app.definitions.MEDAL_TH_BRONZE)}!"
+        )
         ToolTip(self.lbl_medal_bronze, text=txt)
 
         silver_img_orig = Image.open(
@@ -62,7 +63,10 @@ class LeftSidebar(tb.Frame):
         silver_img_tk = ImageTk.PhotoImage(silver_img_orig)
         self.lbl_medal_silver = tb.Label(self.frm_medals, image=silver_img_tk)
         self.lbl_medal_silver.photo = silver_img_tk
-        txt = f"You worked for more than {tc.seconds_to_string(self.app.definitions.MEDAL_TH_SILVER)}!"
+        txt = (
+            "You worked for more than"
+            f" {tc.seconds_to_string(self.app.definitions.MEDAL_TH_SILVER)}!"
+        )
         ToolTip(self.lbl_medal_silver, text=txt)
 
         gold_img_orig = Image.open(
@@ -71,7 +75,10 @@ class LeftSidebar(tb.Frame):
         gold_img_tk = ImageTk.PhotoImage(gold_img_orig)
         self.lbl_medal_gold = tb.Label(self.frm_medals, image=gold_img_tk)
         self.lbl_medal_gold.photo = gold_img_tk
-        txt = f"You worked for more than {tc.seconds_to_string(self.app.definitions.MEDAL_TH_GOLD)}!"
+        txt = (
+            "You worked for more than"
+            f" {tc.seconds_to_string(self.app.definitions.MEDAL_TH_GOLD)}!"
+        )
         ToolTip(self.lbl_medal_gold, text=txt)
 
         # Project category goals title

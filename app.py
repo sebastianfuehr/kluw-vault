@@ -1,7 +1,4 @@
 #!/usr/bin/python
-# Python libraries
-import logging
-import os
 from datetime import datetime
 from tkinter.font import nametofont
 
@@ -14,20 +11,16 @@ from src.controller.file_controller import FileController
 from src.controller.project_category_goal_stats_controller import (
     ProjectCategoryGoalStatsController,
 )
-
-# Controller
-from src.controller.settings_controller import SettingsController
 from src.controller.statistics_controller import StatisticsController
 
-# Unused imports needed for relationship creation of SQLAlchemy
-from src.model.activity import Activity
-
-# Custom libraries
+# Some unused imports are needed for the relationship creation of
+# SQLAlchemy
+from src.model.activity import Activity  # noqa: F401
 from src.model.orm_base import Base, DBConnection  # Session, db_engine, Base
-from src.model.project_category import ProjectCategory
-from src.model.project_category_goal import ProjectCategoryGoal
-from src.model.project_tag import ProjectTag
-from src.model.rel_project_tag import RelProjectTag
+from src.model.project_category import ProjectCategory  # noqa: F401
+from src.model.project_category_goal import ProjectCategoryGoal  # noqa: F401
+from src.model.project_tag import ProjectTag  # noqa: F401
+from src.model.rel_project_tag import RelProjectTag  # noqa: F401
 from src.model.tracking_session import TrackingSession
 
 

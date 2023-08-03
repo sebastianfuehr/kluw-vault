@@ -488,7 +488,6 @@ class Definitions:
         lbl_sticky = "ew"
         lbl_padx = 0
         lbl_pady = 0
-        lbl_width = 8
         self.VIEW_PROJECT_CATEGORY_GOAL_DETAIL = {
             "grid_config": {
                 "rowconfigure": {},

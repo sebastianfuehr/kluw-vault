@@ -1,14 +1,8 @@
-import logging
 from datetime import datetime, timedelta
-from gettext import gettext
 
-import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
 import pandas as pd
 import ttkbootstrap as tb
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from PIL import Image, ImageTk
-from sqlalchemy import select
 from ttkbootstrap.scrolled import ScrolledFrame
 
 from src.components.navigation import ButtonPanel
@@ -16,8 +10,6 @@ from src.components.navigation import ButtonPanel
 from ..components.frames import AutoLayoutFrame
 from ..components.visuals import GraphTimePerDay, GraphTimesPerDay
 from ..controller.time_controller import TimeController
-from ..controller.time_entry_service import TimeEntryService
-from ..model.time_entry import TimeEntry
 
 
 class StatsDashboard(tb.Frame):

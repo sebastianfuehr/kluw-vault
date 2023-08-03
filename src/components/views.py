@@ -3,10 +3,9 @@ import ttkbootstrap as tb
 from ttkbootstrap.dialogs.dialogs import Messagebox
 from ttkbootstrap.scrolled import ScrolledFrame
 
-from ..components.forms import ActivityForm, ProjectCategoryGoalForm, ProjectForm
+from ..components.forms import ActivityForm, ProjectCategoryGoalForm
 from ..components.frames import AutoLayoutFrame
 from ..components.navigation import ButtonPanel, ContextMenu
-from ..components.notifications import Notifications
 from ..components.visuals import GraphTimePerDay
 from ..controller.activity_service import ActivityService
 from ..controller.project_category_goal_service import ProjectCategoryGoalService
@@ -174,7 +173,10 @@ class ProjectDetailView(DetailView):
         )
 
     def delete_activity(self, *_args):
-        msg = f'Are you sure you want to delete the activity "{self.activity_name_var.get()}" in the "{self.project.name}" project?'
+        msg = (
+            "Are you sure you want to delete the activity"
+            f' "{self.activity_name_var.get()}" in the "{self.project.name}" project?'
+        )
         usr_answ = Messagebox.okcancel(message=msg, title="Attention!")
         if usr_answ == "OK":
             ActivityService.delete(self.app.session, self.activity_id_var.get())
@@ -324,7 +326,11 @@ class CategoryDetailView(DetailView):
         )
 
     def delete_activity(self, *_args):
-        msg = f'Are you sure you want to delete the activity "{self.project_name_var.get()}" in the "{self.project_category.name}" project?'
+        msg = (
+            "Are you sure you want to delete the activity"
+            f' "{self.project_name_var.get()}" in the "{self.project_category.name}"'
+            " project?"
+        )
         usr_answ = Messagebox.okcancel(message=msg, title="Attention!")
         if usr_answ == "OK":
             ActivityService.delete(self.app.session, self.project_id_var.get())
@@ -420,7 +426,6 @@ class CustomEntityItemList(tb.Frame):
         if self.scrolled_frame:
             self.scrolled_frame.grid_remove()
 
-        list_layout = self.app.definitions.VIEW_PROJECT_DETAIL["lst_activities"]
         self.scrolled_frame = ScrolledFrame(master=self, autohide=True, height=180)
         self.scrolled_frame.grid(row=1, column=0, sticky="nsew")
 
@@ -496,7 +501,7 @@ class ProjectCategoryGoalList(AutoLayoutFrame):
         row_config = config["row_min_label"]
         curr_row = row_config["row"]
         for goal_id, goal in item_dict.items():
-            btn = tb.Button(
+            tb.Button(
                 self,
                 text="Edit",
                 width=btn_config["width"],
@@ -512,7 +517,7 @@ class ProjectCategoryGoalList(AutoLayoutFrame):
             goal_values = goal.get_goal_list()
             goal_value_idx = 0
             for curr_col in range(row_config["col"], row_config["col"] + 7):
-                lbl = tb.Label(
+                tb.Label(
                     self,
                     text=goal_values[goal_value_idx],
                     width=row_config["width"],
@@ -527,7 +532,7 @@ class ProjectCategoryGoalList(AutoLayoutFrame):
                 goal_value_idx += 1
 
         if len(item_dict.keys()) == 0:
-            btn = tb.Button(
+            tb.Button(
                 self,
                 text="New",
                 width=btn_config["width"],

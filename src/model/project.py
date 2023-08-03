@@ -41,4 +41,7 @@ class Project(Base):
 
     def __repr__(self):
         class_name = type(self).__name__
-        return f"{class_name}(id={self.id}, name={self.name}, category={self.project_category}, description={self.description})"
+        return (
+            f"{class_name}(id={self.id}, name={self.name},"
+            f" category={self.project_category}, description={self.description})"
+        )

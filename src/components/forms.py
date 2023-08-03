@@ -8,7 +8,6 @@ from ttkbootstrap.tooltip import ToolTip
 # Custom modules
 from ..components.frames import AutoLayoutFrame
 from ..controller.activity_service import ActivityService
-from ..controller.project_category_goal_service import ProjectCategoryGoalService
 from ..controller.project_category_service import ProjectCategoryService
 from ..controller.project_service import ProjectService
 from ..controller.time_entry_service import TimeEntryService

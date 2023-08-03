@@ -5,9 +5,9 @@ from src.model.activity import Activity
 
 # Imports needed solely for sqlalchemy
 from src.model.project import Project
-from src.model.project_category import ProjectCategory
-from src.model.project_tag import ProjectTag
-from src.model.rel_project_tag import RelProjectTag
+from src.model.project_category import ProjectCategory  # noqa: F401
+from src.model.project_tag import ProjectTag  # noqa: F401
+from src.model.rel_project_tag import RelProjectTag  # noqa: F401
 from src.model.time_entry import TimeEntry
 
 

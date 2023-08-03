@@ -1,6 +1,7 @@
 import unittest
 
-from src.model.project_category import ProjectCategory  # Import needed for sqlalchemy
+# Imports with noqa: F401 only needed for SQLAlchemy
+from src.model.project_category import ProjectCategory  # noqa: F401
 from src.model.project_category_goal import ProjectCategoryGoal
 
 

@@ -2,8 +2,6 @@
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
 import ttkbootstrap as tb
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
@@ -39,7 +37,7 @@ class GraphTimePerDay(tb.Frame):
         line = axis.plot(
             data_by_date[date_column_name], data_by_date[value_column_name]
         )[0]
-        line_avg = axis.plot(
+        axis.plot(
             data_by_date[date_column_name],
             data_by_date["Average"],
             linestyle="dashed",
@@ -90,7 +88,6 @@ class GraphTimesPerDay(tb.Frame):
         figure.autofmt_xdate()
 
         # Graph
-        data_by_date = self.data
         axis = figure.add_subplot(111)
         for col, data in data.items():
             axis.plot(data, label=col)

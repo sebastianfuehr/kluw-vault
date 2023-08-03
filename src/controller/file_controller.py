@@ -14,7 +14,10 @@ class FileController:
         """Copies a database file into the local database."""
         confirmation = Messagebox.okcancel(
             parent=self.app,
-            message="This will overwrite the current database! All data will be lost! Proceed?",
+            message=(
+                "This will overwrite the current database! "
+                "All data will be lost! Proceed?"
+            ),
             title="Attention!",
         )
         if confirmation != "OK":

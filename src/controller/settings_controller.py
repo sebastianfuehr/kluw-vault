@@ -16,12 +16,10 @@ class SettingsController:
         settings = configparser.ConfigParser()
 
         app_usr_data_file_default = os.path.join(app_root_dir, "assets", "default.ini")
-        try:
-            usr_home_dir = os.path.expanduser("~")
-            app_usr_data_dir = os.path.join(usr_home_dir, ".config", "time-journal")
-            app_usr_data_file = os.path.join(app_usr_data_dir, "config")
-        except:
-            app_usr_data_file = os.path.join(app_root_dir, "assets", "config")
+
+        usr_home_dir = os.path.expanduser("~")
+        app_usr_data_dir = os.path.join(usr_home_dir, ".config", "time-journal")
+        app_usr_data_file = os.path.join(app_usr_data_dir, "config")
 
         print(f"Loading config file at: {app_usr_data_file}")
         if not os.path.isfile(app_usr_data_file):
@@ -69,7 +67,11 @@ class SettingsController:
             # Notify the user
             play_sound = settings["notifications.sound"].getboolean("info_messages")
             Messagebox.show_info(
-                message=f"The user settings have been updated. To ensure a working program, the new configuration file will be loaded. Your old configuration file has been backuped in {backup}",
+                message=(
+                    "The user settings have been updated. To ensure a working program,"
+                    " the new configuration file will be loaded. Your old"
+                    f" configuration file has been backuped in {backup}"
+                ),
                 title="Config File Update",
                 alert=play_sound,
             )

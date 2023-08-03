@@ -1,7 +1,4 @@
 """A collection ov frames for displaying database entities."""
-
-from gettext import gettext
-
 import ttkbootstrap as tb
 
 from src.components.dashboard import StatsDashboard

@@ -1,6 +1,6 @@
-from datetime import date, datetime
+from datetime import date
 
-from sqlalchemy import and_, func, select
+from sqlalchemy import func, select
 
 from ..model.project import Project
 from ..model.project_category import ProjectCategory
@@ -13,7 +13,7 @@ class ProjectCategoryGoalStatsController:
         self.db_session = db_session
 
     def get_active_goals(self):
-        stmt = select(ProjectCategoryGoal).filter(ProjectCategoryGoal.active == True)
+        stmt = select(ProjectCategoryGoal).filter(ProjectCategoryGoal.active)
         results = self.db_session.execute(stmt).scalars().all()
         return results
 
