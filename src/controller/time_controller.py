@@ -1,6 +1,12 @@
 """Module for the TimeController class."""
 
+from __future__ import annotations
+
 from math import fmod
+from typing import TYPE_CHECKING, Tuple
+
+if TYPE_CHECKING:
+    from datetime import timedelta
 
 
 class TimeController:
@@ -11,7 +17,7 @@ class TimeController:
     """
 
     @staticmethod
-    def convert_seconds(seconds):
+    def convert_seconds(seconds: int) -> Tuple[int, int, int]:
         """Takes a number of seconds and returns the corresponding
         hours, minutes, and seconds.
 
@@ -30,7 +36,7 @@ class TimeController:
         return hours, minutes, seconds
 
     @staticmethod
-    def seconds_to_string(seconds):
+    def seconds_to_string(seconds: int) -> str:
         """Converts a number of seconds into a string representation
         of hours, minutes, and seconds.
 
@@ -65,7 +71,7 @@ class TimeController:
             return f"{negative_str}{hours}h {minutes}m {seconds}s"
 
     @staticmethod
-    def timedelta_to_string(duration):
+    def timedelta_to_string(duration: timedelta) -> str:
         """Converts a timedelta object into a string representation
         of hours, minutes, and seconds.
 

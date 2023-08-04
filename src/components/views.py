@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Callable, Optional
+
 import pandas as pd
 import ttkbootstrap as tb
 from ttkbootstrap.dialogs.dialogs import Messagebox
@@ -10,6 +14,12 @@ from ..components.visuals import GraphTimePerDay
 from ..controller.activity_service import ActivityService
 from ..controller.project_category_goal_service import ProjectCategoryGoalService
 from ..controller.project_service import ProjectService
+
+if TYPE_CHECKING:
+    from app import App
+
+    from ..model.project import Project
+    from ..model.project_category import ProjectCategory
 
 
 class DetailView(AutoLayoutFrame):
@@ -25,7 +35,7 @@ class DetailView(AutoLayoutFrame):
         - labels : dict
     """
 
-    def __init__(self, master, app, layout):
+    def __init__(self, master: tb.Frame, app: "App", layout: dict) -> None:
         super().__init__(
             master=master,
             config=layout["grid-config"],
@@ -37,13 +47,13 @@ class DetailView(AutoLayoutFrame):
         btn_edit.bind("<Button-1>", self.open_edit_form)
         btn_edit.place(relx=btn["relx"], rely=btn["rely"], anchor=btn["anchor"])
 
-    def open_edit_form(self, *_args):
+    def open_edit_form(self, *_args: int) -> None:
         """Open a form for editing the selected entity."""
         print("Open edit form")
 
 
 class ProjectDetailView(DetailView):
-    def __init__(self, master, app, project):
+    def __init__(self, master: tb.Frame, app: "App", project: Project) -> None:
         super().__init__(
             master=master, app=app, layout=app.definitions.VIEW_PROJECT_DETAIL
         )
@@ -55,7 +65,7 @@ class ProjectDetailView(DetailView):
 
         self.build_gui_components()
 
-    def build_gui_components(self):
+    def build_gui_components(self) -> None:
         CustomLabel(
             self,
             text=self.project.name,
@@ -84,7 +94,7 @@ class ProjectDetailView(DetailView):
         )
         self.refresh()
 
-    def refresh(self):
+    def refresh(self) -> None:
         # Activities
         items = ActivityService.get_by_project_id(self.app.session, self.project.id)
         item_dict = {}
@@ -94,7 +104,6 @@ class ProjectDetailView(DetailView):
         CustomEntityItemList(
             master=self,
             app=self.app,
-            entity=self.project,
             item_key_var=self.activity_id_var,
             item_name_var=self.activity_name_var,
             item_dict=item_dict,
@@ -129,7 +138,7 @@ class ProjectDetailView(DetailView):
             pady=graph_layout["pady"],
         )
 
-    def open_activity_creation_form(self, *_args):
+    def open_activity_creation_form(self, *_args: int) -> None:
         frm_dict = self.app.definitions.VIEW_PROJECT_DETAIL["frm_edit_activity"]
         form = ActivityForm(
             master=self,
@@ -148,7 +157,7 @@ class ProjectDetailView(DetailView):
             pady=frm_dict["pady"],
         )
 
-    def open_activity_edit_form(self, *_args):
+    def open_activity_edit_form(self, *_args: int) -> None:
         frm_dict = self.app.definitions.VIEW_PROJECT_DETAIL["frm_edit_activity"]
         activity = ActivityService.get_by_id(
             self.app.session, self.activity_id_var.get()
@@ -172,7 +181,7 @@ class ProjectDetailView(DetailView):
             pady=frm_dict["pady"],
         )
 
-    def delete_activity(self, *_args):
+    def delete_activity(self, *_args: int) -> None:
         msg = (
             "Are you sure you want to delete the activity"
             f' "{self.activity_name_var.get()}" in the "{self.project.name}" project?'
@@ -184,7 +193,9 @@ class ProjectDetailView(DetailView):
 
 
 class CategoryDetailView(DetailView):
-    def __init__(self, master, app, project_category):
+    def __init__(
+        self, master: tb.Frame, app: "App", project_category: ProjectCategory
+    ) -> None:
         super().__init__(
             master=master, app=app, layout=app.definitions.VIEW_PROJECT_CATEGORY_DETAIL
         )
@@ -197,7 +208,7 @@ class CategoryDetailView(DetailView):
 
         self.build_gui_components()
 
-    def build_gui_components(self):
+    def build_gui_components(self) -> None:
         CustomLabel(
             self,
             text=self.project_category.name,
@@ -216,7 +227,7 @@ class CategoryDetailView(DetailView):
         )
         self.refresh()
 
-    def refresh(self):
+    def refresh(self) -> None:
         # Projects
         items = ProjectService.get_by_category_id(
             self.app.session, self.project_category.id
@@ -228,7 +239,6 @@ class CategoryDetailView(DetailView):
         CustomEntityItemList(
             master=self,
             app=self.app,
-            entity=self.project_category,
             item_key_var=self.project_id_var,
             item_name_var=self.project_name_var,
             item_dict=item_dict,
@@ -253,7 +263,7 @@ class CategoryDetailView(DetailView):
             layout=self.app.definitions.VIEW_PROJECT_CATEGORY_DETAIL["lst_goals"],
         )
 
-    def open_goal_edit_form(self, *_args):
+    def open_goal_edit_form(self, *_args: int) -> None:
         frm_dict = self.app.definitions.VIEW_PROJECT_CATEGORY_DETAIL[
             "frm_edit_activity"
         ]
@@ -282,66 +292,14 @@ class CategoryDetailView(DetailView):
             pady=frm_dict["pady"],
         )
 
-    def open_activity_creation_form(self, *_args):
-        frm_dict = self.app.definitions.VIEW_PROJECT_DETAIL["frm_edit_activity"]
-        form = ActivityForm(
-            master=self,
-            app=self.app,
-            db_service=ActivityService,
-            db_session=self.app.session,
-            project_id=self.project_category.id,
-        )
-        form.grid(
-            row=frm_dict["row"],
-            column=frm_dict["col"],
-            rowspan=frm_dict["rowspan"],
-            columnspan=frm_dict["columnspan"],
-            sticky=frm_dict["sticky"],
-            padx=frm_dict["padx"],
-            pady=frm_dict["pady"],
-        )
-
-    def open_activity_edit_form(self, *_args):
-        frm_dict = self.app.definitions.VIEW_PROJECT_DETAIL["frm_edit_activity"]
-        activity = ActivityService.get_by_id(
-            self.app.session, self.project_id_var.get()
-        )
-
-        form = ActivityForm(
-            master=self,
-            app=self.app,
-            db_service=ActivityService,
-            db_session=self.app.session,
-            project_id=self.project_category.id,
-            activity=activity,
-        )
-        form.grid(
-            row=frm_dict["row"],
-            column=frm_dict["col"],
-            rowspan=frm_dict["rowspan"],
-            columnspan=frm_dict["columnspan"],
-            sticky=frm_dict["sticky"],
-            padx=frm_dict["padx"],
-            pady=frm_dict["pady"],
-        )
-
-    def delete_activity(self, *_args):
-        msg = (
-            "Are you sure you want to delete the activity"
-            f' "{self.project_name_var.get()}" in the "{self.project_category.name}"'
-            " project?"
-        )
-        usr_answ = Messagebox.okcancel(message=msg, title="Attention!")
-        if usr_answ == "OK":
-            ActivityService.delete(self.app.session, self.project_id_var.get())
-        self.refresh()
-
 
 #######################################################################
 # CUSTOM DETAILVIEW WIDGETS
 #######################################################################
-class CustomLabel(tb.Label):
-    def __init__(self, master, text, layout, **kwargs):
+class CustomLabel(tb.Label):  # type: ignore
+    def __init__(
+        self, master: tb.Frame, text: str, layout: dict, **kwargs: str
+    ) -> None:
         super().__init__(master=master, text=text, font=layout["font"], **kwargs)
         self.grid(
             row=layout["row"],
@@ -354,7 +312,7 @@ class CustomLabel(tb.Label):
         )
 
 
-class CustomEntityItemList(tb.Frame):
+class CustomEntityItemList(tb.Frame):  # type: ignore
     """An interactive list of items, belonging to a specific entity.
 
     Supports an automatic implementation of a context menu.
@@ -371,18 +329,17 @@ class CustomEntityItemList(tb.Frame):
 
     def __init__(
         self,
-        master,
-        app,
-        entity,
-        item_key_var,
-        item_name_var,
-        item_dict,
-        cmd_add_item,
-        cmd_edit_item,
-        cmd_delete_item,
-        layout,
-        **kwargs,
-    ):
+        master: tb.Frame,
+        app: "App",
+        item_key_var: tb.IntVar,
+        item_name_var: tb.StringVar,
+        item_dict: dict,
+        cmd_add_item: Callable[[], None],
+        cmd_edit_item: Callable[[], None],
+        cmd_delete_item: Callable[[], None],
+        layout: dict,
+        **kwargs: str,
+    ) -> None:
         super().__init__(master=master, **kwargs)
         self.grid(
             row=layout["row"],
@@ -394,7 +351,6 @@ class CustomEntityItemList(tb.Frame):
             pady=layout["pady"],
         )
         self.app = app
-        self.entity = entity
         self.item_key_var = item_key_var
         self.item_name_var = item_name_var
         self.cmd_edit_item = cmd_edit_item
@@ -403,8 +359,8 @@ class CustomEntityItemList(tb.Frame):
         self.rowconfigure(1, weight=1)
         self.columnconfigure(0, weight=1)
 
-        self.scrolled_frame = None
-        self.item_list = None
+        self.scrolled_frame: Optional[ScrolledFrame] = None
+        self.item_list: Optional[ButtonPanel] = None
 
         for separator in self.app.definitions.CUSTOM_ENTITIY_ITEM_LIST["separators"]:
             sep_new = tb.Separator(self, orient=separator["orient"])
@@ -421,7 +377,7 @@ class CustomEntityItemList(tb.Frame):
 
         self.refresh(item_dict)
 
-    def refresh(self, item_dict):
+    def refresh(self, item_dict: dict) -> None:
         """Populate the list with items."""
         if self.scrolled_frame:
             self.scrolled_frame.grid_remove()
@@ -443,7 +399,7 @@ class CustomEntityItemList(tb.Frame):
         )
         self.item_list.pack(expand=True, fill="both")
 
-    def add_item(self, *_args):
+    def add_item(self, *_args: int) -> None:
         """Create a new form instance and put it on the grid layout."""
         form = self.form_edit(
             self.master,
@@ -465,8 +421,14 @@ class CustomEntityItemList(tb.Frame):
 
 class ProjectCategoryGoalList(AutoLayoutFrame):
     def __init__(
-        self, master, app, item_key_var, item_dict, cmd_edit_item, layout, **kwargs
-    ):
+        self,
+        master: tb.Frame,
+        app: "App",
+        item_key_var: tb.IntVar,
+        item_dict: dict,
+        cmd_edit_item: Callable[[], None],
+        layout: dict,
+    ) -> None:
         config = app.definitions.VIEW_PROJECT_CATEGORY_GOAL_DETAIL
         super().__init__(
             master=master,
@@ -545,6 +507,6 @@ class ProjectCategoryGoalList(AutoLayoutFrame):
                 pady=btn_config["pady"],
             )
 
-    def open_edit_form(self, item_id):
+    def open_edit_form(self, item_id: int) -> None:
         self.item_key_var.set(item_id)
         self.cmd_edit_item()

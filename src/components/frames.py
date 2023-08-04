@@ -15,7 +15,7 @@ class AutoLayoutFrame(tb.Frame):
     configuration and placement of labels.
     """
 
-    def __init__(self, master, config, labels):
+    def __init__(self, master, config, labels) -> None:
         super().__init__(master=master)
         for idx, weight in config["rowconfigure"].items():
             self.grid_rowconfigure(idx, weight=weight)
@@ -39,7 +39,7 @@ class RefreshMixin:
     and to refresh those upon request.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.registered_components = []
 
@@ -81,7 +81,7 @@ class ListFrame(tb.Frame, RefreshMixin):
         form_edit,
         detail_view,
         db_delete_item,
-    ):
+    ) -> None:
         super().__init__(master=master)
         self.app = app
         self.db_service = db_service

@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING, Callable
 
 import ttkbootstrap as tb
 from ttkbootstrap.dialogs.dialogs import Messagebox
@@ -17,11 +20,16 @@ from ..model.project_category import ProjectCategory
 from ..model.project_category_goal import ProjectCategoryGoal
 from ..model.time_entry import TimeEntry
 
+if TYPE_CHECKING:
+    from sqlalchemy.orm import Session
+
+    from app import App
+
 
 class TimeEntryForm(tb.Frame):
     """A form for editing and adding new time entries."""
 
-    def __init__(self, parent, app, new_entry_var):
+    def __init__(self, parent, app, new_entry_var) -> None:
         super().__init__(parent)
         self.parent = parent
         self.app = app
@@ -32,7 +40,7 @@ class TimeEntryForm(tb.Frame):
         self.build_form_components()
         self.set_time_entry(None)
 
-    def build_form_components(self):
+    def build_form_components(self) -> None:
         """Creates the GUI widgets for this component."""
         frm_padx = 10
         lbl_pax = 10
@@ -176,7 +184,7 @@ class TimeEntryForm(tb.Frame):
         )
         self.btn_save_entry.grid(column=0, row=13, columnspan=2, padx=10, pady=20)
 
-    def __populate_activities_list(self, *args):
+    def __populate_activities_list(self, *args: int) -> None:
         self.selected_activity.set("")
         project_name = self.selected_project.get()
         if project_name == "":
@@ -188,14 +196,14 @@ class TimeEntryForm(tb.Frame):
             if len(activity_names) > 0:
                 self.selected_activity.set(activity_names[0])
 
-    def __select_handler_new_entry(self, *args):
+    def __select_handler_new_entry(self, *args: int) -> None:
         if self.new_entry_var.get():
             self.new_entry_var.set(False)
         else:
             self.new_entry_var.set(True)
         self.form_for_new_entry()
 
-    def form_for_new_entry(self):
+    def form_for_new_entry(self) -> None:
         """Callback wrapper for set_tim_entry(None)."""
         self.set_time_entry(None)
         if self.new_entry_var.get():
@@ -203,11 +211,11 @@ class TimeEntryForm(tb.Frame):
         else:
             self.btn_new_entry.configure(bootstyle="success", text="New")
 
-    def set_time_entry(self, time_entry: TimeEntry):
+    def set_time_entry(self, time_entry: TimeEntry) -> None:
         self.time_entry = time_entry
         self.__populate_fields()
 
-    def __populate_fields(self):
+    def __populate_fields(self) -> None:
         if self.time_entry is None:
             # Rest all fields
             self.te_date.delete(0, tb.END)
@@ -265,7 +273,7 @@ class TimeEntryForm(tb.Frame):
             self.te_comment.text.delete(1.0, tb.END)
             self.te_comment.text.insert(1.0, self.time_entry.comment)
 
-    def save_entry(self):
+    def save_entry(self) -> None:
         """Parses the form contents to create a new time entry and save
         it to the database.
         """
@@ -323,7 +331,7 @@ class Form(AutoLayoutFrame):
     generic close button for the form.
     """
 
-    def __init__(self, master, app, config, db_service, db_session):
+    def __init__(self, master, app, config, db_service, db_session) -> None:
         super().__init__(
             master=master,
             config=config["grid-config"],
@@ -339,11 +347,11 @@ class Form(AutoLayoutFrame):
         btn_close_form.bind("<Button-1>", self.close_form)
         btn_close_form.place(relx=btn["relx"], rely=btn["rely"], anchor=btn["anchor"])
 
-    def close_form(self, *_args):
+    def close_form(self, *_args: int) -> None:
         """Close the currently opened form."""
         self.grid_forget()
 
-    def save_entry(self, new_object):
+    def save_entry(self, new_object) -> None:
         """Read the values from the form fields, create a new Python
         object, and save it into the database.
         """
@@ -355,7 +363,7 @@ class Form(AutoLayoutFrame):
 class ProjectForm(Form):
     """A form to create or edit a project entity."""
 
-    def __init__(self, master, app, db_service, db_session, selected_item=None):
+    def __init__(self, master, app, db_service, db_session, selected_item=None) -> None:
         super().__init__(
             master=master,
             app=app,
@@ -375,7 +383,7 @@ class ProjectForm(Form):
         if self.project is not None:
             self.prefill_input_fields()
 
-    def build_form_components(self):
+    def build_form_components(self) -> None:
         """Create the GUI elements for this component."""
         # Name and description
         CustomEntry(
@@ -450,7 +458,15 @@ class ProjectForm(Form):
 class ActivityForm(Form):
     """A form to create or edit a project activity entity."""
 
-    def __init__(self, master, app, db_service, db_session, project_id, activity=None):
+    def __init__(
+        self,
+        master: tb.Frame,
+        app: "App",
+        db_service,
+        db_session: Session,
+        project_id: int,
+        activity=None,
+    ) -> None:
         super().__init__(
             master=master,
             app=app,
@@ -467,7 +483,7 @@ class ActivityForm(Form):
 
         self.build_form_components()
 
-    def build_form_components(self):
+    def build_form_components(self) -> None:
         """Create the GUI elements for this component."""
         # Build widgets
         CustomEntry(
@@ -493,7 +509,7 @@ class ActivityForm(Form):
             layout=self.app.definitions.FORM_ACTIVITY_EDIT["btn_save"],
         )
 
-    def save_entry(self, *_args):
+    def save_entry(self, *_args: int) -> None:
         """Read the values from the form fields, create a new Python
         object, and save it into the database.
         """
@@ -524,7 +540,14 @@ class ActivityForm(Form):
 class ProjectCategoryForm(Form):
     """A form to create or edit a project entity."""
 
-    def __init__(self, master, app, db_service, db_session, selected_item=None):
+    def __init__(
+        self,
+        master: tb.Frame,
+        app: "App",
+        db_service,
+        db_session: Session,
+        selected_item=None,
+    ) -> None:
         super().__init__(
             master=master,
             app=app,
@@ -542,7 +565,7 @@ class ProjectCategoryForm(Form):
         if self.category is not None:
             self.prefill_input_fields()
 
-    def build_form_components(self):
+    def build_form_components(self) -> None:
         """Create the GUI elements for this component."""
         # Name and description
         CustomEntry(
@@ -563,11 +586,11 @@ class ProjectCategoryForm(Form):
             layout=self.app.definitions.FORM_PROJECT_CATEGORY_EDIT["btn_save"],
         )
 
-    def prefill_input_fields(self):
+    def prefill_input_fields(self) -> None:
         self.name_var.set(self.category.name)
         self.inp_description.set_text(self.category.description)
 
-    def save_entry(self, *_args):
+    def save_entry(self, *_args: int) -> None:
         """Read the values from the form fields, create a new Python
         object, and save it into the database.
         """
@@ -596,7 +619,15 @@ class ProjectCategoryForm(Form):
 class ProjectCategoryGoalForm(Form):
     """A form to create or edit a project activity entity."""
 
-    def __init__(self, master, app, db_service, db_session, category_id, goal=None):
+    def __init__(
+        self,
+        master: tb.Frame,
+        app: "App",
+        db_service,
+        db_session: Session,
+        category_id: int,
+        goal=None,
+    ):
         super().__init__(
             master=master,
             app=app,
@@ -619,7 +650,7 @@ class ProjectCategoryGoalForm(Form):
 
         self.build_form_components()
 
-    def build_form_components(self):
+    def build_form_components(self) -> None:
         """Create the GUI elements for this component."""
         # Build widgets
         CustomEntry(
@@ -678,7 +709,7 @@ class ProjectCategoryGoalForm(Form):
             layout=self.app.definitions.FORM_PROJECT_CATEGORY_GOAL_EDIT["btn_save"],
         )
 
-    def save_entry(self, *_args):
+    def save_entry(self, *_args: int) -> None:
         """Read the values from the form fields, create a new Python
         object, and save it into the database.
         """
@@ -719,7 +750,14 @@ class CustomButton(tb.Button):
     documentation.
     """
 
-    def __init__(self, master, text, command, layout, bootstyle="default"):
+    def __init__(
+        self,
+        master: tb.Frame,
+        text: str,
+        command: Callable[[], None],
+        layout: dict,
+        bootstyle="default",
+    ):
         super().__init__(
             master=master,
             text=text,
@@ -738,7 +776,7 @@ class CustomButton(tb.Button):
 class CustomEntry(tb.Entry):
     """Same as CustomButton."""
 
-    def __init__(self, master, tk_variable, layout):
+    def __init__(self, master: tb.Frame, tk_variable, layout: dict) -> None:
         super().__init__(
             master=master,
             textvariable=tk_variable,
@@ -757,7 +795,7 @@ class CustomEntry(tb.Entry):
 class CustomScrolledText(ScrolledText):
     """Same as CustomButton."""
 
-    def __init__(self, master, layout, autohide=True, **kwargs):
+    def __init__(self, master: tb.Frame, layout: dict, autohide=True, **kwargs):
         super().__init__(
             master=master,
             height=layout["height"],
@@ -781,7 +819,7 @@ class CustomScrolledText(ScrolledText):
         """
         return self.text.get(1.0, tb.END).rstrip()
 
-    def set_text(self, new_text):
+    def set_text(self, new_text: str) -> None:
         self.clear()
         if new_text is not None:
             self.text.insert(1.0, new_text)
@@ -813,7 +851,9 @@ class CustomCombobox(tb.Combobox):
         will be updated upon selection.
     """
 
-    def __init__(self, master, tk_key_var, tk_value_var, layout, elements=None):
+    def __init__(
+        self, master: tb.Frame, tk_key_var, tk_value_var, layout: dict, elements=None
+    ) -> None:
         super().__init__(
             master=master,
             textvariable=tk_value_var,
@@ -836,6 +876,6 @@ class CustomCombobox(tb.Combobox):
         if elements is not None:
             self["values"] = list(self.elements.keys())
 
-    def select_handler(self, *_args):
+    def select_handler(self, *_args: int) -> None:
         """Callback function for when an item is selected."""
         self.tk_key_var.set(self.elements[self.get()])

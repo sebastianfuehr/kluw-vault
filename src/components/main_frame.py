@@ -1,4 +1,8 @@
 """A collection ov frames for displaying database entities."""
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
 import ttkbootstrap as tb
 
 from src.components.dashboard import StatsDashboard
@@ -15,13 +19,16 @@ from src.controller.project_category_service import ProjectCategoryService
 # DB Services
 from src.controller.project_service import ProjectService
 
+if TYPE_CHECKING:
+    from app import App
 
-class MainFrame(tb.Frame):
+
+class MainFrame(tb.Frame):  # type: ignore
     """The visual entrypoint of the application. Everything related to
     building the GUI comes through here.
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent: "App") -> None:
         super().__init__(parent)
         self.parent = parent
         self.app = parent
@@ -30,7 +37,9 @@ class MainFrame(tb.Frame):
         self.tab_nav_str = tb.StringVar()
         self.tab_nav_key = tb.StringVar()  # The currently selected tab
         self.tab_nav_key.trace("w", self.build_tab_frame)
-        self.central_frame = None
+        self.central_frame: Optional[
+            StatsDashboard | TimeEntriesList | ListFrame
+        ] = None
 
         self.grid_rowconfigure(2, weight=1)
         self.grid_columnconfigure(2, weight=1)
@@ -42,7 +51,7 @@ class MainFrame(tb.Frame):
 
         self.pack(fill="both", expand=True)
 
-    def __build_gui_components(self):
+    def __build_gui_components(self) -> None:
         """Construct the GUI elements of this component."""
         sb_left = LeftSidebar(self, self.parent)
         sb_left.grid(row=0, rowspan=3, column=0, sticky="nsew")
@@ -87,7 +96,7 @@ class MainFrame(tb.Frame):
         tab_nav.grid(row=0, column=2, sticky="ew")
         tab_nav.buttons[0].select_handler()
 
-    def build_tab_frame(self, *_args):
+    def build_tab_frame(self, *_args: int) -> None:
         """Will make the central frame which is currently visible
         invisible and puts the selected tab instead.
         """
@@ -102,5 +111,9 @@ class MainFrame(tb.Frame):
                 self.central_frame = self.tab_projects
             case "categories":
                 self.central_frame = self.tab_categories
+        # Verify that the central frame has been filled
+        assert isinstance(
+            self.central_frame, StatsDashboard | TimeEntriesList | ListFrame
+        )
         self.central_frame.grid(row=2, column=2, sticky="nsew")
         self.central_frame.update()

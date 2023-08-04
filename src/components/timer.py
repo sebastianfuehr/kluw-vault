@@ -7,7 +7,7 @@ from ..controller.timer_controller import TimerController
 
 
 class Timer(tb.Frame):
-    def __init__(self, parent, app, new_entry_var):
+    def __init__(self, parent, app, new_entry_var) -> None:
         super().__init__(parent)
         self.parent = parent
         self.app = app
@@ -20,7 +20,7 @@ class Timer(tb.Frame):
         self.grid_columnconfigure(1, weight=1)
         self.init_gui_components()
 
-    def init_gui_components(self):
+    def init_gui_components(self) -> None:
         self.lbl_time_display = tb.Label(
             master=self,
             text="0h 0m 0s",
@@ -67,7 +67,7 @@ class Timer(tb.Frame):
         )
         self.btn_reset.grid(row=3, column=0, columnspan=2)
 
-    def start_handler(self):
+    def start_handler(self) -> None:
         if self.state == "off":
             self.new_entry_var.set(True)
             self.timer_controller.start()
@@ -85,13 +85,13 @@ class Timer(tb.Frame):
             self.update_display()
         self.update_buttons()
 
-    def stop_handler(self):
+    def stop_handler(self) -> None:
         self.timer_controller.stop()
         self.state = "stopped"
         self.parent.stop_entry(self.timer_controller.get_current_duration())
         self.update_buttons()
 
-    def reset_handler(self):
+    def reset_handler(self) -> None:
         self.new_entry_var.set(False)
         self.timer_controller.reset()
         self.parent.start_new_entry()
@@ -100,7 +100,7 @@ class Timer(tb.Frame):
         self.lbl_time_display["text"] = "0:00:00"
         self.lbl_paused_time_display["text"] = "0:00:00"
 
-    def update_buttons(self):
+    def update_buttons(self) -> None:
         if self.state == "off":
             self.btn_start_pause_resume.configure(
                 text="Start", state="normal", bootstyle="success"
@@ -118,7 +118,7 @@ class Timer(tb.Frame):
             self.btn_stop.configure(state="disabled")
             self.btn_reset.configure(bootstyle="success-link")
 
-    def update_display(self):
+    def update_display(self) -> None:
         if self.state == "on":
             elapsed = self.timer_controller.get_current_duration()
             self.lbl_time_display["text"] = tc.timedelta_to_string(elapsed)

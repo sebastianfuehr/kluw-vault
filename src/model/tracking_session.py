@@ -9,6 +9,6 @@ class TrackingSession(Base):
     start = Column(DateTime)
     end = Column(DateTime)
 
-    def __init__(self, start, end):
+    def __init__(self, start, end) -> None:
         self.start = start
         self.end = end

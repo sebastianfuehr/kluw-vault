@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 import ttkbootstrap as tb
 from ttkbootstrap.tableview import Tableview
@@ -10,9 +13,14 @@ from src.components.timer import Timer
 from ..controller.time_entry_service import TimeEntryService
 from ..model.time_entry import TimeEntry
 
+if TYPE_CHECKING:
+    from datetime import timedelta
 
-class TimeEntriesList(tb.Frame):
-    def __init__(self, parent, app):
+    from app import App
+
+
+class TimeEntriesList(tb.Frame):  # type: ignore
+    def __init__(self, parent: tb.Frame, app: "App") -> None:
         super().__init__(parent)
         self.parent = parent
         self.app = app
@@ -24,7 +32,7 @@ class TimeEntriesList(tb.Frame):
         self.grid_rowconfigure(0, weight=1)
         self.build_components()
 
-    def build_components(self):
+    def build_components(self) -> None:
         # Table
         self.columns = [
             "db_id",
@@ -92,16 +100,16 @@ class TimeEntriesList(tb.Frame):
         self.timer = Timer(self, self.app, self.new_entry)
         self.timer.grid(row=2, column=2, sticky="s", pady=30)
 
-    def on_tb_tableview_select(self, _):
+    def on_tb_tableview_select(self, *_args: int) -> None:
         try:
             self.selected_iid = self.table.view.selection()[0]
             values = self.table.view.item(self.selected_iid, "values")
-            selected_te = TimeEntry.from_list(values)
+            selected_te: TimeEntry = TimeEntry.from_list(values)
             self.te_form.set_time_entry(selected_te)
         except IndexError:
             print("Index not found.")
 
-    def __handle_new_entry_panel(self, *args):
+    def __handle_new_entry_panel(self, *args: int) -> None:
         """Overlay the time entry tabel with an information panel,
         while a new time entry is being created or the timer is
         running.
@@ -113,33 +121,33 @@ class TimeEntriesList(tb.Frame):
             self.frm_new_entry.grid_forget()
             self.table.grid(row=0, column=0, sticky="nsew", rowspan=3)
 
-    def add_entry(self, te: TimeEntry):
+    def add_entry(self, te: TimeEntry) -> None:
         # self.table.insert_row(0, te.to_list())
         # self.table.load_table_data()
         self.rebuild_table()
         self.app.stats_sidebar.update_goal_progress()
 
-    def update_entry(self, te: TimeEntry):
+    def update_entry(self, te: TimeEntry) -> None:
         # Temporary database reload. TODO: Update tableview row.
         # self.table.view.item(self.selected_iid, values=te.to_list)
         self.rebuild_table()
         self.app.stats_sidebar.update_goal_progress()
 
-    def rebuild_table(self):
+    def rebuild_table(self) -> None:
         entries = TimeEntryService.get_all(self.app.session).all()
         row_data = [entry.to_list() for entry in entries]
         self.table.delete_rows()
         self.table.insert_rows(tb.END, row_data)
         self.table.load_table_data()
 
-    def start_new_entry(self):
+    def start_new_entry(self) -> None:
         self.te_form.form_for_new_entry()
 
-    def resume_entry(self, curr_pause_duration):
+    def resume_entry(self, curr_pause_duration: timedelta) -> None:
         self.te_form.te_pause.delete(0, tb.END)
         self.te_form.te_pause.insert(0, str(curr_pause_duration).split(".", 2)[0])
 
-    def stop_entry(self, curr_duration):
+    def stop_entry(self, curr_duration: timedelta) -> None:
         self.te_form.te_end.delete(0, tb.END)
         self.te_form.te_end.insert(0, datetime.now().strftime("%H:%M:%S"))
 

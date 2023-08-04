@@ -12,7 +12,7 @@ from ..controller.time_controller import TimeController as tc
 
 
 class LeftSidebar(tb.Frame):
-    def __init__(self, parent, app):
+    def __init__(self, parent, app) -> None:
         super().__init__(parent)
         self.parent = parent
         self.config = parent.config

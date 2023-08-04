@@ -1,14 +1,28 @@
 """A collection of graphs for the time journal."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import ttkbootstrap as tb
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
+if TYPE_CHECKING:
+    import pandas as pd
 
-class GraphTimePerDay(tb.Frame):
+    from app import App
+
+
+class GraphTimePerDay(tb.Frame):  # type: ignore
     def __init__(
-        self, parent, app, data, value_column_name: str, date_column_name="Date"
+        self,
+        parent: tb.Frame,
+        app: "App",
+        data: pd.DataFrame,
+        value_column_name: str,
+        date_column_name="Date",
     ):
         """Creates a line graph to depict time series data in addition
         to an average value line.
@@ -63,10 +77,15 @@ class GraphTimePerDay(tb.Frame):
         fig_widget.get_tk_widget().pack(side="top", fill="both")
 
 
-class GraphTimesPerDay(tb.Frame):
+class GraphTimesPerDay(tb.Frame):  # type: ignore
     def __init__(
-        self, parent, app, data, value_column_name: str, date_column_name="Date"
-    ):
+        self,
+        parent,
+        app,
+        data,
+        value_column_name: Optional[str],
+        date_column_name="Date",
+    ) -> None:
         """Creates a line graph to depict time series data in addition
         to an average value line.
 

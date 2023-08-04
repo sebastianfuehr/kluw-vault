@@ -1,23 +1,32 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from sqlalchemy import Boolean, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .orm_base import Base
+
+if TYPE_CHECKING:
+    from src.model.project_category import ProjectCategory
 
 
 class ProjectCategoryGoal(Base):
     __tablename__ = "project_category_goals"
-    id = Column(Integer, primary_key=True)
-    description = Column(String)
-    project_category_id = Column(Integer, ForeignKey("project_categories.id"))
-    project_category = relationship("ProjectCategory")
-    min_monday = Column(Integer)
-    min_tuesday = Column(Integer)
-    min_wednesday = Column(Integer)
-    min_thursday = Column(Integer)
-    min_friday = Column(Integer)
-    min_saturday = Column(Integer)
-    min_sunday = Column(Integer)
-    active = Column(Boolean)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    description: Mapped[str] = mapped_column(String)
+    project_category_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("project_categories.id")
+    )
+    project_category: Mapped[ProjectCategory] = relationship("ProjectCategory")
+    min_monday = mapped_column(Integer)
+    min_tuesday = mapped_column(Integer)
+    min_wednesday = mapped_column(Integer)
+    min_thursday = mapped_column(Integer)
+    min_friday = mapped_column(Integer)
+    min_saturday = mapped_column(Integer)
+    min_sunday = mapped_column(Integer)
+    active = mapped_column(Boolean)
 
     def __init__(
         self,
@@ -30,7 +39,7 @@ class ProjectCategoryGoal(Base):
         min_saturday=0,
         min_sunday=0,
         active=True,
-    ):
+    ) -> None:
         self.id = id
         self.min_monday = min_monday
         self.min_tuesday = min_tuesday
@@ -58,7 +67,7 @@ class ProjectCategoryGoal(Base):
             self.min_sunday,
         ]
 
-    def get_weekday_minute_goal(self, weekday):
+    def get_weekday_minute_goal(self, weekday: int) -> int:
         """Returns the minute goal for any given weekday."""
         match weekday:
             case 0:

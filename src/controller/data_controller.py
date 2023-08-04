@@ -7,7 +7,7 @@ from ..model.time_entry import TimeEntry
 class DataController:
     """A central entity that manages the data of the application."""
 
-    def __init__(self, db_session):
+    def __init__(self, db_session) -> None:
         self.db_session = db_session
 
         # Various data frames with specific capabilities

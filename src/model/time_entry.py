@@ -1,39 +1,44 @@
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING, List, Optional, Self
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .orm_base import Base
+
+if TYPE_CHECKING:
+    from src.model.activity import Activity
+    from src.model.project import Project
 
 
 class TimeEntry(Base):
     __tablename__ = "time_entries"
-    id = Column(Integer, primary_key=True)
-    start = Column(DateTime)
-    stop = Column(DateTime)
-    pause = Column(Integer)
-    project_id = Column(Integer, ForeignKey("projects.id"))
-    project = relationship("Project")
-    activity_id = Column(Integer, ForeignKey("activities.id"))
-    activity = relationship("Activity")
-    tags = Column(String)
-    alone = Column(Boolean)
-    comment = Column(Text)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    start: Mapped[datetime] = mapped_column(DateTime)
+    stop: Mapped[datetime] = mapped_column(DateTime)
+    pause: Mapped[int] = mapped_column(Integer)
+    project_id: Mapped[int] = mapped_column(Integer, ForeignKey("projects.id"))
+    project: Mapped["Project"] = relationship("Project")
+    activity_id: Mapped[int] = mapped_column(Integer, ForeignKey("activities.id"))
+    activity: Mapped["Activity"] = relationship("Activity")
+    tags: Mapped[str] = mapped_column(String)
+    alone: Mapped[bool] = mapped_column(Boolean)
+    comment: Mapped[str] = mapped_column(Text)
 
     def __init__(
         self,
-        id=None,
-        start=None,
-        stop=None,
-        pause=0,
-        project_id=None,
-        project_name=None,
-        activity_id=None,
-        activity_name=None,
-        alone=True,
-        tags=None,
-        comment=None,
-    ):
+        id: Optional[int] = None,
+        start: Optional[datetime] = None,
+        stop: Optional[datetime] = None,
+        pause: int = 0,
+        project_id: Optional[int] = None,
+        project_name: Optional[str] = None,
+        activity_id: Optional[int] = None,
+        activity_name: Optional[str] = None,
+        alone: bool = True,
+        tags: Optional[str] = None,
+        comment: Optional[str] = None,
+    ) -> None:
         """
         Parameters
         ----------
@@ -120,7 +125,8 @@ class TimeEntry(Base):
 
     # MISC. ###################################################################
 
-    def get_column_names():
+    @staticmethod
+    def get_column_names() -> List[str]:
         return [
             "db_id",
             "Date",
@@ -138,7 +144,7 @@ class TimeEntry(Base):
             "Comment",
         ]
 
-    def to_list(self):
+    def to_list(self) -> list:
         return [
             self.id,
             self.get_date(),
@@ -156,7 +162,15 @@ class TimeEntry(Base):
             self.comment,
         ]
 
-    def from_list(time_entry_list):
+    @staticmethod
+    def from_list(time_entry_list) -> Self:
+        """Transforms a list with parameters into a new TimeEntry
+        object.
+
+        Args
+            time_entry_list: A list which should correspond to the
+            output of TimeEntry.to_list().
+        """
         start = datetime.strptime(
             f"{time_entry_list[1]} {time_entry_list[3]}", "%Y-%m-%d %H:%M:%S"
         )

@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta
+from typing import TYPE_CHECKING, Tuple
 
 import pandas as pd
 import ttkbootstrap as tb
@@ -11,9 +14,12 @@ from ..components.frames import AutoLayoutFrame
 from ..components.visuals import GraphTimePerDay, GraphTimesPerDay
 from ..controller.time_controller import TimeController
 
+if TYPE_CHECKING:
+    from app import App
 
-class StatsDashboard(tb.Frame):
-    def __init__(self, parent, app):
+
+class StatsDashboard(tb.Frame):  # type: ignore
+    def __init__(self, parent: tb.Frame, app: "App") -> None:
         super().__init__(parent)
         self.parent = parent
         self.app = app
@@ -47,11 +53,11 @@ class StatsDashboard(tb.Frame):
         )
         filter_panel.grid(row=0, column=0, sticky="ew")
 
-    def preprocess_data(self):
+    def preprocess_data(self) -> None:
         """Takes the current dataframe from DataController and prepares
         it for further use.
         """
-        self.data_max = self.app.dc.time_entry_df
+        self.data_max: pd.DataFrame = self.app.dc.time_entry_df
 
         ago_one_year = str((datetime.today() - timedelta(days=365)).date())
         ago_six_months = str((datetime.today() - timedelta(days=182)).date())
@@ -62,7 +68,7 @@ class StatsDashboard(tb.Frame):
         self.data_one_month = self.data_max[self.data_max["Date"] > ago_one_month]
         self.data_one_week = self.data_max[self.data_max["Date"] > ago_one_week]
 
-    def select_handler(self, *_args):
+    def select_handler(self, *_args: int) -> None:
         # Select the right data set
         match self.time_string.get():
             case "Max":
@@ -78,7 +84,7 @@ class StatsDashboard(tb.Frame):
 
         self.build_gui_components(data)
 
-    def build_gui_components(self, data):
+    def build_gui_components(self, data: pd.DataFrame) -> None:
         if len(self.data_max) == 0:
             return
         if self.has_content:
@@ -131,7 +137,7 @@ class StatsDashboard(tb.Frame):
         )
 
         # Graph - Total time per day
-        self.graph_time_per_day = GraphTimePerDay(
+        self.graph_time_per_day: GraphTimePerDay = GraphTimePerDay(
             parent=self.content_frame,
             app=self.app,
             data=duration_per_day,
@@ -150,18 +156,19 @@ class StatsDashboard(tb.Frame):
         self.has_content = True
 
 
-class OverviewPanel(tb.Frame):
-    def __init__(self, parent, app, data):
+class OverviewPanel(tb.Frame):  # type: ignore
+    def __init__(self, parent: tb.Frame, app: "App", data: pd.DataFrame) -> None:
         super().__init__(master=parent)
         self.app = app
         self.data = data
+        self.tr = app.definitions.tr
 
         self.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
         self.calculate_values()
         self.build_gui_components()
 
-    def calculate_values(self):
+    def calculate_values(self) -> None:
         goals = self.app.pcgsc.get_active_goals()
         weekday = datetime.today().weekday()
         total_goal_minutes = 0
@@ -174,19 +181,21 @@ class OverviewPanel(tb.Frame):
         curr_ratio = self.app.sc.total_time_today() / 60 / total_goal_minutes
         self.progress_today = tb.StringVar(self, f"{round(curr_ratio*6, 1)}%")
 
-    def build_gui_components(self):
+    def build_gui_components(self) -> None:
         self.block_goal_today = OverviewPanelBlock(
-            self, self.app, _("GOAL TODAY"), self.goal_today_str
+            self, self.app, self.tr("GOAL TODAY"), self.goal_today_str
         )
         self.block_goal_today.grid(row=0, column=0, sticky="nsew", padx=10)
         self.block_progress_today = OverviewPanelBlock(
-            self, self.app, _("PROGRESS"), self.progress_today
+            self, self.app, self.tr("PROGRESS"), self.progress_today
         )
         self.block_progress_today.grid(row=0, column=1, sticky="nsew", padx=10)
 
 
-class OverviewPanelBlock(tb.Frame):
-    def __init__(self, parent, app, heading, value_str):
+class OverviewPanelBlock(tb.Frame):  # type: ignore
+    def __init__(
+        self, parent: tb.Frame, app: "App", heading: str, value_str: tb.StringVar
+    ) -> None:
         super().__init__(master=parent)
         self.app = app
         self.value_str = value_str
@@ -207,8 +216,8 @@ class OverviewPanelBlock(tb.Frame):
         lbl_value.pack(side="top", fill="x", pady=20)
 
 
-class MedalScore(tb.Frame):
-    def __init__(self, parent, app, data_max):
+class MedalScore(tb.Frame):  # type: ignore
+    def __init__(self, parent: tb.Frame, app: "App", data_max: pd.DataFrame):
         super().__init__(master=parent)
         self.app = app
         self.data_max = data_max
@@ -222,7 +231,14 @@ class MedalScore(tb.Frame):
         total_bronze, total_silver, total_gold = self.calculate_values()
         self.draw_image(width, height, total_bronze, total_silver, total_gold)
 
-    def draw_image(self, width, height, total_bronze, total_silver, total_gold):
+    def draw_image(
+        self,
+        width: int,
+        height: int,
+        total_bronze: int,
+        total_silver: int,
+        total_gold: int,
+    ) -> None:
         pedestal_width = width * 0.7 / 3
         center_bronze = width / 6
         center_gold = width / 6 * 3
@@ -323,7 +339,7 @@ class MedalScore(tb.Frame):
             text=total_silver,
         )
 
-    def calculate_values(self):
+    def calculate_values(self) -> Tuple[int, int, int]:
         # Group data
         tmp_data = self.data_max
         duration_per_day = tmp_data.groupby(pd.Grouper(key="Date", freq="D"))[

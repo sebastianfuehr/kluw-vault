@@ -1,5 +1,5 @@
-import configparser
 import os
+from configparser import ConfigParser
 from shutil import copyfile
 
 from ttkbootstrap.dialogs.dialogs import Messagebox
@@ -7,13 +7,15 @@ from ttkbootstrap.dialogs.dialogs import Messagebox
 
 class SettingsController:
     @staticmethod
-    def load_or_create_config_file(app_root_dir, required_config_file_version):
+    def load_or_create_config_file(
+        app_root_dir, required_config_file_version
+    ) -> ConfigParser:
         """Loads and returns user settings. If the file
         APP_USER_DATA_DIR do not exist, creates the necessary directory
         structure and copies a template file with the default settings
         to the location.
         """
-        settings = configparser.ConfigParser()
+        settings = ConfigParser()
 
         app_usr_data_file_default = os.path.join(app_root_dir, "assets", "default.ini")
 

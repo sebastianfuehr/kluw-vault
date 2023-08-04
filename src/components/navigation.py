@@ -34,7 +34,7 @@ class ButtonPanel(tb.Frame):  # pylint: disable=too-many-ancestors
         ttk_key_var=None,
         context_menu=None,
         **kwargs
-    ):
+    ) -> None:
         super().__init__(master=parent, **kwargs)
 
         self.buttons = []
@@ -86,7 +86,7 @@ class TextButton(tb.Label):  # pylint: disable=too-many-ancestors
         key=None,
         tab_nav_int=None,
         context_menu=None,
-    ):
+    ) -> None:
         self.colors = styling["colors"]
         super().__init__(
             master=master,
@@ -116,11 +116,11 @@ class TextButton(tb.Label):  # pylint: disable=too-many-ancestors
             self.context_menu = context_menu
             self.bind("<Button-3>", self.open_context_menu)
 
-    def open_context_menu(self, event):
+    def open_context_menu(self, event) -> None:
         self.select_handler()
         self.context_menu.open_popup(event)
 
-    def select_handler(self, *_args):
+    def select_handler(self, *_args: int) -> None:
         """Callback method for when the label is clicked on."""
         if self.tab_nav_int is not None:
             self.tab_nav_int.set(self.key)
@@ -129,19 +129,19 @@ class TextButton(tb.Label):  # pylint: disable=too-many-ancestors
             button.unselect()
         self.configure(foreground=self.colors["highlight"])
 
-    def unselect(self):
+    def unselect(self) -> None:
         """Resets the text color."""
         self.configure(foreground=self.colors["text"])
 
 
 class ContextMenu(tb.Frame):
-    def __init__(self, app):
+    def __init__(self, app) -> None:
         super().__init__(master=app)
         self.app = app
         self.buttons = []
         self.app.bind("<Button-1>", self.destroy, add=True)
 
-    def add_command(self, label, command):
+    def add_command(self, label, command) -> None:
         lbl = tb.Label(self, text=label)
         lbl.pack(fill="x", anchor="w", padx=5, pady=5)
         lbl.bind("<Button-1>", command)
@@ -149,18 +149,18 @@ class ContextMenu(tb.Frame):
         lbl.bind("<Leave>", self.hover_out)
         self.buttons.append(lbl)
 
-    def open_popup(self, *_args):
+    def open_popup(self, *_args) -> None:
         curr_x = self.app.winfo_pointerx() - self.app.winfo_x()
         curr_y = self.app.winfo_pointery() - self.app.winfo_y()
         self.place(x=curr_x + 1, y=curr_y + 1)
         self.lift()
 
-    def hover_in(self, event):
+    def hover_in(self, event) -> None:
         event.widget.configure(foreground="gray")
 
-    def hover_out(self, event):
+    def hover_out(self, event) -> None:
         event.widget.configure(foreground="white")
 
-    def destroy(self, event=None):
+    def destroy(self, event=None) -> None:
         if event is not None:
             self.place_forget()
