@@ -1,6 +1,6 @@
 """Tests for the MainFrame component."""
 
-from test.util import find_widget_by_name
+from tests.util import find_widget_by_name
 
 import pytest
 
