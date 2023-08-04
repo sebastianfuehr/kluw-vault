@@ -247,7 +247,7 @@ class TimeEntryForm(tb.Frame):
             self.te_date.delete(0, tb.END)
             self.te_date.insert(0, self.time_entry.get_date())
 
-            self.te_weekday["text"] = self.time_entry.get_weekday()
+            self.te_weekday["text"] = self.time_entry.get_weekday_str()
 
             self.te_start.delete(0, tb.END)
             self.te_start.insert(0, self.time_entry.get_start_time())

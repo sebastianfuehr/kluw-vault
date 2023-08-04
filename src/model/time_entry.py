@@ -12,6 +12,21 @@ if TYPE_CHECKING:
 
 
 class TimeEntry(Base):
+    """A representation of a time entry, spent working on a project of
+    some kind.
+
+    Attributes
+        __tablename__: The table name inside the database.
+        id:
+        start:
+        stop:
+        pause:
+        project_id:
+        project:
+        activity_id:
+        activity:
+    """
+
     __tablename__ = "time_entries"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     start: Mapped[datetime] = mapped_column(DateTime)
@@ -39,12 +54,6 @@ class TimeEntry(Base):
         tags: Optional[str] = None,
         comment: Optional[str] = None,
     ) -> None:
-        """
-        Parameters
-        ----------
-        pause: Integer
-            A pause in seconds.
-        """
         self.id = id
         if start is not None:
             self.start = start
@@ -71,7 +80,13 @@ class TimeEntry(Base):
         else:
             return self.start.date()
 
-    def get_weekday(self):
+    def get_weekday_str(self):
+        """Returns the weekday of the date of the time entry in a short
+        string format.
+
+        Returns
+            weekday: A string in the format "%a", e.g., "We".
+        """
         if self.start is None:
             return None
         else:
@@ -148,7 +163,7 @@ class TimeEntry(Base):
         return [
             self.id,
             self.get_date(),
-            self.get_weekday(),
+            self.get_weekday_str(),
             self.get_start_time(),
             self.get_end_time(),
             self.get_pause_timedelta(),
