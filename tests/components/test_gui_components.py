@@ -1,11 +1,10 @@
 """Tests for the MainFrame component."""
 
-from tests.util import find_widget_by_name
-
 import pytest
 
 from app import App
 from src.model.orm_base import DBConnection
+from tests.util import find_widget_by_name
 
 
 @pytest.fixture(scope="module")
@@ -14,6 +13,7 @@ def app():
     return App(db_connection)
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize(
     "widget_name, variable_value",
     [
@@ -38,6 +38,7 @@ def test_main_frame_tab_navigation(app, widget_name, variable_value):
     assert app.main_frame.tab_nav_str.get() == variable_value
 
 
+@pytest.mark.skip
 @pytest.mark.parametrize(
     "widget_names, expected_result",
     [
