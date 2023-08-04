@@ -13,7 +13,7 @@ from src.controller.project_category_goal_stats_controller import (
 )
 from src.controller.statistics_controller import StatisticsController
 
-# Some unused imports are needed for the relationship creation of
+# Unused noqa: F401 imports are needed for the relationship creation of
 # SQLAlchemy
 from src.model.activity import Activity  # noqa: F401
 from src.model.orm_base import Base, DBConnection  # Session, db_engine, Base
@@ -24,10 +24,10 @@ from src.model.rel_project_tag import RelProjectTag  # noqa: F401
 from src.model.tracking_session import TrackingSession
 
 
-class App(tb.Window):
-    def __init__(self, db_connection):
+class App(tb.Window):  # type: ignore
+    def __init__(self, db_connection: DBConnection) -> None:
         # Load config data
-        self.definitions = Definitions()
+        self.definitions: Definitions = Definitions()
         self.settings = self.definitions.load_config()
         theme = self.settings["appearance"]["theme"]
         super().__init__(title="Time Journal", themename=theme, minsize=(1080, 800))
@@ -38,7 +38,6 @@ class App(tb.Window):
         self.option_add("*TCombobox*Listbox*Font", (None, 16))
 
         # Open a new database connection
-        # self.db_conn = DBConnection("/time-journal.db")
         Base.metadata.create_all(db_connection.db_engine)
         self.session = db_connection.Session()
         self.db_engine = db_connection.db_engine
@@ -51,11 +50,11 @@ class App(tb.Window):
         # GUI structure
         self.main_frame = MainFrame(self)
 
-    def start(self):
+    def start(self) -> None:
         self.session_start = datetime.now()
         self.mainloop()
 
-    def stop(self):
+    def stop(self) -> None:
         """Save the session data into the database and close the database connection."""
         session_end = datetime.now()
         session_data = TrackingSession(start=self.session_start, end=session_end)

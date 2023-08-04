@@ -3,12 +3,18 @@ This file pulls from constants.py and enums.py and is used by the main
 entrypoint of the application app.py.
 """
 
+from __future__ import annotations
+
 import gettext
 import os
 import sys
+from typing import TYPE_CHECKING
 
 from config.constants import CONFIG_FILE_VERSION
 from src.controller.settings_controller import SettingsController
+
+if TYPE_CHECKING:
+    from configparser import ConfigParser
 
 
 class Definitions:
@@ -28,7 +34,7 @@ class Definitions:
     DASHBOARD_HEADING_SIZE = 24
     FORM_HEADING_FONT = (None, 24, "bold")
     COMBO_BOX_FONT = (None, 16)
-    FONTS = {
+    FONTS: dict = {
         "default": (None, 16),
         "dashboard": {"heading": ("Nimbus Sans", 24, "bold")},
         "form": {
@@ -48,14 +54,14 @@ class Definitions:
     }
 
     # Simple color name-value pairs
-    COLORS = {"text": "white", "highlight": "#21eaad"}
+    COLORS: dict = {"text": "white", "highlight": "#21eaad"}
     # Color combinations for specific components
-    COMPONENT_COLORS = {
+    COMPONENT_COLORS: dict = {
         "list-item": {"text": COLORS["text"], "highlight": COLORS["highlight"]}
     }
 
     # COMPONENTS
-    CUSTOM_ENTITIY_ITEM_LIST = {
+    CUSTOM_ENTITIY_ITEM_LIST: dict = {
         "separators": [
             {"col": 0, "row": 0, "orient": "horizontal", "sticky": "ew", "rowspan": 1},
             {"col": 0, "row": 2, "orient": "horizontal", "sticky": "ew", "rowspan": 1},
@@ -63,7 +69,7 @@ class Definitions:
     }
 
     # MENUS
-    FILTER_PERIODS = {
+    FILTER_PERIODS: dict = {
         "elements": ["Max", "1 Year", "6 Months", "Month", "Week"],
         "padx": 10,
         "pady": 10,
@@ -74,7 +80,7 @@ class Definitions:
     }
 
     # TABS
-    TAB_FRAME_LIST = {
+    TAB_FRAME_LIST: dict = {
         "sidebar": {"col": 0, "row": 0, "sticky": "nsew"},
         "form": {"col": 0, "row": 0, "sticky": "nsew"},
         "button": {"col": 0, "row": 0, "pady": 20},
@@ -93,17 +99,17 @@ class Definitions:
         "colors": COMPONENT_COLORS["list-item"],
     }
 
-    def load_config(self):
+    def load_config(self) -> ConfigParser:
         config = SettingsController.load_or_create_config_file(
             self.APP_ROOT_DIR, CONFIG_FILE_VERSION
         )
 
-        print(f"Loading language {config['DEFAULT']['language']} from user settings")
-        locale = gettext.translation(
+        print(f"Loading language '{config['DEFAULT']['language']}' from user settings")
+        self.locale = gettext.translation(
             "messages", localedir="locales", languages=[config["DEFAULT"]["language"]]
         )
-        locale.install()
-        _ = locale.gettext
+        self.locale.install()
+        self.tr = self.locale.gettext
 
         self.generate_config_based_settings(config)
         return config
@@ -135,9 +141,9 @@ class Definitions:
         self.MAINFRAME_TABS_NAV = {
             "elements": {
                 "dashboard": "Dashboard",
-                "time-entries": _("Time Entries"),
-                "projects": _("Projects"),
-                "categories": _("Categories"),
+                "time-entries": self.tr("Time Entries"),
+                "projects": self.tr("Projects"),
+                "categories": self.tr("Categories"),
             },
             "padx": (40, 0),
             "pady": 20,
@@ -156,7 +162,7 @@ class Definitions:
             "grid-config": {"rowconfigure": {}, "columnconfigure": {(0, 1): 1}},
             "labels": [
                 {
-                    "text": "📰 " + _("Overview"),
+                    "text": "📰 " + self.tr("Overview"),
                     "row": 0,
                     "rowspan": 1,
                     "col": 0,
@@ -167,7 +173,7 @@ class Definitions:
                     "font": self.FONTS["dashboard"]["heading"],
                 },
                 {
-                    "text": "🗓️ " + _("Time per Day"),
+                    "text": "🗓️ " + self.tr("Time per Day"),
                     "row": 0,
                     "rowspan": 1,
                     "col": 1,
@@ -178,7 +184,7 @@ class Definitions:
                     "font": self.FONTS["dashboard"]["heading"],
                 },
                 {
-                    "text": "📈 " + _("Time per Day per Project"),
+                    "text": "📈 " + self.tr("Time per Day per Project"),
                     "row": 4,
                     "rowspan": 1,
                     "col": 1,
@@ -189,7 +195,7 @@ class Definitions:
                     "font": self.FONTS["dashboard"]["heading"],
                 },
                 {
-                    "text": "🏅" + _("Medal Score"),
+                    "text": "🏅" + self.tr("Medal Score"),
                     "row": 2,
                     "rowspan": 1,
                     "col": 0,
@@ -230,7 +236,7 @@ class Definitions:
         }
 
         self.VIEW_BTN_EDIT = {
-            "text": _("Edit"),
+            "text": self.tr("Edit"),
             "relx": 0.98,
             "rely": 0.02,
             "anchor": "ne",
@@ -242,7 +248,7 @@ class Definitions:
             "grid-config": {"rowconfigure": {}, "columnconfigure": {0: 1, 2: 1}},
             "labels": [
                 {
-                    "text": _("Total time:"),
+                    "text": self.tr("Total time:"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 0,
@@ -253,7 +259,7 @@ class Definitions:
                     "font": self.FONTS["view"]["section"],
                 },
                 {
-                    "text": _("Category"),
+                    "text": self.tr("Category"),
                     "row": 2,
                     "rowspan": 1,
                     "col": 0,
@@ -264,7 +270,7 @@ class Definitions:
                     "font": self.FONTS["view"]["section"],
                 },
                 {
-                    "text": _("Description"),
+                    "text": self.tr("Description"),
                     "row": 4,
                     "rowspan": 1,
                     "col": 0,
@@ -275,7 +281,7 @@ class Definitions:
                     "font": self.FONTS["view"]["section"],
                 },
                 {
-                    "text": _("Activities"),
+                    "text": self.tr("Activities"),
                     "row": 2,
                     "rowspan": 1,
                     "col": 2,
@@ -286,7 +292,7 @@ class Definitions:
                     "font": self.FONTS["view"]["section"],
                 },
                 {
-                    "text": _("Statistics"),
+                    "text": self.tr("Statistics"),
                     "row": 6,
                     "rowspan": 1,
                     "col": 0,
@@ -297,7 +303,7 @@ class Definitions:
                     "font": self.FONTS["view"]["subtitle"],
                 },
                 {
-                    "text": "🗓️ " + _("Time per Day"),
+                    "text": "🗓️ " + self.tr("Time per Day"),
                     "row": 7,
                     "rowspan": 1,
                     "col": 0,
@@ -375,7 +381,7 @@ class Definitions:
             "grid-config": {"rowconfigure": {}, "columnconfigure": {0: 1, 2: 1}},
             "labels": [
                 {
-                    "text": _("Total time:"),
+                    "text": self.tr("Total time:"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 0,
@@ -386,7 +392,7 @@ class Definitions:
                     "font": self.FONTS["view"]["section"],
                 },
                 {
-                    "text": _("Description"),
+                    "text": self.tr("Description"),
                     "row": 2,
                     "rowspan": 1,
                     "col": 0,
@@ -397,7 +403,7 @@ class Definitions:
                     "font": self.FONTS["view"]["section"],
                 },
                 {
-                    "text": _("Goals"),
+                    "text": self.tr("Goals"),
                     "row": 4,
                     "rowspan": 1,
                     "col": 0,
@@ -408,7 +414,7 @@ class Definitions:
                     "font": self.FONTS["view"]["subtitle"],
                 },
                 {
-                    "text": _("Projects"),
+                    "text": self.tr("Projects"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 2,
@@ -419,7 +425,7 @@ class Definitions:
                     "font": self.FONTS["view"]["section"],
                 },
                 {
-                    "text": _("Statistics"),
+                    "text": self.tr("Statistics"),
                     "row": 6,
                     "rowspan": 1,
                     "col": 0,
@@ -515,7 +521,7 @@ class Definitions:
             ],
             "labels": [
                 {
-                    "text": _("Mon"),
+                    "text": self.tr("Mon"),
                     "row": 0,
                     "rowspan": 1,
                     "col": first_lbl_col,
@@ -526,7 +532,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Tue"),
+                    "text": self.tr("Tue"),
                     "row": 0,
                     "rowspan": 1,
                     "col": first_lbl_col + 1,
@@ -537,7 +543,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Wed"),
+                    "text": self.tr("Wed"),
                     "row": 0,
                     "rowspan": 1,
                     "col": first_lbl_col + 2,
@@ -548,7 +554,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Thu"),
+                    "text": self.tr("Thu"),
                     "row": 0,
                     "rowspan": 1,
                     "col": first_lbl_col + 3,
@@ -559,7 +565,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Fri"),
+                    "text": self.tr("Fri"),
                     "row": 0,
                     "rowspan": 1,
                     "col": first_lbl_col + 4,
@@ -570,7 +576,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Sat"),
+                    "text": self.tr("Sat"),
                     "row": 0,
                     "rowspan": 1,
                     "col": first_lbl_col + 5,
@@ -581,7 +587,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Sun"),
+                    "text": self.tr("Sun"),
                     "row": 0,
                     "rowspan": 1,
                     "col": first_lbl_col + 6,
@@ -629,7 +635,7 @@ class Definitions:
             },
             "labels": [
                 {
-                    "text": _("Name"),
+                    "text": self.tr("Name"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 1,
@@ -640,7 +646,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Description"),
+                    "text": self.tr("Description"),
                     "row": 3,
                     "rowspan": 1,
                     "col": 1,
@@ -651,7 +657,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Project Category"),
+                    "text": self.tr("Project Category"),
                     "row": 5,
                     "rowspan": 1,
                     "col": 1,
@@ -707,7 +713,7 @@ class Definitions:
             },
             "labels": [
                 {
-                    "text": _("Name"),
+                    "text": self.tr("Name"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 1,
@@ -718,7 +724,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Description"),
+                    "text": self.tr("Description"),
                     "row": 3,
                     "rowspan": 1,
                     "col": 1,
@@ -765,7 +771,7 @@ class Definitions:
             },
             "labels": [
                 {
-                    "text": _("Name"),
+                    "text": self.tr("Name"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 1,
@@ -776,7 +782,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Description"),
+                    "text": self.tr("Description"),
                     "row": 3,
                     "rowspan": 1,
                     "col": 1,
@@ -827,7 +833,7 @@ class Definitions:
             },
             "labels": [
                 {
-                    "text": _("Monday"),
+                    "text": self.tr("Monday"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 1,
@@ -838,7 +844,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Tuesday"),
+                    "text": self.tr("Tuesday"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 2,
@@ -849,7 +855,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Wednesday"),
+                    "text": self.tr("Wednesday"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 3,
@@ -860,7 +866,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Thursday"),
+                    "text": self.tr("Thursday"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 4,
@@ -871,7 +877,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Friday"),
+                    "text": self.tr("Friday"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 5,
@@ -882,7 +888,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Saturday"),
+                    "text": self.tr("Saturday"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 6,
@@ -893,7 +899,7 @@ class Definitions:
                     "font": self.FONTS["form"]["label"],
                 },
                 {
-                    "text": _("Sunday"),
+                    "text": self.tr("Sunday"),
                     "row": 1,
                     "rowspan": 1,
                     "col": 7,
