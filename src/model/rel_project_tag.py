@@ -9,5 +9,5 @@ class RelProjectTag(Base):
     project_id = Column(Integer, ForeignKey("projects.id"), primary_key=True)
     project_tag_id = Column(Integer, ForeignKey("project_tags.id"), primary_key=True)
 
-    def __init__(self):
+    def __init__(self) -> None:
         print("Test")
