@@ -1,3 +1,5 @@
+from types import NotImplementedType
+
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -13,3 +15,12 @@ class ProjectCategory(Base):
     def __init__(self, id=None, name=None) -> None:
         self.id = id
         self.name = name
+
+    def __eq__(self, other: object) -> bool | NotImplementedType:
+        if not isinstance(other, ProjectCategory):
+            return NotImplemented
+        return (
+            self.id == other.id
+            and self.name == other.name
+            and self.description == other.description
+        )

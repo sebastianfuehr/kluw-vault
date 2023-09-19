@@ -1,14 +1,14 @@
-from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, List, Optional, Self
+from datetime import date, datetime, time, timedelta
+from types import NotImplementedType
+from typing import List, Optional
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .orm_base import Base
+from src.model.activity import Activity
+from src.model.project import Project
 
-if TYPE_CHECKING:
-    from src.model.activity import Activity
-    from src.model.project import Project
+from .orm_base import Base
 
 
 class TimeEntry(Base):
@@ -45,7 +45,7 @@ class TimeEntry(Base):
         id: Optional[int] = None,
         start: Optional[datetime] = None,
         stop: Optional[datetime] = None,
-        pause: int = 0,
+        pause: float = 0,
         project_id: Optional[int] = None,
         project_name: Optional[str] = None,
         activity_id: Optional[int] = None,
@@ -65,78 +65,61 @@ class TimeEntry(Base):
             self.stop = None
         self.pause = int(pause)
         self.project_id = project_id
-        self.project_name = project_name
+        # self.project_name = project_name
+        self.project = Project(id=self.project_id, name=project_name)
         self.activity_id = activity_id
-        self.activity_name = activity_name
+        # self.activity_name = activity_name
+        self.activity = Activity(id=self.activity_id, name=activity_name)
         self.alone = alone
         self.tags = tags
         self.comment = comment
 
     # GETTER AND SETTER #######################################################
 
-    def get_date(self):
-        if self.start is None:
-            return None
-        else:
-            return self.start.date()
+    def get_date(self) -> date:
+        return self.start.date()
 
-    def get_weekday_str(self):
+    def get_weekday_str(self) -> str:
         """Returns the weekday of the date of the time entry in a short
         string format.
 
         Returns
             weekday: A string in the format "%a", e.g., "We".
         """
-        if self.start is None:
-            return None
-        else:
-            return self.start.strftime("%a")
+        return self.start.strftime("%a")
 
-    def get_start_time(self):
-        if self.start is None:
-            return None
-        else:
-            return self.start.time()
+    def get_start_time(self) -> time:
+        return self.start.time()
 
-    def get_end_time(self):
-        if self.stop is None:
-            return None
-        else:
-            return self.stop.time()
+    def get_end_time(self) -> time:
+        return self.stop.time()
 
-    def get_pause_seconds(self):
+    def get_pause_seconds(self) -> float:
         return self.pause
 
-    def get_pause_timedelta(self):
-        if self.pause is not None:
-            return timedelta(seconds=self.pause)
-        else:
-            return None
+    def get_pause_timedelta(self) -> timedelta:
+        return timedelta(seconds=self.pause)
 
-    def get_duration_timedelta(self):
+    def get_duration_timedelta(self) -> timedelta:
         duration = timedelta(seconds=0)
         if self.start is not None and self.stop is not None:
             duration = self.stop - self.start - self.get_pause_timedelta()
         return duration
 
-    def get_duration_minutes(self):
+    def get_duration_minutes(self) -> float:
         return self.get_duration_timedelta().total_seconds() / 60
 
-    def get_project_name(self):
+    def get_project_name(self) -> str | None:
         if self.project is not None:
             return self.project.name
-        elif self.project_name is not None:
-            return self.project_name
         else:
             return None
 
-    def get_activity_name(self):
-        if self.activity is not None:
-            return self.activity.name
-        elif hasattr(self, "activity_name") and self.activity_name is not None:
-            return self.activity_name
-        else:
+    def get_activity_name(self) -> str | None:
+        if self.activity is None:
             return None
+        else:
+            return self.activity.name
 
     # MISC. ###################################################################
 
@@ -178,7 +161,7 @@ class TimeEntry(Base):
         ]
 
     @staticmethod
-    def from_list(time_entry_list) -> Self:
+    def from_list(time_entry_list: list) -> "TimeEntry":
         """Transforms a list with parameters into a new TimeEntry
         object.
 
@@ -210,9 +193,9 @@ class TimeEntry(Base):
             start=start,
             stop=stop,
             pause=pause_duration.total_seconds(),
-            project_id=time_entry_list[7],
+            project_id=int(time_entry_list[7]),
             project_name=time_entry_list[8],
-            activity_id=time_entry_list[9],
+            activity_id=int(time_entry_list[9]),
             activity_name=time_entry_list[10],
             alone=time_entry_list[11],
             tags=time_entry_list[12],
@@ -220,7 +203,9 @@ class TimeEntry(Base):
         )
         return new_entry
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool | NotImplementedType:
+        if not isinstance(other, TimeEntry):
+            return NotImplemented
         return (
             self.id == other.id
             and self.start == other.start

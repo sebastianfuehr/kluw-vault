@@ -1,5 +1,3 @@
-from typing import TYPE_CHECKING
-
 from sqlalchemy import select
 from sqlalchemy.engine import Row, ScalarResult
 from sqlalchemy.orm import Session

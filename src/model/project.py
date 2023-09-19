@@ -1,3 +1,6 @@
+from types import NotImplementedType
+from typing import List
+
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
@@ -27,7 +30,7 @@ class Project(Base):
         self.name = name
 
     @staticmethod
-    def get_column_names():
+    def get_column_names() -> List[str]:
         return [
             "id",
             "Name",
@@ -36,12 +39,22 @@ class Project(Base):
             "Project Tags",
         ]
 
-    def to_string(self):
+    def to_string(self) -> str:
         return f"{self.name} ({self.project_category}): {self.description}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         class_name = type(self).__name__
         return (
             f"{class_name}(id={self.id}, name={self.name},"
             f" category={self.project_category}, description={self.description})"
+        )
+
+    def __eq__(self, other: object) -> bool | NotImplementedType:
+        if not isinstance(other, Project):
+            return NotImplemented
+        return (
+            self.id == other.id
+            and self.name == other.name
+            and self.description == other.description
+            and self.project_category == other.project_category
         )

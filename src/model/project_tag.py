@@ -12,5 +12,5 @@ class ProjectTag(Base):
         "Project", secondary="rel_project_tags", back_populates="project_tags"
     )
 
-    def __init__(self, name):
+    def __init__(self, name: str) -> None:
         self.name = name
